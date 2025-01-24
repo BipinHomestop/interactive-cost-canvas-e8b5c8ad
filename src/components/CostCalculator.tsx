@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -14,6 +15,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 
 interface CalculatorInputs {
+  location: string;
+  name: string;
+  phone: string;
+  email: string;
+  garageCapacity: number;
   quantity: number;
   serviceType: string;
   additionalFeatures: string;
@@ -37,12 +43,28 @@ const SERVICE_IMAGES = {
   premium: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
 };
 
+const TEXAS_CITIES = [
+  "Houston",
+  "San Antonio",
+  "Dallas",
+  "Austin",
+  "Fort Worth",
+  "El Paso",
+  "Arlington",
+  "Corpus Christi",
+];
+
 export function CostCalculator() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [totalCost, setTotalCost] = useState<number | null>(null);
   const { register, handleSubmit, setValue, watch, trigger } = useForm<CalculatorInputs>({
     defaultValues: {
+      location: "",
+      name: "",
+      phone: "",
+      email: "",
+      garageCapacity: 1,
       quantity: 1,
       serviceType: "basic",
       additionalFeatures: "standard",
@@ -67,7 +89,7 @@ export function CostCalculator() {
   const nextStep = async () => {
     const isValid = await trigger();
     if (isValid) {
-      setStep((prev) => Math.min(prev + 1, 3));
+      setStep((prev) => Math.min(prev + 1, 6));
     }
   };
 
@@ -88,7 +110,7 @@ export function CostCalculator() {
       <div className="w-1/2 bg-white p-6 rounded-lg shadow-md">
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            {[1, 2, 3].map((stepNumber) => (
+            {[1, 2, 3, 4, 5, 6].map((stepNumber) => (
               <div
                 key={stepNumber}
                 className={`flex-1 h-2 mx-1 rounded ${
@@ -98,12 +120,80 @@ export function CostCalculator() {
             ))}
           </div>
           <div className="text-center text-sm text-gray-600">
-            Step {step} of 3: {step === 1 ? "Quantity" : step === 2 ? "Service Type" : "Additional Features"}
+            Step {step} of 6
           </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {step === 1 && (
+            <div className="space-y-2">
+              <Label htmlFor="location">Select Your Location</Label>
+              <Select
+                onValueChange={(value) => setValue("location", value)}
+                defaultValue=""
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your city" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TEXAS_CITIES.map((city) => (
+                    <SelectItem key={city} value={city.toLowerCase()}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  {...register("name", { required: true })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  {...register("phone", { required: true })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email", { required: true })}
+                />
+              </div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4">
+              <Label>Maximum Cars in Garage</Label>
+              <div className="pt-6">
+                <Slider
+                  defaultValue={[1]}
+                  max={5}
+                  min={1}
+                  step={1}
+                  onValueChange={([value]) => setValue("garageCapacity", value)}
+                />
+                <div className="mt-2 text-center text-sm text-gray-600">
+                  {watch("garageCapacity")} {watch("garageCapacity") === 1 ? "car" : "cars"}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {step === 4 && (
             <div className="space-y-2">
               <Label htmlFor="quantity">Quantity</Label>
               <Input
@@ -115,7 +205,7 @@ export function CostCalculator() {
             </div>
           )}
 
-          {step === 2 && (
+          {step === 5 && (
             <div className="space-y-2">
               <Label htmlFor="serviceType">Service Type</Label>
               <Select
@@ -134,7 +224,7 @@ export function CostCalculator() {
             </div>
           )}
 
-          {step === 3 && (
+          {step === 6 && (
             <>
               <div className="space-y-2">
                 <Label htmlFor="additionalFeatures">Additional Features</Label>
@@ -165,7 +255,7 @@ export function CostCalculator() {
                 <ChevronLeft className="mr-2 h-4 w-4" /> Previous
               </Button>
             )}
-            {step < 3 && (
+            {step < 6 && (
               <Button type="button" className="ml-auto" onClick={nextStep}>
                 Next <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
