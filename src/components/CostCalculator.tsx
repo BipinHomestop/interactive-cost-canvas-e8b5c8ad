@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,27 +20,14 @@ interface CalculatorInputs {
   phone: string;
   email: string;
   garageCapacity: number;
-  quantity: number;
   serviceType: string;
   additionalFeatures: string;
 }
 
-const BASE_PRICES = {
-  basic: 100,
-  standard: 200,
-  premium: 300,
-};
-
-const FEATURE_PRICES = {
-  rush: 50,
-  priority: 30,
-  standard: 0,
-};
-
-const SERVICE_IMAGES = {
-  basic: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=500&q=80",
-  standard: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=500&q=80",
-  premium: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
+const STEP_IMAGES = {
+  1: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=500&q=80", // Location/Map image
+  2: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=80", // Contact form image
+  3: "https://images.unsplash.com/photo-1486006920555-c77dcf18193c?auto=format&fit=crop&w=500&q=80", // Garage/Car image
 };
 
 const TEXAS_CITIES = [
@@ -65,19 +52,11 @@ export function CostCalculator() {
       phone: "",
       email: "",
       garageCapacity: 1,
-      quantity: 1,
-      serviceType: "basic",
-      additionalFeatures: "standard",
     },
   });
 
-  const serviceType = watch("serviceType");
-
   const onSubmit = (data: CalculatorInputs) => {
-    const basePrice = BASE_PRICES[data.serviceType as keyof typeof BASE_PRICES];
-    const featurePrice =
-      FEATURE_PRICES[data.additionalFeatures as keyof typeof FEATURE_PRICES];
-    const total = (basePrice + featurePrice) * data.quantity;
+    const total = data.garageCapacity * 100; // Simple calculation example
     setTotalCost(total);
 
     toast({
@@ -89,7 +68,7 @@ export function CostCalculator() {
   const nextStep = async () => {
     const isValid = await trigger();
     if (isValid) {
-      setStep((prev) => Math.min(prev + 1, 6));
+      setStep((prev) => Math.min(prev + 1, 3));
     }
   };
 
@@ -101,8 +80,8 @@ export function CostCalculator() {
     <div className="flex gap-8 items-start">
       <div className="w-1/2">
         <img
-          src={SERVICE_IMAGES[serviceType as keyof typeof SERVICE_IMAGES]}
-          alt={`${serviceType} service visualization`}
+          src={STEP_IMAGES[step as keyof typeof STEP_IMAGES]}
+          alt={`Step ${step} visualization`}
           className="w-full rounded-lg shadow-lg mb-4 aspect-video object-cover"
         />
       </div>
@@ -110,7 +89,7 @@ export function CostCalculator() {
       <div className="w-1/2 bg-white p-6 rounded-lg shadow-md">
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            {[1, 2, 3, 4, 5, 6].map((stepNumber) => (
+            {[1, 2, 3].map((stepNumber) => (
               <div
                 key={stepNumber}
                 className={`flex-1 h-2 mx-1 rounded ${
@@ -120,7 +99,7 @@ export function CostCalculator() {
             ))}
           </div>
           <div className="text-center text-sm text-gray-600">
-            Step {step} of 6
+            Step {step} of 3
           </div>
         </div>
 
@@ -190,63 +169,10 @@ export function CostCalculator() {
                   {watch("garageCapacity")} {watch("garageCapacity") === 1 ? "car" : "cars"}
                 </div>
               </div>
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity</Label>
-              <Input
-                id="quantity"
-                type="number"
-                min="1"
-                {...register("quantity", { valueAsNumber: true })}
-              />
-            </div>
-          )}
-
-          {step === 5 && (
-            <div className="space-y-2">
-              <Label htmlFor="serviceType">Service Type</Label>
-              <Select
-                onValueChange={(value) => setValue("serviceType", value)}
-                defaultValue="basic"
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select service type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="basic">Basic ($100)</SelectItem>
-                  <SelectItem value="standard">Standard ($200)</SelectItem>
-                  <SelectItem value="premium">Premium ($300)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          {step === 6 && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="additionalFeatures">Additional Features</Label>
-                <Select
-                  onValueChange={(value) => setValue("additionalFeatures", value)}
-                  defaultValue="standard"
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select additional features" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard">Standard (No additional cost)</SelectItem>
-                    <SelectItem value="priority">Priority Service (+$30)</SelectItem>
-                    <SelectItem value="rush">Rush Service (+$50)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
               <Button type="submit" className="w-full">
                 Calculate Cost
               </Button>
-            </>
+            </div>
           )}
 
           <div className="flex justify-between mt-6">
@@ -255,7 +181,7 @@ export function CostCalculator() {
                 <ChevronLeft className="mr-2 h-4 w-4" /> Previous
               </Button>
             )}
-            {step < 6 && (
+            {step < 3 && (
               <Button type="button" className="ml-auto" onClick={nextStep}>
                 Next <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
