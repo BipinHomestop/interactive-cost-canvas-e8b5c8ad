@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface CalculatorInputs {
   location: string;
@@ -21,9 +22,15 @@ interface CalculatorInputs {
   email: string;
   garageCapacity: number;
   garageFinish: string;
+  needStemWalls: string;
+  stemWallType?: string;
 }
 
-const STEP_IMAGES = {
+type StepImages = {
+  [key: number]: string | { [key: string]: string };
+};
+
+const STEP_IMAGES: StepImages = {
   1: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=500&q=80",
   2: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=80",
   3: "https://images.unsplash.com/photo-1486006920555-c77dcf18193c?auto=format&fit=crop&w=500&q=80",
@@ -51,11 +58,16 @@ const GARAGE_FINISHES = [
   { value: "slate", label: "Slate" },
 ];
 
+const STEM_WALL_TYPES = [
+  { value: "standard", label: "4\" Standard" },
+  { value: "large", label: "Large Stem Walls" },
+];
+
 export function CostCalculator() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [totalCost, setTotalCost] = useState<number | null>(null);
-  const { register, handleSubmit, setValue, watch } = useForm<CalculatorInputs>({
+  const { register, handleSubmit, setValue, watch, control } = useForm<CalculatorInputs>({
     defaultValues: {
       location: "",
       name: "",
@@ -63,29 +75,38 @@ export function CostCalculator() {
       email: "",
       garageCapacity: 1,
       garageFinish: "snowfall",
+      needStemWalls: "no",
+      stemWallType: undefined,
     },
   });
 
+  const formValues = useWatch({ control });
   const selectedFinish = watch("garageFinish");
+  const needStemWalls = watch("needStemWalls");
 
-  const onSubmit = (data: CalculatorInputs) => {
-    const basePrice = data.garageCapacity * 1000;
-    const finishMultiplier = data.garageFinish === "snowfall" ? 1.2 : 1;
-    const total = basePrice * finishMultiplier;
+  useEffect(() => {
+    calculateCost();
+  }, [formValues]);
+
+  const calculateCost = () => {
+    const basePrice = formValues.garageCapacity * 1000;
+    const finishMultiplier = formValues.garageFinish === "snowfall" ? 1.2 : 1;
+    let total = basePrice * finishMultiplier;
+
+    if (formValues.needStemWalls === "yes") {
+      total += formValues.stemWallType === "standard" ? 500 : 1000;
+    }
     
     setTotalCost(total);
-
-    toast({
-      title: "Quote Generated",
-      description: `Your estimated cost is $${total}`,
-    });
   };
 
   const getStepImage = () => {
-    if (step === 4) {
-      return STEP_IMAGES[4][selectedFinish as keyof typeof STEP_IMAGES[4]] || STEP_IMAGES[4].snowfall;
+    const image = STEP_IMAGES[step];
+    if (typeof image === 'string') return image;
+    if (step === 4 && typeof image === 'object') {
+      return image[selectedFinish] || image.snowfall;
     }
-    return STEP_IMAGES[step as keyof typeof STEP_IMAGES];
+    return '';
   };
 
   const nextStep = () => {
@@ -97,16 +118,16 @@ export function CostCalculator() {
   };
 
   return (
-    <div className="flex gap-8 items-start">
+    <div className="flex gap-8 items-stretch">
       <div className="w-1/2">
         <img
           src={getStepImage()}
           alt={`Step ${step} visualization`}
-          className="w-full rounded-lg shadow-lg mb-4 aspect-video object-cover"
+          className="w-full rounded-lg shadow-lg h-[600px] object-cover"
         />
       </div>
       
-      <div className="w-1/2 bg-white p-6 rounded-lg shadow-md">
+      <div className="w-1/2 bg-white p-6 rounded-lg shadow-md h-[600px] overflow-y-auto">
         <div className="mb-8">
           <div className="flex justify-between mb-2">
             {[1, 2, 3, 4].map((stepNumber) => (
@@ -123,7 +144,7 @@ export function CostCalculator() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(calculateCost)} className="space-y-6">
           {step === 1 && (
             <div className="space-y-2">
               <Label htmlFor="location">Select Your Location</Label>
@@ -215,9 +236,40 @@ export function CostCalculator() {
                   </div>
                 ))}
               </div>
-              <Button type="submit" className="w-full mt-6">
-                Calculate Cost
-              </Button>
+
+              <div className="mt-8 space-y-4">
+                <Label>Do you need stem walls?</Label>
+                <RadioGroup
+                  defaultValue="no"
+                  onValueChange={(value) => setValue("needStemWalls", value)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="yes" id="yes" />
+                    <Label htmlFor="yes">Yes</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no" id="no" />
+                    <Label htmlFor="no">No</Label>
+                  </div>
+                </RadioGroup>
+
+                {needStemWalls === "yes" && (
+                  <div className="space-y-4 mt-4">
+                    <Label>Select Stem Wall Type</Label>
+                    <RadioGroup
+                      defaultValue="standard"
+                      onValueChange={(value) => setValue("stemWallType", value)}
+                    >
+                      {STEM_WALL_TYPES.map((type) => (
+                        <div key={type.value} className="flex items-center space-x-2">
+                          <RadioGroupItem value={type.value} id={type.value} />
+                          <Label htmlFor={type.value}>{type.label}</Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
