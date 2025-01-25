@@ -14,6 +14,23 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 
+const TEXAS_CITIES = [
+  "Houston",
+  "San Antonio",
+  "Dallas",
+  "Austin",
+  "Fort Worth",
+  "El Paso",
+  "Arlington",
+  "Corpus Christi",
+];
+
+const GARAGE_FINISHES = [
+  { value: "snowfall", label: "Snowfall (Most Popular)" },
+  { value: "granite", label: "Granite" },
+  { value: "slate", label: "Slate" },
+];
+
 interface CalculatorInputs {
   location: string;
   name: string;
