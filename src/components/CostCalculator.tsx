@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronRight, ChevronLeft } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface CalculatorInputs {
   location: string;
@@ -39,25 +38,13 @@ const STEP_IMAGES: StepImages = {
     granite: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
     slate: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
   },
-  5: "/lovable-uploads/22ff454f-41d8-485e-a60d-cb7554661683.png"
+  5: {
+    no: "/lovable-uploads/22ff454f-41d8-485e-a60d-cb7554661683.png",
+    yes: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
+    standard: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=500&q=80",
+    large: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80"
+  }
 };
-
-const TEXAS_CITIES = [
-  "Houston",
-  "San Antonio",
-  "Dallas",
-  "Austin",
-  "Fort Worth",
-  "El Paso",
-  "Arlington",
-  "Corpus Christi",
-];
-
-const GARAGE_FINISHES = [
-  { value: "snowfall", label: "Snowfall (Most Popular)" },
-  { value: "granite", label: "Granite" },
-  { value: "slate", label: "Slate" },
-];
 
 export function CostCalculator() {
   const { toast } = useToast();
@@ -101,8 +88,18 @@ export function CostCalculator() {
   const getStepImage = () => {
     const image = STEP_IMAGES[step];
     if (typeof image === 'string') return image;
-    if (step === 4 && typeof image === 'object') {
+    if (step === 4) {
       return image[selectedFinish] || image.snowfall;
+    }
+    if (step === 5) {
+      if (needStemWalls === 'no') return image.no;
+      if (needStemWalls === 'yes') {
+        if (formValues.stemWallType) {
+          return image[formValues.stemWallType];
+        }
+        return image.yes;
+      }
+      return image.no;
     }
     return '';
   };
@@ -255,7 +252,7 @@ export function CostCalculator() {
                   <Button
                     type="button"
                     variant={needStemWalls === "yes" ? "default" : "outline"}
-                    className="flex-1 bg-[#0A0B3B]"
+                    className={`flex-1 ${needStemWalls === "yes" ? "bg-[#0A0B3B] text-white" : "bg-white text-[#0A0B3B]"}`}
                     onClick={() => setValue("needStemWalls", "yes")}
                   >
                     Yes
@@ -263,7 +260,7 @@ export function CostCalculator() {
                   <Button
                     type="button"
                     variant={needStemWalls === "no" ? "default" : "outline"}
-                    className="flex-1 bg-[#C4C1BB]"
+                    className={`flex-1 ${needStemWalls === "no" ? "bg-[#C4C1BB] text-white" : "bg-white text-[#0A0B3B]"}`}
                     onClick={() => setValue("needStemWalls", "no")}
                   >
                     No
@@ -275,7 +272,7 @@ export function CostCalculator() {
                     <Button
                       type="button"
                       variant={formValues.stemWallType === "standard" ? "default" : "outline"}
-                      className="flex-1 bg-[#C4C1BB]"
+                      className={`flex-1 ${formValues.stemWallType === "standard" ? "bg-[#C4C1BB] text-white" : "bg-white text-[#0A0B3B]"}`}
                       onClick={() => setValue("stemWallType", "standard")}
                     >
                       4" Standard
@@ -283,7 +280,7 @@ export function CostCalculator() {
                     <Button
                       type="button"
                       variant={formValues.stemWallType === "large" ? "default" : "outline"}
-                      className="flex-1 bg-[#0A0B3B]"
+                      className={`flex-1 ${formValues.stemWallType === "large" ? "bg-[#0A0B3B] text-white" : "bg-white text-[#0A0B3B]"}`}
                       onClick={() => setValue("stemWallType", "large")}
                     >
                       Large stem walls
