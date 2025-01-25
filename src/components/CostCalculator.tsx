@@ -38,7 +38,8 @@ const STEP_IMAGES: StepImages = {
     snowfall: "/lovable-uploads/36204769-3ce1-4ebb-bfab-01295ad47562.png",
     granite: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
     slate: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
-  }
+  },
+  5: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80"
 };
 
 const TEXAS_CITIES = [
@@ -66,7 +67,7 @@ const STEM_WALL_TYPES = [
 export function CostCalculator() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const [totalCost, setTotalCost] = useState<number | null>(null);
+  const [totalCost, setTotalCost] = useState<number>(0);
   const { register, handleSubmit, setValue, watch, control } = useForm<CalculatorInputs>({
     defaultValues: {
       location: "",
@@ -110,7 +111,7 @@ export function CostCalculator() {
   };
 
   const nextStep = () => {
-    setStep((prev) => Math.min(prev + 1, 4));
+    setStep((prev) => Math.min(prev + 1, 5));
   };
 
   const prevStep = () => {
@@ -125,12 +126,20 @@ export function CostCalculator() {
           alt={`Step ${step} visualization`}
           className="w-full rounded-lg shadow-lg h-[600px] object-cover"
         />
+        {totalCost > 0 && (
+          <div className="mt-4 p-4 bg-[#0A0B42] text-white rounded-lg">
+            <h3 className="text-2xl font-bold">Your Price: ${totalCost.toLocaleString()}</h3>
+            <p className="text-[#FFA047] mt-1">
+              Market Price: ${(totalCost * 1.4).toLocaleString()}
+            </p>
+          </div>
+        )}
       </div>
       
       <div className="w-1/2 bg-white p-6 rounded-lg shadow-md h-[600px] overflow-y-auto">
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            {[1, 2, 3, 4].map((stepNumber) => (
+            {[1, 2, 3, 4, 5].map((stepNumber) => (
               <div
                 key={stepNumber}
                 className={`flex-1 h-2 mx-1 rounded ${
@@ -140,7 +149,7 @@ export function CostCalculator() {
             ))}
           </div>
           <div className="text-center text-sm text-gray-600">
-            Step {step} of 4
+            Step {step} of 5
           </div>
         </div>
 
@@ -236,38 +245,56 @@ export function CostCalculator() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
 
-              <div className="mt-8 space-y-4">
-                <Label>Do you need stem walls?</Label>
+          {step === 5 && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold mb-2">Stem Walls</h2>
+                <p className="text-gray-600">
+                  Stem walls are the vertical concrete surfaces around your garage.
+                </p>
+              </div>
+
+              <div className="space-y-4">
                 <RadioGroup
                   defaultValue="no"
                   onValueChange={(value) => setValue("needStemWalls", value)}
+                  className="flex gap-4 justify-center"
                 >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="yes" />
-                    <Label htmlFor="yes">Yes</Label>
+                  <div className={`flex-1 p-4 rounded-lg cursor-pointer text-center transition-all ${
+                    needStemWalls === "yes" ? "bg-[#0A0B42] text-white" : "bg-gray-200"
+                  }`}>
+                    <RadioGroupItem value="yes" id="yes" className="hidden" />
+                    <Label htmlFor="yes" className="cursor-pointer">Yes</Label>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="no" />
-                    <Label htmlFor="no">No</Label>
+                  <div className={`flex-1 p-4 rounded-lg cursor-pointer text-center transition-all ${
+                    needStemWalls === "no" ? "bg-[#0A0B42] text-white" : "bg-gray-200"
+                  }`}>
+                    <RadioGroupItem value="no" id="no" className="hidden" />
+                    <Label htmlFor="no" className="cursor-pointer">No</Label>
                   </div>
                 </RadioGroup>
 
                 {needStemWalls === "yes" && (
-                  <div className="space-y-4 mt-4">
-                    <Label>Select Stem Wall Type</Label>
-                    <RadioGroup
-                      defaultValue="standard"
-                      onValueChange={(value) => setValue("stemWallType", value)}
-                    >
-                      {STEM_WALL_TYPES.map((type) => (
-                        <div key={type.value} className="flex items-center space-x-2">
-                          <RadioGroupItem value={type.value} id={type.value} />
-                          <Label htmlFor={type.value}>{type.label}</Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </div>
+                  <RadioGroup
+                    defaultValue="standard"
+                    onValueChange={(value) => setValue("stemWallType", value)}
+                    className="flex gap-4 justify-center mt-4"
+                  >
+                    {STEM_WALL_TYPES.map((type) => (
+                      <div
+                        key={type.value}
+                        className={`flex-1 p-4 rounded-lg cursor-pointer text-center transition-all ${
+                          watch("stemWallType") === type.value ? "bg-[#0A0B42] text-white" : "bg-gray-200"
+                        }`}
+                      >
+                        <RadioGroupItem value={type.value} id={type.value} className="hidden" />
+                        <Label htmlFor={type.value} className="cursor-pointer">{type.label}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
                 )}
               </div>
             </div>
@@ -276,24 +303,13 @@ export function CostCalculator() {
           <div className="flex justify-between mt-6">
             {step > 1 && (
               <Button type="button" variant="outline" onClick={prevStep}>
-                <ChevronLeft className="mr-2 h-4 w-4" /> Previous
+                <ChevronLeft className="mr-2 h-4 w-4" /> Back
               </Button>
             )}
-            {step < 4 && (
-              <Button type="button" className="ml-auto" onClick={nextStep}>
-                Next <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            )}
+            <Button type="button" className="ml-auto" onClick={nextStep}>
+              {step === 5 ? "Finish" : "Next"} <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
-
-          {totalCost !== null && (
-            <div className="mt-6 p-4 bg-primary/5 rounded-md">
-              <h3 className="text-lg font-semibold">Your Price: ${totalCost}</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Market Price: ${Math.round(totalCost * 1.4)}
-              </p>
-            </div>
-          )}
         </form>
       </div>
     </div>
