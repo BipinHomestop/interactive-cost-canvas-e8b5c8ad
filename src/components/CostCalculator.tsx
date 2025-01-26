@@ -6,9 +6,12 @@ import { ContactStep } from "./calculator/ContactStep";
 import { GarageCapacityStep } from "./calculator/GarageCapacityStep";
 import { GarageFinishStep } from "./calculator/GarageFinishStep";
 import { StemWallsStep } from "./calculator/StemWallsStep";
+import { HouseStepsStep } from "./calculator/HouseStepsStep";
+import { AdditionalFootageStep } from "./calculator/AdditionalFootageStep";
 import { CalculatorInputs, StepImages } from "./calculator/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const STEP_IMAGES: StepImages = {
   1: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=500&q=80",
@@ -24,13 +27,17 @@ const STEP_IMAGES: StepImages = {
     yes: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80",
     standard: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=500&q=80",
     large: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80"
-  }
+  },
+  6: "/lovable-uploads/bc589651-ce8c-4c4a-85cc-fca87bb964b1.png",
+  7: "/lovable-uploads/3f8711ce-aed3-4ab1-88f7-6be8fd76b2fb.png"
 };
 
 export function CostCalculator() {
   const [step, setStep] = useState(1);
   const [totalCost, setTotalCost] = useState<number>(0);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+  
   const { register, handleSubmit, setValue, watch, control, formState: { errors } } = useForm<CalculatorInputs>({
     defaultValues: {
       location: "",
@@ -41,12 +48,17 @@ export function CostCalculator() {
       garageFinish: "snowfall",
       needStemWalls: "no",
       stemWallType: undefined,
+      needSteps: "no",
+      needExtraFootage: "no",
+      extraFootage: undefined,
     },
   });
 
   const formValues = useWatch({ control });
   const selectedFinish = watch("garageFinish");
   const needStemWalls = watch("needStemWalls");
+  const needSteps = watch("needSteps");
+  const needExtraFootage = watch("needExtraFootage");
 
   useEffect(() => {
     if (step >= 3) {
@@ -55,12 +67,31 @@ export function CostCalculator() {
   }, [formValues, step]);
 
   const calculateCost = () => {
-    const basePrice = formValues.garageCapacity * 1000;
+    let total = formValues.garageCapacity * 1000;
+    
+    // Apply finish multiplier
     const finishMultiplier = formValues.garageFinish === "snowfall" ? 1.2 : 1;
-    let total = basePrice * finishMultiplier;
-
+    total *= finishMultiplier;
+    
+    // Add stem walls cost
     if (formValues.needStemWalls === "yes") {
       total += formValues.stemWallType === "standard" ? 500 : 1000;
+    }
+    
+    // Add steps cost
+    if (formValues.needSteps === "yes") {
+      total += 300;
+    }
+    
+    // Add extra footage cost
+    if (formValues.needExtraFootage === "yes" && formValues.extraFootage) {
+      const footageCosts = {
+        "up-to-50": 200,
+        "51-100": 400,
+        "101-150": 600,
+        "151-200": 800,
+      };
+      total += footageCosts[formValues.extraFootage as keyof typeof footageCosts] || 0;
     }
     
     setTotalCost(total);
@@ -87,7 +118,6 @@ export function CostCalculator() {
 
   const nextStep = async () => {
     if (step === 2) {
-      // Validate and submit contact information
       if (!formValues.name || !formValues.phone || !formValues.email) {
         toast({
           title: "Error",
@@ -100,18 +130,16 @@ export function CostCalculator() {
       try {
         const { error } = await supabase
           .from('cost_calculator_submissions')
-          .insert([
-            {
-              location: formValues.location,
-              name: formValues.name,
-              phone: formValues.phone,
-              email: formValues.email,
-              garage_capacity: formValues.garageCapacity,
-              garage_finish: formValues.garageFinish,
-              need_stem_walls: formValues.needStemWalls,
-              stem_wall_type: formValues.stemWallType,
-            }
-          ]);
+          .insert([{
+            location: formValues.location,
+            name: formValues.name,
+            phone: formValues.phone,
+            email: formValues.email,
+            garage_capacity: formValues.garageCapacity,
+            garage_finish: formValues.garageFinish,
+            need_stem_walls: formValues.needStemWalls,
+            stem_wall_type: formValues.stemWallType,
+          }]);
 
         if (error) throw error;
 
@@ -130,7 +158,7 @@ export function CostCalculator() {
       }
     }
     
-    setStep((prev) => Math.min(prev + 1, 5));
+    setStep((prev) => Math.min(prev + 1, 7));
   };
 
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
@@ -168,14 +196,30 @@ export function CostCalculator() {
             onStemWallTypeChange={(value) => setValue("stemWallType", value)}
           />
         );
+      case 6:
+        return (
+          <HouseStepsStep
+            needSteps={needSteps}
+            onNeedStepsChange={(value) => setValue("needSteps", value)}
+          />
+        );
+      case 7:
+        return (
+          <AdditionalFootageStep
+            needExtraFootage={needExtraFootage}
+            extraFootage={formValues.extraFootage}
+            onNeedExtraFootageChange={(value) => setValue("needExtraFootage", value)}
+            onExtraFootageChange={(value) => setValue("extraFootage", value)}
+          />
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="flex gap-8 items-stretch">
-      <div className="w-1/2 relative">
+    <div className={`flex ${isMobile ? 'flex-col' : 'gap-8'} items-stretch`}>
+      <div className={`${isMobile ? 'w-full mb-6' : 'w-1/2'} relative`}>
         <img
           src={getStepImage()}
           alt={`Step ${step} visualization`}
@@ -193,10 +237,10 @@ export function CostCalculator() {
         )}
       </div>
       
-      <div className="w-1/2 bg-white p-6 rounded-lg shadow-md h-[600px] overflow-y-auto">
+      <div className={`${isMobile ? 'w-full' : 'w-1/2'} bg-white p-6 rounded-lg shadow-md ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            {[1, 2, 3, 4, 5].map((stepNumber) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((stepNumber) => (
               <div
                 key={stepNumber}
                 className={`flex-1 h-2 mx-1 rounded ${
@@ -206,7 +250,7 @@ export function CostCalculator() {
             ))}
           </div>
           <div className="text-center text-sm text-gray-600">
-            Step {step} of 5
+            Step {step} of 7
           </div>
         </div>
 
@@ -218,10 +262,10 @@ export function CostCalculator() {
                 Back
               </Button>
             )}
-            {step < 5 && (
+            {step < 7 && (
               <Button
                 type="button"
-                className="ml-auto bg-[#0A0B3B]"
+                className="ml-auto"
                 onClick={nextStep}
               >
                 Next

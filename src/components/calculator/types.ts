@@ -7,6 +7,9 @@ export interface CalculatorInputs {
   garageFinish: string;
   needStemWalls: string;
   stemWallType?: string;
+  needSteps: string;
+  needExtraFootage: string;
+  extraFootage?: string;
 }
 
 export type StepImages = {
