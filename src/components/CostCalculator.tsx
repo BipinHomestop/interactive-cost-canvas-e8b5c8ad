@@ -7,6 +7,8 @@ import { GarageCapacityStep } from "./calculator/GarageCapacityStep";
 import { GarageFinishStep } from "./calculator/GarageFinishStep";
 import { StemWallsStep } from "./calculator/StemWallsStep";
 import { CalculatorInputs, StepImages } from "./calculator/types";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const STEP_IMAGES: StepImages = {
   1: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=500&q=80",
@@ -28,7 +30,8 @@ const STEP_IMAGES: StepImages = {
 export function CostCalculator() {
   const [step, setStep] = useState(1);
   const [totalCost, setTotalCost] = useState<number>(0);
-  const { register, handleSubmit, setValue, watch, control } = useForm<CalculatorInputs>({
+  const { toast } = useToast();
+  const { register, handleSubmit, setValue, watch, control, formState: { errors } } = useForm<CalculatorInputs>({
     defaultValues: {
       location: "",
       name: "",
@@ -82,7 +85,54 @@ export function CostCalculator() {
     return '';
   };
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 5));
+  const nextStep = async () => {
+    if (step === 2) {
+      // Validate and submit contact information
+      if (!formValues.name || !formValues.phone || !formValues.email) {
+        toast({
+          title: "Error",
+          description: "Please fill in all required fields",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        const { error } = await supabase
+          .from('cost_calculator_submissions')
+          .insert([
+            {
+              location: formValues.location,
+              name: formValues.name,
+              phone: formValues.phone,
+              email: formValues.email,
+              garage_capacity: formValues.garageCapacity,
+              garage_finish: formValues.garageFinish,
+              need_stem_walls: formValues.needStemWalls,
+              stem_wall_type: formValues.stemWallType,
+            }
+          ]);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success",
+          description: "Your information has been saved",
+        });
+      } catch (error) {
+        console.error('Error saving data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save your information",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
+    setStep((prev) => Math.min(prev + 1, 5));
+  };
+
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   const renderStep = () => {

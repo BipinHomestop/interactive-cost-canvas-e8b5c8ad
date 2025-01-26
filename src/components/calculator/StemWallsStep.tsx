@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
 
 interface StemWallsStepProps {
   needStemWalls: string;
@@ -58,7 +57,7 @@ export function StemWallsStep({
               variant={stemWallType === "standard" ? "default" : "outline"}
               className={`flex-1 ${
                 stemWallType === "standard"
-                  ? "bg-[#C4C1BB] text-white"
+                  ? "bg-[#0A0B3B] text-white"
                   : "bg-white text-[#0A0B3B]"
               }`}
               onClick={() => onStemWallTypeChange("standard")}
@@ -79,20 +78,6 @@ export function StemWallsStep({
             </Button>
           </div>
         )}
-      </div>
-
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">FAQ's</h3>
-        <div className="space-y-4">
-          <Button variant="outline" className="w-full justify-between">
-            How tall are typical stem walls
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" className="w-full justify-between">
-            Why should I coat my stem walls?
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
     </div>
   );

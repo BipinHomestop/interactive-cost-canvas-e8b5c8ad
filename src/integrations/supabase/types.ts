@@ -9,7 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cost_calculator_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          garage_capacity: number
+          garage_finish: string
+          id: string
+          location: string
+          name: string
+          need_stem_walls: string
+          phone: string
+          stem_wall_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          garage_capacity: number
+          garage_finish: string
+          id?: string
+          location: string
+          name: string
+          need_stem_walls: string
+          phone: string
+          stem_wall_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          garage_capacity?: number
+          garage_finish?: string
+          id?: string
+          location?: string
+          name?: string
+          need_stem_walls?: string
+          phone?: string
+          stem_wall_type?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
