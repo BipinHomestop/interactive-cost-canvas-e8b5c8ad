@@ -8,6 +8,7 @@ import { StemWallsStep } from "./calculator/StemWallsStep";
 import { HouseStepsStep } from "./calculator/HouseStepsStep";
 import { AdditionalFootageStep } from "./calculator/AdditionalFootageStep";
 import { CurrentConditionStep } from "./calculator/CurrentConditionStep";
+import { PaymentStep } from "./calculator/PaymentStep";
 import { ImageDisplay } from "./calculator/ImageDisplay";
 import { FormNavigation } from "./calculator/FormNavigation";
 import { CalculatorInputs, StepImages } from "./calculator/types";
@@ -32,7 +33,8 @@ const STEP_IMAGES: StepImages = {
   },
   6: "/lovable-uploads/bc589651-ce8c-4c4a-85cc-fca87bb964b1.png",
   7: "/lovable-uploads/3f8711ce-aed3-4ab1-88f7-6be8fd76b2fb.png",
-  8: "/lovable-uploads/55651b0a-d0c0-4115-b0ba-f547a5825512.png"
+  8: "/lovable-uploads/55651b0a-d0c0-4115-b0ba-f547a5825512.png",
+  9: "/lovable-uploads/7cc4d8e8-47dd-42ff-860c-c3093c7fe23e.png"
 };
 
 export function CostCalculator() {
@@ -166,7 +168,7 @@ export function CostCalculator() {
       }
     }
     
-    setStep((prev) => Math.min(prev + 1, 8));
+    setStep((prev) => Math.min(prev + 1, 9));
   };
 
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
@@ -227,6 +229,8 @@ export function CostCalculator() {
             onConditionChange={(value) => setValue("currentCondition", value as "original" | "existing")}
           />
         );
+      case 9:
+        return <PaymentStep onBack={prevStep} />;
       default:
         return null;
     }
@@ -245,18 +249,20 @@ export function CostCalculator() {
       <div className={`${isMobile ? 'w-full' : 'w-1/2'} bg-white p-6 rounded-lg shadow-md ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
         <div className="mb-8">
           <div className="text-center text-sm text-gray-600">
-            Step {step} of 8
+            Step {step} of 9
           </div>
         </div>
 
         <form onSubmit={handleSubmit(calculateCost)} className="space-y-6">
           {renderStep()}
-          <FormNavigation
-            step={step}
-            onNext={nextStep}
-            onPrev={prevStep}
-            isLastStep={step === 8}
-          />
+          {step < 9 && (
+            <FormNavigation
+              step={step}
+              onNext={nextStep}
+              onPrev={prevStep}
+              isLastStep={step === 8}
+            />
+          )}
         </form>
       </div>
     </div>

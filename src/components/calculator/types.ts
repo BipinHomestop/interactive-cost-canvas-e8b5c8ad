@@ -22,6 +22,7 @@ export interface StepImages {
   6: string;
   7: string;
   8: string;
+  9: string;
 }
 
 export interface ImageDisplayProps {
