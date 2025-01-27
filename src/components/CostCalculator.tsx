@@ -96,7 +96,7 @@ export function CostCalculator() {
         "101-150": 600,
         "151-200": 800,
       };
-      total += footageCosts[formValues.extraFootage as keyof typeof footageCosts] || 0;
+      total += footageCosts[formValues.extraFootage] || 0;
     }
 
     // Add condition cost
@@ -194,7 +194,7 @@ export function CostCalculator() {
         return (
           <GarageFinishStep
             selectedFinish={selectedFinish}
-            onFinishChange={(value) => setValue("garageFinish", value)}
+            onFinishChange={(value) => setValue("garageFinish", value as "snowfall" | "granite" | "slate")}
           />
         );
       case 5:
@@ -202,15 +202,15 @@ export function CostCalculator() {
           <StemWallsStep
             needStemWalls={needStemWalls}
             stemWallType={formValues.stemWallType}
-            onStemWallsChange={(value) => setValue("needStemWalls", value)}
-            onStemWallTypeChange={(value) => setValue("stemWallType", value)}
+            onStemWallsChange={(value) => setValue("needStemWalls", value as "yes" | "no")}
+            onStemWallTypeChange={(value) => setValue("stemWallType", value as "standard" | "large")}
           />
         );
       case 6:
         return (
           <HouseStepsStep
             needSteps={needSteps}
-            onNeedStepsChange={(value) => setValue("needSteps", value)}
+            onNeedStepsChange={(value) => setValue("needSteps", value as "yes" | "no")}
           />
         );
       case 7:
@@ -218,15 +218,15 @@ export function CostCalculator() {
           <AdditionalFootageStep
             needExtraFootage={needExtraFootage}
             extraFootage={formValues.extraFootage}
-            onNeedExtraFootageChange={(value) => setValue("needExtraFootage", value)}
-            onExtraFootageChange={(value) => setValue("extraFootage", value)}
+            onNeedExtraFootageChange={(value) => setValue("needExtraFootage", value as "yes" | "no")}
+            onExtraFootageChange={(value) => setValue("extraFootage", value as "up-to-50" | "51-100" | "101-150" | "151-200")}
           />
         );
       case 8:
         return (
           <CurrentConditionStep
             condition={currentCondition}
-            onConditionChange={(value) => setValue("currentCondition", value)}
+            onConditionChange={(value) => setValue("currentCondition", value as "original" | "existing")}
           />
         );
       default:
