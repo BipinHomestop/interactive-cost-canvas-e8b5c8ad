@@ -12,9 +12,9 @@ export function HouseStepsStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-[#0A0B3B] mb-2">Steps To The House</h2>
+        <h2 className="text-2xl font-bold text-[#0A0B3B] mb-2">House Steps</h2>
         <p className="text-gray-600">
-          Concrete or brick steps only.
+          Do you need steps from your house to the garage?
         </p>
       </div>
 
@@ -23,7 +23,9 @@ export function HouseStepsStep({
           type="button"
           variant={needSteps === "yes" ? "default" : "outline"}
           className={`flex-1 ${
-            needSteps === "yes" ? "bg-[#0A0B3B]" : ""
+            needSteps === "yes"
+              ? "bg-[#0A0B3B] text-white"
+              : "bg-white text-[#0A0B3B]"
           }`}
           onClick={() => onNeedStepsChange("yes")}
         >
@@ -33,7 +35,9 @@ export function HouseStepsStep({
           type="button"
           variant={needSteps === "no" ? "default" : "outline"}
           className={`flex-1 ${
-            needSteps === "no" ? "bg-gray-200" : ""
+            needSteps === "no"
+              ? "bg-[#0EA5E9] text-white"
+              : "bg-white text-[#0A0B3B]"
           }`}
           onClick={() => onNeedStepsChange("no")}
         >

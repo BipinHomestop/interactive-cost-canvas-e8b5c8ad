@@ -9,13 +9,13 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep }: NavigationP
           Back
         </Button>
       )}
-      {!isLastStep && (
+      {step < 9 && (
         <Button
           type="button"
-          className="ml-auto"
+          className={`${step > 1 ? "" : "ml-auto"} bg-[#0EA5E9] hover:bg-[#0EA5E9]/90`}
           onClick={onNext}
         >
-          Next
+          {step === 8 ? "Finish" : "Next"}
         </Button>
       )}
     </div>
