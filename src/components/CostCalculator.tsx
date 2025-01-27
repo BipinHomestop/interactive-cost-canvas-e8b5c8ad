@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
 import { GarageCapacityStep } from "./calculator/GarageCapacityStep";
@@ -10,6 +9,7 @@ import { HouseStepsStep } from "./calculator/HouseStepsStep";
 import { AdditionalFootageStep } from "./calculator/AdditionalFootageStep";
 import { CurrentConditionStep } from "./calculator/CurrentConditionStep";
 import { ImageDisplay } from "./calculator/ImageDisplay";
+import { FormNavigation } from "./calculator/FormNavigation";
 import { CalculatorInputs, StepImages } from "./calculator/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -41,7 +41,7 @@ export function CostCalculator() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  const { register, handleSubmit, setValue, watch, control, formState: { errors } } = useForm<CalculatorInputs>({
+  const { register, handleSubmit, setValue, watch, control } = useForm<CalculatorInputs>({
     defaultValues: {
       location: "",
       name: "",
@@ -74,21 +74,17 @@ export function CostCalculator() {
   const calculateCost = () => {
     let total = formValues.garageCapacity * 1000;
     
-    // Apply finish multiplier
     const finishMultiplier = formValues.garageFinish === "snowfall" ? 1.2 : 1;
     total *= finishMultiplier;
     
-    // Add stem walls cost
     if (formValues.needStemWalls === "yes") {
       total += formValues.stemWallType === "standard" ? 500 : 1000;
     }
     
-    // Add steps cost
     if (formValues.needSteps === "yes") {
       total += 300;
     }
     
-    // Add extra footage cost
     if (formValues.needExtraFootage === "yes" && formValues.extraFootage) {
       const footageCosts = {
         "up-to-50": 200,
@@ -99,7 +95,6 @@ export function CostCalculator() {
       total += footageCosts[formValues.extraFootage] || 0;
     }
 
-    // Add condition cost
     if (formValues.currentCondition === "existing") {
       total += 200;
     }
@@ -110,10 +105,12 @@ export function CostCalculator() {
   const getStepImage = () => {
     const image = STEP_IMAGES[step as keyof typeof STEP_IMAGES];
     if (typeof image === 'string') return image;
-    if (step === 4) {
-      return image[selectedFinish] || image.snowfall;
+    
+    if (step === 4 && 'snowfall' in image) {
+      return image[selectedFinish];
     }
-    if (step === 5) {
+    
+    if (step === 5 && 'no' in image) {
       if (needStemWalls === 'no') return image.no;
       if (needStemWalls === 'yes') {
         if (formValues.stemWallType) {
@@ -123,6 +120,7 @@ export function CostCalculator() {
       }
       return image.no;
     }
+    
     return '';
   };
 
@@ -253,22 +251,12 @@ export function CostCalculator() {
 
         <form onSubmit={handleSubmit(calculateCost)} className="space-y-6">
           {renderStep()}
-          <div className="flex justify-between mt-6">
-            {step > 1 && (
-              <Button type="button" variant="outline" onClick={prevStep}>
-                Back
-              </Button>
-            )}
-            {step < 8 && (
-              <Button
-                type="button"
-                className="ml-auto"
-                onClick={nextStep}
-              >
-                Next
-              </Button>
-            )}
-          </div>
+          <FormNavigation
+            step={step}
+            onNext={nextStep}
+            onPrev={prevStep}
+            isLastStep={step === 8}
+          />
         </form>
       </div>
     </div>

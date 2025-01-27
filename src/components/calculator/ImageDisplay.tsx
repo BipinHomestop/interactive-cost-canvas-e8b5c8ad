@@ -1,10 +1,5 @@
 import { useIsMobile } from "@/hooks/use-mobile";
-
-interface ImageDisplayProps {
-  imageSrc: string;
-  totalCost: number;
-  step: number;
-}
+import { ImageDisplayProps } from "./types";
 
 export function ImageDisplay({ imageSrc, totalCost, step }: ImageDisplayProps) {
   const isMobile = useIsMobile();
