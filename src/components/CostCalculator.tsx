@@ -8,6 +8,8 @@ import { GarageFinishStep } from "./calculator/GarageFinishStep";
 import { StemWallsStep } from "./calculator/StemWallsStep";
 import { HouseStepsStep } from "./calculator/HouseStepsStep";
 import { AdditionalFootageStep } from "./calculator/AdditionalFootageStep";
+import { CurrentConditionStep } from "./calculator/CurrentConditionStep";
+import { ImageDisplay } from "./calculator/ImageDisplay";
 import { CalculatorInputs, StepImages } from "./calculator/types";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -29,7 +31,8 @@ const STEP_IMAGES: StepImages = {
     large: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=500&q=80"
   },
   6: "/lovable-uploads/bc589651-ce8c-4c4a-85cc-fca87bb964b1.png",
-  7: "/lovable-uploads/3f8711ce-aed3-4ab1-88f7-6be8fd76b2fb.png"
+  7: "/lovable-uploads/3f8711ce-aed3-4ab1-88f7-6be8fd76b2fb.png",
+  8: "/lovable-uploads/55651b0a-d0c0-4115-b0ba-f547a5825512.png"
 };
 
 export function CostCalculator() {
@@ -51,6 +54,7 @@ export function CostCalculator() {
       needSteps: "no",
       needExtraFootage: "no",
       extraFootage: undefined,
+      currentCondition: "original"
     },
   });
 
@@ -59,6 +63,7 @@ export function CostCalculator() {
   const needStemWalls = watch("needStemWalls");
   const needSteps = watch("needSteps");
   const needExtraFootage = watch("needExtraFootage");
+  const currentCondition = watch("currentCondition");
 
   useEffect(() => {
     if (step >= 3) {
@@ -93,12 +98,17 @@ export function CostCalculator() {
       };
       total += footageCosts[formValues.extraFootage as keyof typeof footageCosts] || 0;
     }
+
+    // Add condition cost
+    if (formValues.currentCondition === "existing") {
+      total += 200;
+    }
     
     setTotalCost(total);
   };
 
   const getStepImage = () => {
-    const image = STEP_IMAGES[step];
+    const image = STEP_IMAGES[step as keyof typeof STEP_IMAGES];
     if (typeof image === 'string') return image;
     if (step === 4) {
       return image[selectedFinish] || image.snowfall;
@@ -158,7 +168,7 @@ export function CostCalculator() {
       }
     }
     
-    setStep((prev) => Math.min(prev + 1, 7));
+    setStep((prev) => Math.min(prev + 1, 8));
   };
 
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
@@ -212,6 +222,13 @@ export function CostCalculator() {
             onExtraFootageChange={(value) => setValue("extraFootage", value)}
           />
         );
+      case 8:
+        return (
+          <CurrentConditionStep
+            condition={currentCondition}
+            onConditionChange={(value) => setValue("currentCondition", value)}
+          />
+        );
       default:
         return null;
     }
@@ -219,38 +236,18 @@ export function CostCalculator() {
 
   return (
     <div className={`flex ${isMobile ? 'flex-col' : 'gap-8'} items-stretch`}>
-      <div className={`${isMobile ? 'w-full mb-6' : 'w-1/2'} relative`}>
-        <img
-          src={getStepImage()}
-          alt={`Step ${step} visualization`}
-          className="w-full rounded-lg shadow-lg h-[600px] object-cover"
+      <div className={`${isMobile ? 'w-full mb-6' : 'w-1/2'}`}>
+        <ImageDisplay
+          imageSrc={getStepImage()}
+          totalCost={totalCost}
+          step={step}
         />
-        {step >= 3 && (
-          <div className="absolute bottom-0 left-0 right-0 bg-[#0A0B3B] text-white p-4 rounded-b-lg">
-            <div className="text-2xl font-bold">
-              Your Price: ${totalCost.toLocaleString()}
-            </div>
-            <div className="text-[#FFA500]">
-              Market Price: ${Math.round(totalCost * 1.4).toLocaleString()}
-            </div>
-          </div>
-        )}
       </div>
       
       <div className={`${isMobile ? 'w-full' : 'w-1/2'} bg-white p-6 rounded-lg shadow-md ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
         <div className="mb-8">
-          <div className="flex justify-between mb-2">
-            {[1, 2, 3, 4, 5, 6, 7].map((stepNumber) => (
-              <div
-                key={stepNumber}
-                className={`flex-1 h-2 mx-1 rounded ${
-                  stepNumber <= step ? "bg-primary" : "bg-gray-200"
-                }`}
-              />
-            ))}
-          </div>
           <div className="text-center text-sm text-gray-600">
-            Step {step} of 7
+            Step {step} of 8
           </div>
         </div>
 
@@ -262,7 +259,7 @@ export function CostCalculator() {
                 Back
               </Button>
             )}
-            {step < 7 && (
+            {step < 8 && (
               <Button
                 type="button"
                 className="ml-auto"
