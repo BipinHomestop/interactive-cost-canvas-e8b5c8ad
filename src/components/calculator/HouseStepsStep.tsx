@@ -24,7 +24,7 @@ export function HouseStepsStep({
           variant={needSteps === "yes" ? "default" : "outline"}
           className={`flex-1 ${
             needSteps === "yes"
-              ? "bg-[#0A0B3B] text-white"
+              ? "bg-[#1A3174] text-white"
               : "bg-white text-[#0A0B3B]"
           }`}
           onClick={() => onNeedStepsChange("yes")}
@@ -36,7 +36,7 @@ export function HouseStepsStep({
           variant={needSteps === "no" ? "default" : "outline"}
           className={`flex-1 ${
             needSteps === "no"
-              ? "bg-[#0EA5E9] text-white"
+              ? "bg-[#1A3174] text-white"
               : "bg-white text-[#0A0B3B]"
           }`}
           onClick={() => onNeedStepsChange("no")}

@@ -156,6 +156,7 @@ export function CostCalculator() {
         toast({
           title: "Success",
           description: "Your information has been saved",
+          className: "bg-green-500 text-white border-none",
         });
       } catch (error) {
         console.error('Error saving data:', error);

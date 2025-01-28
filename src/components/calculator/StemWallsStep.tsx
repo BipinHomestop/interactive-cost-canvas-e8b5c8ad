@@ -29,7 +29,7 @@ export function StemWallsStep({
             variant={needStemWalls === "yes" ? "default" : "outline"}
             className={`flex-1 ${
               needStemWalls === "yes"
-                ? "bg-[#0A0B3B] text-white"
+                ? "bg-[#1A3174] text-white"
                 : "bg-white text-[#0A0B3B]"
             }`}
             onClick={() => onStemWallsChange("yes")}
@@ -41,7 +41,7 @@ export function StemWallsStep({
             variant={needStemWalls === "no" ? "default" : "outline"}
             className={`flex-1 ${
               needStemWalls === "no"
-                ? "bg-[#0EA5E9] text-white"
+                ? "bg-[#1A3174] text-white"
                 : "bg-white text-[#0A0B3B]"
             }`}
             onClick={() => onStemWallsChange("no")}
@@ -57,7 +57,7 @@ export function StemWallsStep({
               variant={stemWallType === "standard" ? "default" : "outline"}
               className={`flex-1 ${
                 stemWallType === "standard"
-                  ? "bg-[#0A0B3B] text-white"
+                  ? "bg-[#1A3174] text-white"
                   : "bg-white text-[#0A0B3B]"
               }`}
               onClick={() => onStemWallTypeChange("standard")}
@@ -69,7 +69,7 @@ export function StemWallsStep({
               variant={stemWallType === "large" ? "default" : "outline"}
               className={`flex-1 ${
                 stemWallType === "large"
-                  ? "bg-[#0A0B3B] text-white"
+                  ? "bg-[#1A3174] text-white"
                   : "bg-white text-[#0A0B3B]"
               }`}
               onClick={() => onStemWallTypeChange("large")}

@@ -27,7 +27,7 @@ export function AdditionalFootageStep({
           type="button"
           variant={needExtraFootage === "yes" ? "default" : "outline"}
           className={`flex-1 ${
-            needExtraFootage === "yes" ? "bg-[#0A0B3B]" : ""
+            needExtraFootage === "yes" ? "bg-[#1A3174]" : ""
           }`}
           onClick={() => onNeedExtraFootageChange("yes")}
         >
@@ -37,7 +37,7 @@ export function AdditionalFootageStep({
           type="button"
           variant={needExtraFootage === "no" ? "default" : "outline"}
           className={`flex-1 ${
-            needExtraFootage === "no" ? "bg-gray-200" : ""
+            needExtraFootage === "no" ? "bg-[#1A3174]" : ""
           }`}
           onClick={() => onNeedExtraFootageChange("no")}
         >
@@ -53,7 +53,7 @@ export function AdditionalFootageStep({
               type="button"
               variant={extraFootage === size ? "default" : "outline"}
               className={`${
-                extraFootage === size ? "bg-[#0A0B3B]" : ""
+                extraFootage === size ? "bg-[#1A3174]" : ""
               }`}
               onClick={() => onExtraFootageChange(size)}
             >
