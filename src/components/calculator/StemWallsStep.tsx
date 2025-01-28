@@ -39,7 +39,11 @@ export function StemWallsStep({
           <Button
             type="button"
             variant="outline"
-            className="flex-1 bg-white text-[#0A0B3B]"
+            className={`flex-1 ${
+              needStemWalls === "no"
+                ? "bg-[#1A3174] text-white"
+                : "bg-white text-[#0A0B3B]"
+            }`}
             onClick={() => onStemWallsChange("no")}
           >
             No

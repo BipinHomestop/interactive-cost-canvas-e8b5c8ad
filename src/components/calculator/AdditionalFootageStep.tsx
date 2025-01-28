@@ -27,7 +27,9 @@ export function AdditionalFootageStep({
           type="button"
           variant={needExtraFootage === "yes" ? "default" : "outline"}
           className={`flex-1 ${
-            needExtraFootage === "yes" ? "bg-[#1A3174] text-white" : "bg-white text-[#0A0B3B]"
+            needExtraFootage === "yes"
+              ? "bg-[#1A3174] text-white"
+              : "bg-white text-[#0A0B3B]"
           }`}
           onClick={() => onNeedExtraFootageChange("yes")}
         >
@@ -35,8 +37,12 @@ export function AdditionalFootageStep({
         </Button>
         <Button
           type="button"
-          variant="outline"
-          className="flex-1 bg-white text-[#0A0B3B]"
+          variant={needExtraFootage === "no" ? "default" : "outline"}
+          className={`flex-1 ${
+            needExtraFootage === "no"
+              ? "bg-[#1A3174] text-white"
+              : "bg-white text-[#0A0B3B]"
+          }`}
           onClick={() => onNeedExtraFootageChange("no")}
         >
           No
@@ -51,7 +57,9 @@ export function AdditionalFootageStep({
               type="button"
               variant={extraFootage === size ? "default" : "outline"}
               className={`${
-                extraFootage === size ? "bg-[#1A3174] text-white" : "bg-white text-[#0A0B3B]"
+                extraFootage === size
+                  ? "bg-[#1A3174] text-white"
+                  : "bg-white text-[#0A0B3B]"
               }`}
               onClick={() => onExtraFootageChange(size)}
             >
