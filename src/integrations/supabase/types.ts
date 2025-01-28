@@ -12,37 +12,49 @@ export type Database = {
       cost_calculator_submissions: {
         Row: {
           created_at: string
+          current_condition: string | null
           email: string
+          extra_footage: string | null
           garage_capacity: number
           garage_finish: string
           id: string
           location: string
           name: string
+          need_extra_footage: string | null
           need_stem_walls: string
+          need_steps: string | null
           phone: string
           stem_wall_type: string | null
         }
         Insert: {
           created_at?: string
+          current_condition?: string | null
           email: string
+          extra_footage?: string | null
           garage_capacity: number
           garage_finish: string
           id?: string
           location: string
           name: string
+          need_extra_footage?: string | null
           need_stem_walls: string
+          need_steps?: string | null
           phone: string
           stem_wall_type?: string | null
         }
         Update: {
           created_at?: string
+          current_condition?: string | null
           email?: string
+          extra_footage?: string | null
           garage_capacity?: number
           garage_finish?: string
           id?: string
           location?: string
           name?: string
+          need_extra_footage?: string | null
           need_stem_walls?: string
+          need_steps?: string | null
           phone?: string
           stem_wall_type?: string | null
         }

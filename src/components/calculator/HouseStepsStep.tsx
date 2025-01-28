@@ -33,12 +33,8 @@ export function HouseStepsStep({
         </Button>
         <Button
           type="button"
-          variant={needSteps === "no" ? "default" : "outline"}
-          className={`flex-1 ${
-            needSteps === "no"
-              ? "bg-[#1A3174] text-white"
-              : "bg-white text-[#0A0B3B]"
-          }`}
+          variant="outline"
+          className="flex-1 bg-white text-[#0A0B3B]"
           onClick={() => onNeedStepsChange("no")}
         >
           No

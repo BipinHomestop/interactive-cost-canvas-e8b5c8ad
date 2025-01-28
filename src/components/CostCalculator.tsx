@@ -40,6 +40,7 @@ const STEP_IMAGES: StepImages = {
 export function CostCalculator() {
   const [step, setStep] = useState(1);
   const [totalCost, setTotalCost] = useState<number>(0);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
@@ -138,7 +139,7 @@ export function CostCalculator() {
       }
 
       try {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('cost_calculator_submissions')
           .insert([{
             location: formValues.location,
@@ -149,9 +150,18 @@ export function CostCalculator() {
             garage_finish: formValues.garageFinish,
             need_stem_walls: formValues.needStemWalls,
             stem_wall_type: formValues.stemWallType,
-          }]);
+            need_steps: formValues.needSteps,
+            need_extra_footage: formValues.needExtraFootage,
+            extra_footage: formValues.extraFootage,
+            current_condition: formValues.currentCondition
+          }])
+          .select();
 
         if (error) throw error;
+
+        if (data && data[0]) {
+          setSubmissionId(data[0].id);
+        }
 
         toast({
           title: "Success",
@@ -167,12 +177,66 @@ export function CostCalculator() {
         });
         return;
       }
+    } else if (submissionId && step > 2) {
+      try {
+        const { error } = await supabase
+          .from('cost_calculator_submissions')
+          .update({
+            garage_capacity: formValues.garageCapacity,
+            garage_finish: formValues.garageFinish,
+            need_stem_walls: formValues.needStemWalls,
+            stem_wall_type: formValues.stemWallType,
+            need_steps: formValues.needSteps,
+            need_extra_footage: formValues.needExtraFootage,
+            extra_footage: formValues.extraFootage,
+            current_condition: formValues.currentCondition
+          })
+          .eq('id', submissionId);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error updating data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update your information",
+          variant: "destructive",
+        });
+        return;
+      }
     }
     
     setStep((prev) => Math.min(prev + 1, 9));
   };
 
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+  const prevStep = async () => {
+    if (submissionId && step > 2) {
+      try {
+        const { error } = await supabase
+          .from('cost_calculator_submissions')
+          .update({
+            garage_capacity: formValues.garageCapacity,
+            garage_finish: formValues.garageFinish,
+            need_stem_walls: formValues.needStemWalls,
+            stem_wall_type: formValues.stemWallType,
+            need_steps: formValues.needSteps,
+            need_extra_footage: formValues.needExtraFootage,
+            extra_footage: formValues.extraFootage,
+            current_condition: formValues.currentCondition
+          })
+          .eq('id', submissionId);
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error updating data:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update your information",
+          variant: "destructive",
+        });
+      }
+    }
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
   const renderStep = () => {
     switch (step) {
