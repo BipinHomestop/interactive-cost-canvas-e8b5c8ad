@@ -12,7 +12,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep }: NavigationP
       {step < 9 && (
         <Button
           type="button"
-          className={`${step > 1 ? "" : "ml-auto"} bg-[#0EA5E9] hover:bg-[#0EA5E9]/90`}
+          className={`${step > 1 ? "" : "ml-auto"} bg-[#1A3174] hover:bg-[#1A3174]/90`}
           onClick={onNext}
         >
           {step === 8 ? "Finish" : "Next"}

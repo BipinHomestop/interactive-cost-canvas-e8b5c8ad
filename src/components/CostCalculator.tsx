@@ -230,7 +230,7 @@ export function CostCalculator() {
           />
         );
       case 9:
-        return <PaymentStep onBack={prevStep} />;
+        return <PaymentStep onBack={prevStep} formData={formValues} totalCost={totalCost} />;
       default:
         return null;
     }
@@ -247,11 +247,13 @@ export function CostCalculator() {
       </div>
       
       <div className={`${isMobile ? 'w-full' : 'w-1/2'} bg-white p-6 rounded-lg shadow-md ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
-        <div className="mb-8">
-          <div className="text-center text-sm text-gray-600">
-            Step {step} of 9
+        {step < 9 && (
+          <div className="mb-8">
+            <div className="text-center text-sm text-gray-600">
+              Step {step} of 8
+            </div>
           </div>
-        </div>
+        )}
 
         <form onSubmit={handleSubmit(calculateCost)} className="space-y-6">
           {renderStep()}
