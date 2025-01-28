@@ -4,7 +4,7 @@ export interface CalculatorInputs {
   phone: string;
   email: string;
   garageCapacity: number;
-  garageFinish: "snowfall" | "granite" | "slate";
+  garageFinish: "snowfall" | "granite" | "slate" | "modern" | "minimal" | "glass" | "classic" | "premium" | "deluxe";
   needStemWalls: "yes" | "no";
   stemWallType?: "standard" | "large";
   needSteps: "yes" | "no";
@@ -17,7 +17,7 @@ export interface StepImages {
   1: string;
   2: string;
   3: string;
-  4: Record<"snowfall" | "granite" | "slate", string>;
+  4: Record<"snowfall" | "granite" | "slate" | "modern" | "minimal" | "glass" | "classic" | "premium" | "deluxe", string>;
   5: Record<"no" | "yes" | "standard" | "large", string>;
   6: string;
   7: string;

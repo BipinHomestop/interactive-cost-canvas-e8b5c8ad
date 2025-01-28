@@ -22,8 +22,14 @@ const STEP_IMAGES: StepImages = {
   3: "https://images.unsplash.com/photo-1486006920555-c77dcf18193c?auto=format&fit=crop&w=500&q=80",
   4: {
     snowfall: "/lovable-uploads/36204769-3ce1-4ebb-bfab-01295ad47562.png",
-    granite: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
-    slate: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=500&q=80",
+    granite: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=500&q=80",
+    slate: "https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=500&q=80",
+    modern: "https://images.unsplash.com/photo-1439337153520-7082a56a81f4?auto=format&fit=crop&w=500&q=80",
+    minimal: "https://images.unsplash.com/photo-1497604401993-f2e922e5cb0a?auto=format&fit=crop&w=500&q=80",
+    glass: "https://images.unsplash.com/photo-1524230572899-a752b3835840?auto=format&fit=crop&w=500&q=80",
+    classic: "https://images.unsplash.com/photo-1431576901776-e539bd916ba2?auto=format&fit=crop&w=500&q=80",
+    premium: "https://images.unsplash.com/photo-1487252665478-49b61b47f302?auto=format&fit=crop&w=500&q=80",
+    deluxe: "https://images.unsplash.com/photo-1452960962994-acf4fd70b632?auto=format&fit=crop&w=500&q=80"
   },
   5: {
     no: "/lovable-uploads/22ff454f-41d8-485e-a60d-cb7554661683.png",
