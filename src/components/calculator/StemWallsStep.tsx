@@ -38,7 +38,7 @@ export function StemWallsStep({
           </Button>
           <Button
             type="button"
-            variant="outline"
+            variant={needStemWalls === "no" ? "default" : "outline"}
             className={`flex-1 ${
               needStemWalls === "no"
                 ? "bg-[#1A3174] text-white"

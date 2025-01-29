@@ -23,7 +23,7 @@ export function CurrentConditionStep({
           type="button"
           variant={condition === "original" ? "default" : "outline"}
           className={`${
-            condition === "original" ? "bg-[#1A3174]" : "bg-white"
+            condition === "original" ? "bg-[#1A3174] text-white" : "bg-white text-[#0A0B3B]"
           }`}
           onClick={() => onConditionChange("original")}
         >
@@ -33,7 +33,7 @@ export function CurrentConditionStep({
           type="button"
           variant={condition === "existing" ? "default" : "outline"}
           className={`${
-            condition === "existing" ? "bg-[#1A3174]" : "bg-white"
+            condition === "existing" ? "bg-[#1A3174] text-white" : "bg-white text-[#0A0B3B]"
           }`}
           onClick={() => onConditionChange("existing")}
         >
