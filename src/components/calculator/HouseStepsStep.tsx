@@ -21,11 +21,11 @@ export function HouseStepsStep({
       <div className="flex gap-4">
         <Button
           type="button"
-          variant={needSteps === "yes" ? "default" : "outline"}
+          variant="outline"
           className={`flex-1 ${
             needSteps === "yes"
-              ? "bg-[#1A3174] text-white"
-              : "bg-white text-[#0A0B3B]"
+              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+              : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
           }`}
           onClick={() => onNeedStepsChange("yes")}
         >
@@ -33,11 +33,11 @@ export function HouseStepsStep({
         </Button>
         <Button
           type="button"
-          variant={needSteps === "no" ? "default" : "outline"}
+          variant="outline"
           className={`flex-1 ${
             needSteps === "no"
-              ? "bg-[#1A3174] text-white"
-              : "bg-white text-[#0A0B3B]"
+              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+              : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
           }`}
           onClick={() => onNeedStepsChange("no")}
         >

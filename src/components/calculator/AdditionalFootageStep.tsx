@@ -16,60 +16,93 @@ export function AdditionalFootageStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-[#0A0B3B] mb-2">Additional Sq Footage</h2>
+        <h2 className="text-2xl font-bold text-[#0A0B3B] mb-2">Additional Square Footage</h2>
         <p className="text-gray-600">
-          Additional floor surface that is not used for parking. This includes storage areas, walkways, or any space exceeding 200 sq ft per car.
+          Do you need additional square footage?
         </p>
       </div>
 
-      <div className="flex gap-4 mb-4">
-        <Button
-          type="button"
-          variant={needExtraFootage === "yes" ? "default" : "outline"}
-          className={`flex-1 ${
-            needExtraFootage === "yes"
-              ? "bg-[#1A3174] text-white"
-              : "bg-white text-[#0A0B3B]"
-          }`}
-          onClick={() => onNeedExtraFootageChange("yes")}
-        >
-          Yes
-        </Button>
-        <Button
-          type="button"
-          variant={needExtraFootage === "no" ? "default" : "outline"}
-          className={`flex-1 ${
-            needExtraFootage === "no"
-              ? "bg-[#1A3174] text-white"
-              : "bg-white text-[#0A0B3B]"
-          }`}
-          onClick={() => onNeedExtraFootageChange("no")}
-        >
-          No
-        </Button>
-      </div>
-
-      {needExtraFootage === "yes" && (
-        <div className="grid grid-cols-2 gap-4">
-          {["up-to-50", "51-100", "101-150", "151-200"].map((size) => (
-            <Button
-              key={size}
-              type="button"
-              variant={extraFootage === size ? "default" : "outline"}
-              className={`${
-                extraFootage === size
-                  ? "bg-[#1A3174] text-white"
-                  : "bg-white text-[#0A0B3B]"
-              }`}
-              onClick={() => onExtraFootageChange(size)}
-            >
-              {size === "up-to-50" ? "Up to 50 sqf" : 
-               size === "51-100" ? "51-100 sqf" :
-               size === "101-150" ? "101 - 150 sqf" : "151 - 200 sqf"}
-            </Button>
-          ))}
+      <div className="space-y-4">
+        <div className="flex gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            className={`flex-1 ${
+              needExtraFootage === "yes"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
+            }`}
+            onClick={() => onNeedExtraFootageChange("yes")}
+          >
+            Yes
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className={`flex-1 ${
+              needExtraFootage === "no"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
+            }`}
+            onClick={() => onNeedExtraFootageChange("no")}
+          >
+            No
+          </Button>
         </div>
-      )}
+
+        {needExtraFootage === "yes" && (
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              className={`${
+                extraFootage === "up-to-50"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
+              }`}
+              onClick={() => onExtraFootageChange("up-to-50")}
+            >
+              Up to 50 sq ft
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className={`${
+                extraFootage === "51-100"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
+              }`}
+              onClick={() => onExtraFootageChange("51-100")}
+            >
+              51-100 sq ft
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className={`${
+                extraFootage === "101-150"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
+              }`}
+              onClick={() => onExtraFootageChange("101-150")}
+            >
+              101-150 sq ft
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className={`${
+                extraFootage === "151-200"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
+              }`}
+              onClick={() => onExtraFootageChange("151-200")}
+            >
+              151-200 sq ft
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -26,11 +26,11 @@ export function StemWallsStep({
         <div className="flex gap-4">
           <Button
             type="button"
-            variant={needStemWalls === "yes" ? "default" : "outline"}
+            variant="outline"
             className={`flex-1 ${
               needStemWalls === "yes"
-                ? "bg-[#1A3174] text-white"
-                : "bg-white text-[#0A0B3B]"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
             onClick={() => onStemWallsChange("yes")}
           >
@@ -38,11 +38,11 @@ export function StemWallsStep({
           </Button>
           <Button
             type="button"
-            variant={needStemWalls === "no" ? "default" : "outline"}
+            variant="outline"
             className={`flex-1 ${
               needStemWalls === "no"
-                ? "bg-[#1A3174] text-white"
-                : "bg-white text-[#0A0B3B]"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
             onClick={() => onStemWallsChange("no")}
           >
@@ -54,11 +54,11 @@ export function StemWallsStep({
           <div className="flex gap-4 mt-4">
             <Button
               type="button"
-              variant={stemWallType === "standard" ? "default" : "outline"}
+              variant="outline"
               className={`flex-1 ${
                 stemWallType === "standard"
-                  ? "bg-[#1A3174] text-white"
-                  : "bg-white text-[#0A0B3B]"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onStemWallTypeChange("standard")}
             >
@@ -66,11 +66,11 @@ export function StemWallsStep({
             </Button>
             <Button
               type="button"
-              variant={stemWallType === "large" ? "default" : "outline"}
+              variant="outline"
               className={`flex-1 ${
                 stemWallType === "large"
-                  ? "bg-[#1A3174] text-white"
-                  : "bg-white text-[#0A0B3B]"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onStemWallTypeChange("large")}
             >
