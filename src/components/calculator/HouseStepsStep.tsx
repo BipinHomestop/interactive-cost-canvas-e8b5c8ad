@@ -22,9 +22,9 @@ export function HouseStepsStep({
         <Button
           type="button"
           variant="outline"
-          className={`flex-1 ${
+          className={`flex-1 border-2 ${
             needSteps === "yes"
-              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
               : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
           }`}
           onClick={() => onNeedStepsChange("yes")}
@@ -34,9 +34,9 @@ export function HouseStepsStep({
         <Button
           type="button"
           variant="outline"
-          className={`flex-1 ${
+          className={`flex-1 border-2 ${
             needSteps === "no"
-              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
               : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
           }`}
           onClick={() => onNeedStepsChange("no")}

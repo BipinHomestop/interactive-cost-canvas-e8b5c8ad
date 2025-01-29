@@ -27,9 +27,9 @@ export function StemWallsStep({
           <Button
             type="button"
             variant="outline"
-            className={`flex-1 ${
+            className={`flex-1 border-2 ${
               needStemWalls === "yes"
-                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
             onClick={() => onStemWallsChange("yes")}
@@ -39,9 +39,9 @@ export function StemWallsStep({
           <Button
             type="button"
             variant="outline"
-            className={`flex-1 ${
+            className={`flex-1 border-2 ${
               needStemWalls === "no"
-                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
             onClick={() => onStemWallsChange("no")}
@@ -55,9 +55,9 @@ export function StemWallsStep({
             <Button
               type="button"
               variant="outline"
-              className={`flex-1 ${
+              className={`flex-1 border-2 ${
                 stemWallType === "standard"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onStemWallTypeChange("standard")}
@@ -67,9 +67,9 @@ export function StemWallsStep({
             <Button
               type="button"
               variant="outline"
-              className={`flex-1 ${
+              className={`flex-1 border-2 ${
                 stemWallType === "large"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onStemWallTypeChange("large")}

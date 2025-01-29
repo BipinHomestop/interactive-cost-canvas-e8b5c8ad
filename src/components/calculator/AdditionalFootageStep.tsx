@@ -27,9 +27,9 @@ export function AdditionalFootageStep({
           <Button
             type="button"
             variant="outline"
-            className={`flex-1 ${
+            className={`flex-1 border-2 ${
               needExtraFootage === "yes"
-                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
             onClick={() => onNeedExtraFootageChange("yes")}
@@ -39,9 +39,9 @@ export function AdditionalFootageStep({
           <Button
             type="button"
             variant="outline"
-            className={`flex-1 ${
+            className={`flex-1 border-2 ${
               needExtraFootage === "no"
-                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
             onClick={() => onNeedExtraFootageChange("no")}
@@ -55,9 +55,9 @@ export function AdditionalFootageStep({
             <Button
               type="button"
               variant="outline"
-              className={`${
+              className={`border-2 ${
                 extraFootage === "up-to-50"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onExtraFootageChange("up-to-50")}
@@ -67,9 +67,9 @@ export function AdditionalFootageStep({
             <Button
               type="button"
               variant="outline"
-              className={`${
+              className={`border-2 ${
                 extraFootage === "51-100"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onExtraFootageChange("51-100")}
@@ -79,9 +79,9 @@ export function AdditionalFootageStep({
             <Button
               type="button"
               variant="outline"
-              className={`${
+              className={`border-2 ${
                 extraFootage === "101-150"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onExtraFootageChange("101-150")}
@@ -91,9 +91,9 @@ export function AdditionalFootageStep({
             <Button
               type="button"
               variant="outline"
-              className={`${
+              className={`border-2 ${
                 extraFootage === "151-200"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
               onClick={() => onExtraFootageChange("151-200")}
