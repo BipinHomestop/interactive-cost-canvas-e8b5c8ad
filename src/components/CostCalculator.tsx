@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 
 const STEP_IMAGES: StepImages = {
   1: "/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png",
@@ -310,7 +311,7 @@ export function CostCalculator() {
 
   return (
     <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch`}>
-      <div className={`${isMobile ? 'w-full mb-6' : 'w-[40%]'}`}>
+      <div className={`${isMobile ? 'w-full mb-6' : 'w-[30%]'}`}>
         <ImageDisplay
           imageSrc={getStepImage()}
           totalCost={totalCost}
@@ -340,35 +341,39 @@ export function CostCalculator() {
         </form>
       </div>
 
-      <div className={`${isMobile ? 'w-full mt-6' : 'w-[20%]'} bg-white p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
-        <h2 className="text-xl font-bold mb-4 text-[#1A3174]">Frequently Asked Questions</h2>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>What is included in the cost?</AccordionTrigger>
-            <AccordionContent>
-              Our cost includes materials, labor, and installation for your garage project based on your selected options.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>How long does installation take?</AccordionTrigger>
-            <AccordionContent>
-              Installation typically takes 1-2 days depending on the size and complexity of your garage project.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger>Do you offer warranties?</AccordionTrigger>
-            <AccordionContent>
-              Yes, we offer comprehensive warranties on both materials and workmanship. Contact us for details.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-4">
-            <AccordionTrigger>What payment methods do you accept?</AccordionTrigger>
-            <AccordionContent>
-              We accept all major credit cards, bank transfers, and financing options are available.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+      {!isMobile && <Separator orientation="vertical" className="h-[600px]" />}
+
+      {step >= 3 && (
+        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
+          <h2 className="text-xl font-bold mb-4 text-[#1A3174] text-left">Frequently Asked Questions</h2>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>What is included in the cost?</AccordionTrigger>
+              <AccordionContent>
+                Our cost includes materials, labor, and installation for your garage project based on your selected options.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>How long does installation take?</AccordionTrigger>
+              <AccordionContent>
+                Installation typically takes 1-2 days depending on the size and complexity of your garage project.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Do you offer warranties?</AccordionTrigger>
+              <AccordionContent>
+                Yes, we offer comprehensive warranties on both materials and workmanship. Contact us for details.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>What payment methods do you accept?</AccordionTrigger>
+              <AccordionContent>
+                We accept all major credit cards, bank transfers, and financing options are available.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      )}
     </div>
   );
 }
