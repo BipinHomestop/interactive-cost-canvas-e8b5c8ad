@@ -19,7 +19,7 @@ export function GarageFinishStep({ selectedFinish, onFinishChange }: GarageFinis
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-center mb-6">Garage Finish</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         {GARAGE_FINISHES.map((finish) => (
           <div
             key={finish.value}

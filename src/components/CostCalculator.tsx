@@ -246,6 +246,127 @@ export function CostCalculator() {
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
+  const getFAQs = (step: number) => {
+    switch (step) {
+      case 3:
+        return [
+          {
+            question: "How many cars can fit in different garage sizes?",
+            answer: "A single car garage typically fits one car, a double garage fits two cars, and so on. Consider extra space for storage or workspace when choosing."
+          },
+          {
+            question: "What's the recommended size for my needs?",
+            answer: "Consider your vehicle sizes, storage needs, and available space. We can help you determine the best size during consultation."
+          },
+          {
+            question: "Can I expand the garage later?",
+            answer: "While possible, it's more cost-effective to build the right size initially. Plan for future needs when choosing your garage capacity."
+          },
+          {
+            question: "Do you offer custom sizes?",
+            answer: "Yes, we can customize garage sizes to meet your specific needs while adhering to local building codes."
+          }
+        ];
+      case 4:
+        return [
+          {
+            question: "Does the finish affect the price?",
+            answer: "Yes, different finishes have varying costs. Premium finishes like granite or slate may affect the final price."
+          },
+          {
+            question: "What's the most popular finish?",
+            answer: "The Snowfall finish is our most popular choice, offering a clean and modern look that complements most home styles."
+          },
+          {
+            question: "Will the finish fade or change color over time?",
+            answer: "Our finishes are designed to be long-lasting and resistant to fading. They maintain their color and appearance for many years with proper maintenance."
+          },
+          {
+            question: "How do I choose the best color for my garage?",
+            answer: "Consider your home's exterior colors, architectural style, and personal preferences. We recommend selecting a finish that complements your home's existing color scheme."
+          }
+        ];
+      case 5:
+        return [
+          {
+            question: "What are stem walls?",
+            answer: "Stem walls are vertical concrete surfaces that form the foundation of your garage, providing structural support and stability."
+          },
+          {
+            question: "Do I need stem walls?",
+            answer: "It depends on your garage design and local building requirements. Our team can assess your specific needs during consultation."
+          },
+          {
+            question: "What's the difference between standard and large stem walls?",
+            answer: "Standard stem walls are 4 inches thick, while large stem walls offer additional support for larger structures or specific soil conditions."
+          },
+          {
+            question: "How long do stem walls last?",
+            answer: "Properly constructed stem walls can last the lifetime of your garage with minimal maintenance."
+          }
+        ];
+      case 6:
+        return [
+          {
+            question: "Why might I need steps?",
+            answer: "Steps are necessary when there's a height difference between your house and garage entrance for safe and convenient access."
+          },
+          {
+            question: "What types of steps are available?",
+            answer: "We offer various step designs that can be customized to match your home's style and meet safety requirements."
+          },
+          {
+            question: "Are the steps covered by warranty?",
+            answer: "Yes, our steps are covered under our comprehensive warranty package, ensuring long-lasting quality and safety."
+          },
+          {
+            question: "Can steps be added later?",
+            answer: "While possible, it's more cost-effective to include steps in the initial construction if you think you'll need them."
+          }
+        ];
+      case 7:
+        return [
+          {
+            question: "What is additional square footage?",
+            answer: "Additional square footage refers to extra space added to your garage beyond the standard size for storage or workspace."
+          },
+          {
+            question: "How much extra space should I add?",
+            answer: "Consider your storage needs, workspace requirements, and future plans when deciding on additional square footage."
+          },
+          {
+            question: "Does extra footage affect permits?",
+            answer: "Yes, additional square footage may affect building permits and local zoning requirements. We'll handle all necessary paperwork."
+          },
+          {
+            question: "Can I add space later?",
+            answer: "While possible, it's more cost-effective to include the desired space in the initial construction."
+          }
+        ];
+      case 8:
+        return [
+          {
+            question: "What's the difference between original and existing conditions?",
+            answer: "Original means no previous coating, while existing means there's an old coating that needs removal before application."
+          },
+          {
+            question: "How is existing coating removed?",
+            answer: "We use professional-grade equipment and techniques to safely remove existing coatings without damaging the surface."
+          },
+          {
+            question: "Does removal affect the timeline?",
+            answer: "Yes, removing existing coating adds some time to the project, but it's necessary for proper application."
+          },
+          {
+            question: "Can you apply over existing coating?",
+            answer: "For best results and longevity, we recommend removing existing coatings before applying new ones."
+          }
+        ];
+      default:
+        return [];
+    }
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -348,38 +469,20 @@ export function CostCalculator() {
           <>
             <h2 className="text-xl font-bold mb-6 text-[#1A3174] text-left">FAQ's</h2>
             <Accordion type="single" collapsible className="space-y-4">
-              <AccordionItem value="item-1" className="border rounded-lg bg-white shadow-sm">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  Does the finish affect the price?
-                </AccordionTrigger>
-                <AccordionContent className="px-4">
-                  Yes, different finishes have varying costs. Premium finishes like granite or slate may affect the final price.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2" className="border rounded-lg bg-white shadow-sm">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  What's the most popular finish?
-                </AccordionTrigger>
-                <AccordionContent className="px-4">
-                  The Snowfall finish is our most popular choice, offering a clean and modern look that complements most home styles.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3" className="border rounded-lg bg-white shadow-sm">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  Will the finish fade or change color over time?
-                </AccordionTrigger>
-                <AccordionContent className="px-4">
-                  Our finishes are designed to be long-lasting and resistant to fading. They maintain their color and appearance for many years with proper maintenance.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-4" className="border rounded-lg bg-white shadow-sm">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  How do I choose the best color for my garage?
-                </AccordionTrigger>
-                <AccordionContent className="px-4">
-                  Consider your home's exterior colors, architectural style, and personal preferences. We recommend selecting a finish that complements your home's existing color scheme.
-                </AccordionContent>
-              </AccordionItem>
+              {getFAQs(step).map((faq, index) => (
+                <AccordionItem 
+                  key={index} 
+                  value={`item-${index + 1}`} 
+                  className="border rounded-lg bg-white shadow-sm"
+                >
+                  <AccordionTrigger className="px-4 hover:no-underline">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="px-4">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
             </Accordion>
           </>
         ) : null}
