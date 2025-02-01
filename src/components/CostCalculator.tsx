@@ -480,14 +480,6 @@ export function CostCalculator() {
         </div>
         
         <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'min-h-[600px]'} relative`}>
-          {step < 9 && (
-            <div className="mb-8">
-              <div className="text-center text-sm text-gray-600">
-                Step {step} of 8
-              </div>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit(calculateCost)} className="space-y-6 h-full">
             <div className="flex-grow">
               {renderStep()}
