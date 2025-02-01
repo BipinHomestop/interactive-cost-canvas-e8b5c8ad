@@ -1,44 +1,71 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect, useRef } from "react";
 import { Label } from "@/components/ui/label";
-
-const TEXAS_CITIES = [
-  "Houston",
-  "San Antonio",
-  "Dallas",
-  "Austin",
-  "Fort Worth",
-  "El Paso",
-  "Arlington",
-  "Corpus Christi",
-];
 
 interface LocationStepProps {
   onLocationChange: (value: string) => void;
 }
 
 export function LocationStep({ onLocationChange }: LocationStepProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const loadGoogleMapsScript = () => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeAutocomplete;
+      document.head.appendChild(script);
+    };
+
+    const initializeAutocomplete = () => {
+      if (!inputRef.current) return;
+
+      const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
+        componentRestrictions: { country: "us" },
+        bounds: new google.maps.LatLngBounds(
+          new google.maps.LatLng(32.5555, -97.3308), // SW corner of DFW
+          new google.maps.LatLng(33.0183, -96.6389)  // NE corner of DFW
+        ),
+        strictBounds: true,
+        types: ['address']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.formatted_address) {
+          onLocationChange(place.formatted_address);
+        }
+      });
+    };
+
+    loadGoogleMapsScript();
+
+    return () => {
+      // Cleanup script if component unmounts
+      const script = document.querySelector('script[src*="maps.googleapis.com/maps/api"]');
+      if (script) {
+        script.remove();
+      }
+    };
+  }, [onLocationChange]);
+
   return (
     <div className="space-y-6">
-      <div className="text-left">
-        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Select Your Location</h2>
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-primary mb-2">Where's Your Project Located?</h2>
         <p className="text-gray-600 mb-8">
-          Choose your city to get started with your garage renovation estimate
+          Enter your address to get started with your garage renovation estimate
         </p>
       </div>
 
       <div className="relative">
-        <Select onValueChange={onLocationChange} defaultValue="">
-          <SelectTrigger className="h-14 w-full px-4 border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-            <SelectValue placeholder="Select your city" />
-          </SelectTrigger>
-          <SelectContent>
-            {TEXAS_CITIES.map((city) => (
-              <SelectItem key={city} value={city.toLowerCase()}>
-                {city}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <input
+          ref={inputRef}
+          type="text"
+          className="input-modern"
+          placeholder="Enter your address"
+        />
       </div>
     </div>
   );

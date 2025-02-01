@@ -23,6 +23,13 @@ export function GarageCapacityStep({ capacity, onCapacityChange }: GarageCapacit
   return (
     <div className="space-y-8">
       <div className="text-center">
+        <h2 className="text-2xl font-bold text-primary mb-2">Garage Capacity</h2>
+        <p className="text-gray-600 mb-8">
+          Select the number of cars your garage needs to accommodate
+        </p>
+      </div>
+
+      <div className="text-center">
         <div className="text-7xl font-bold text-primary mb-4">{capacity}</div>
         <div className="text-4xl font-semibold text-primary uppercase tracking-wider">CAR</div>
       </div>
