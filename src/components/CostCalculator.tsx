@@ -431,61 +431,63 @@ export function CostCalculator() {
   };
 
   return (
-    <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch`}>
-      <div className={`${isMobile ? 'w-full mb-6' : 'w-[30%]'}`}>
-        <ImageDisplay
-          imageSrc={getStepImage()}
-          totalCost={totalCost}
-          step={step}
-        />
-      </div>
-      
-      <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
-        {step < 9 && (
-          <div className="mb-8">
-            <div className="text-center text-sm text-gray-600">
-              Step {step} of 8
-            </div>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit(calculateCost)} className="space-y-6">
-          {renderStep()}
+    <div className="w-full px-4 lg:px-8">
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-6`}>
+        <div className={`${isMobile ? 'w-full mb-6' : 'w-[30%]'}`}>
+          <ImageDisplay
+            imageSrc={getStepImage()}
+            totalCost={totalCost}
+            step={step}
+          />
+        </div>
+        
+        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
           {step < 9 && (
-            <FormNavigation
-              step={step}
-              onNext={nextStep}
-              onPrev={prevStep}
-              isLastStep={step === 8}
-            />
+            <div className="mb-8">
+              <div className="text-center text-sm text-gray-600">
+                Step {step} of 8
+              </div>
+            </div>
           )}
-        </form>
-      </div>
 
-      {!isMobile && <Separator orientation="vertical" className="h-[600px]" />}
+          <form onSubmit={handleSubmit(calculateCost)} className="space-y-6">
+            {renderStep()}
+            {step < 9 && (
+              <FormNavigation
+                step={step}
+                onNext={nextStep}
+                onPrev={prevStep}
+                isLastStep={step === 8}
+              />
+            )}
+          </form>
+        </div>
 
-      <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
-        {step >= 3 ? (
-          <>
-            <h2 className="text-xl font-bold mb-6 text-[#1A3174] text-left">FAQ's</h2>
-            <Accordion type="single" collapsible className="space-y-4">
-              {getFAQs(step).map((faq, index) => (
-                <AccordionItem 
-                  key={index} 
-                  value={`item-${index + 1}`} 
-                  className="border rounded-lg bg-white shadow-sm"
-                >
-                  <AccordionTrigger className="px-4 hover:no-underline">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </>
-        ) : null}
+        {!isMobile && <Separator orientation="vertical" className="h-[600px]" />}
+
+        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
+          {step >= 3 ? (
+            <>
+              <h2 className="text-xl font-bold mb-6 text-[#1A3174] text-left">FAQ's</h2>
+              <Accordion type="single" collapsible className="space-y-4">
+                {getFAQs(step).map((faq, index) => (
+                  <AccordionItem 
+                    key={index} 
+                    value={`item-${index + 1}`} 
+                    className="border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <AccordionTrigger className="px-4 hover:no-underline">
+                      <span className="text-[#1A3174] font-medium">{faq.question}</span>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-4 text-gray-600">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </>
+          ) : null}
+        </div>
       </div>
     </div>
   );

@@ -3,19 +3,26 @@ import { NavigationProps } from "./types";
 
 export function FormNavigation({ step, onNext, onPrev, isLastStep }: NavigationProps) {
   return (
-    <div className="flex justify-between mt-6">
-      {step > 1 && (
-        <Button type="button" variant="outline" onClick={onPrev}>
+    <div className="grid grid-cols-2 gap-4 mt-6">
+      {step > 1 ? (
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onPrev}
+          className="w-full border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10"
+        >
           Back
         </Button>
+      ) : (
+        <div /> // Empty div for grid alignment when no back button
       )}
       {step < 9 && (
         <Button
           type="button"
-          className={`${step > 1 ? "" : "ml-auto"} bg-[#1A3174] hover:bg-[#1A3174]/90`}
+          className="w-full bg-[#1A3174] hover:bg-[#1A3174]/90"
           onClick={onNext}
         >
-          {step === 8 ? "Finish" : "Next"}
+          {isLastStep ? "Finish" : "Next"}
         </Button>
       )}
     </div>
