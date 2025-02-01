@@ -248,6 +248,44 @@ export function CostCalculator() {
 
   const getFAQs = (step: number) => {
     switch (step) {
+      case 1:
+        return [
+          {
+            question: "What locations do you serve?",
+            answer: "We currently serve major cities across Texas, including Houston, Dallas, Austin, and San Antonio."
+          },
+          {
+            question: "Do you offer services outside Texas?",
+            answer: "Currently, we are focused on providing our services within Texas to ensure the highest quality of service."
+          },
+          {
+            question: "How long does installation typically take?",
+            answer: "Installation time varies based on the project scope, but typically takes 2-5 business days."
+          },
+          {
+            question: "Do you offer free consultations?",
+            answer: "Yes, we offer free initial consultations to discuss your project needs and provide accurate estimates."
+          }
+        ];
+      case 2:
+        return [
+          {
+            question: "How will you use my contact information?",
+            answer: "Your information is used solely to communicate about your project and will never be shared with third parties."
+          },
+          {
+            question: "When will someone contact me?",
+            answer: "Our team typically reaches out within 1 business day of receiving your information."
+          },
+          {
+            question: "Can I specify preferred contact methods?",
+            answer: "Yes, just let us know your preferred method of contact when filling out the form."
+          },
+          {
+            question: "Is my information secure?",
+            answer: "Yes, we use industry-standard encryption to protect your personal information."
+          }
+        ];
       case 3:
         return [
           {
@@ -432,7 +470,7 @@ export function CostCalculator() {
 
   return (
     <div className="w-full px-4 lg:px-8">
-      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-6`}>
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-3`}>
         <div className={`${isMobile ? 'w-full mb-6' : 'w-[30%]'}`}>
           <ImageDisplay
             imageSrc={getStepImage()}
@@ -441,7 +479,7 @@ export function CostCalculator() {
           />
         </div>
         
-        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
+        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'min-h-[600px]'} relative`}>
           {step < 9 && (
             <div className="mb-8">
               <div className="text-center text-sm text-gray-600">
@@ -450,23 +488,25 @@ export function CostCalculator() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(calculateCost)} className="space-y-6">
-            {renderStep()}
+          <form onSubmit={handleSubmit(calculateCost)} className="space-y-6 h-full">
+            <div className="flex-grow">
+              {renderStep()}
+            </div>
             {step < 9 && (
-              <FormNavigation
-                step={step}
-                onNext={nextStep}
-                onPrev={prevStep}
-                isLastStep={step === 8}
-              />
+              <div className="absolute bottom-6 left-6 right-6">
+                <FormNavigation
+                  step={step}
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                  isLastStep={step === 8}
+                />
+              </div>
             )}
           </form>
         </div>
 
-        {!isMobile && <Separator orientation="vertical" className="h-[600px]" />}
-
-        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
-          {step >= 3 ? (
+        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'min-h-[600px]'} overflow-y-auto`}>
+          {(step >= 3 || step <= 2) && (
             <>
               <h2 className="text-xl font-bold mb-6 text-[#1A3174] text-left">FAQ's</h2>
               <Accordion type="single" collapsible className="space-y-4">
@@ -486,7 +526,7 @@ export function CostCalculator() {
                 ))}
               </Accordion>
             </>
-          ) : null}
+          )}
         </div>
       </div>
     </div>

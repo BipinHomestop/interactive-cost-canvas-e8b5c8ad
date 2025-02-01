@@ -17,7 +17,7 @@ export function ContactStep({ register }: ContactStepProps) {
           type="text" 
           {...register("name", { required: "Full name is required" })} 
           placeholder="Enter your full name"
-          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
+          className="h-12 w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
         />
       </div>
       <div className="space-y-2">
@@ -27,7 +27,7 @@ export function ContactStep({ register }: ContactStepProps) {
           type="tel" 
           {...register("phone", { required: "Phone number is required" })} 
           placeholder="Enter your phone number"
-          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
+          className="h-12 w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
         />
       </div>
       <div className="space-y-2">
@@ -43,7 +43,7 @@ export function ContactStep({ register }: ContactStepProps) {
             }
           })} 
           placeholder="Enter your email"
-          className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
+          className="h-12 w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
         />
       </div>
       <p className="text-sm text-gray-500">* Required fields</p>

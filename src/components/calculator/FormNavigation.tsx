@@ -3,7 +3,7 @@ import { NavigationProps } from "./types";
 
 export function FormNavigation({ step, onNext, onPrev, isLastStep }: NavigationProps) {
   return (
-    <div className="grid grid-cols-2 gap-4 mt-6">
+    <div className="grid grid-cols-2 gap-4 w-full">
       {step > 1 ? (
         <Button 
           type="button" 
