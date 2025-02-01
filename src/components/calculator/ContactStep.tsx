@@ -9,29 +9,40 @@ interface ContactStepProps {
 
 export function ContactStep({ register }: ContactStepProps) {
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name *</Label>
+    <div className="space-y-6">
+      <div className="relative">
         <Input 
           id="name" 
           type="text" 
           {...register("name", { required: "Full name is required" })} 
-          placeholder="Enter your full name"
-          className="h-12 w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
+          placeholder=" "
+          className="h-14 w-full px-4 pt-4 peer border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-transparent"
         />
+        <Label 
+          htmlFor="name" 
+          className="absolute text-gray-500 text-sm duration-150 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 left-1"
+        >
+          Full Name *
+        </Label>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone Number *</Label>
+      
+      <div className="relative">
         <Input 
           id="phone" 
           type="tel" 
           {...register("phone", { required: "Phone number is required" })} 
-          placeholder="Enter your phone number"
-          className="h-12 w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
+          placeholder=" "
+          className="h-14 w-full px-4 pt-4 peer border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-transparent"
         />
+        <Label 
+          htmlFor="phone" 
+          className="absolute text-gray-500 text-sm duration-150 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 left-1"
+        >
+          Phone Number *
+        </Label>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email *</Label>
+      
+      <div className="relative">
         <Input 
           id="email" 
           type="email" 
@@ -42,10 +53,17 @@ export function ContactStep({ register }: ContactStepProps) {
               message: "Invalid email address"
             }
           })} 
-          placeholder="Enter your email"
-          className="h-12 w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-[#1A3174] focus:ring-2 focus:ring-[#1A3174]/20 transition-all"
+          placeholder=" "
+          className="h-14 w-full px-4 pt-4 peer border-2 border-gray-200 rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-transparent"
         />
+        <Label 
+          htmlFor="email" 
+          className="absolute text-gray-500 text-sm duration-150 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-3 left-1"
+        >
+          Email *
+        </Label>
       </div>
+      
       <p className="text-sm text-gray-500">* Required fields</p>
     </div>
   );

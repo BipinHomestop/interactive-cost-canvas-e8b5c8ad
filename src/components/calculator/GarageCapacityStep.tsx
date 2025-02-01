@@ -1,5 +1,6 @@
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Minus, Plus } from "lucide-react";
 
 interface GarageCapacityStepProps {
   capacity: number;
@@ -7,20 +8,51 @@ interface GarageCapacityStepProps {
 }
 
 export function GarageCapacityStep({ capacity, onCapacityChange }: GarageCapacityStepProps) {
+  const handleIncrement = () => {
+    if (capacity < 5) {
+      onCapacityChange([capacity + 1]);
+    }
+  };
+
+  const handleDecrement = () => {
+    if (capacity > 1) {
+      onCapacityChange([capacity - 1]);
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <Label>Maximum Cars in Garage</Label>
-      <div className="pt-6">
-        <Slider
-          defaultValue={[capacity]}
-          max={5}
-          min={1}
-          step={1}
-          onValueChange={onCapacityChange}
-        />
-        <div className="mt-2 text-center text-sm text-gray-600">
-          {capacity} {capacity === 1 ? "car" : "cars"}
-        </div>
+    <div className="space-y-8">
+      <div className="text-center">
+        <div className="text-7xl font-bold text-primary mb-4">{capacity}</div>
+        <div className="text-4xl font-semibold text-primary uppercase tracking-wider">CAR</div>
+      </div>
+      
+      <div className="flex justify-center items-center gap-16 mt-8">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className={`rounded-full w-16 h-16 border-2 ${
+            capacity <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary hover:text-white'
+          }`}
+          onClick={handleDecrement}
+          disabled={capacity <= 1}
+        >
+          <Minus className="h-8 w-8" />
+        </Button>
+        
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className={`rounded-full w-16 h-16 border-2 ${
+            capacity >= 5 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary hover:text-white'
+          }`}
+          onClick={handleIncrement}
+          disabled={capacity >= 5}
+        >
+          <Plus className="h-8 w-8" />
+        </Button>
       </div>
     </div>
   );
