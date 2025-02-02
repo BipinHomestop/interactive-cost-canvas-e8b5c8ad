@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
 import { GarageCapacityStep } from "./calculator/GarageCapacityStep";
@@ -11,12 +10,10 @@ import { CurrentConditionStep } from "./calculator/CurrentConditionStep";
 import { PaymentStep } from "./calculator/PaymentStep";
 import { ImageDisplay } from "./calculator/ImageDisplay";
 import { FormNavigation } from "./calculator/FormNavigation";
-import { CalculatorInputs, StepImages } from "./calculator/types";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { FAQSection } from "./calculator/FAQSection";
+import { StepImages } from "./calculator/types";
+import { useCalculator } from "@/hooks/use-calculator";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
 
 const STEP_IMAGES: StepImages = {
   1: "/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png",
@@ -46,72 +43,23 @@ const STEP_IMAGES: StepImages = {
 };
 
 export function CostCalculator() {
-  const [step, setStep] = useState(1);
-  const [totalCost, setTotalCost] = useState<number>(0);
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
-  const { toast } = useToast();
   const isMobile = useIsMobile();
-  
-  const { register, handleSubmit, setValue, watch, control } = useForm<CalculatorInputs>({
-    defaultValues: {
-      location: "",
-      name: "",
-      phone: "",
-      email: "",
-      garageCapacity: 1,
-      garageFinish: "snowfall",
-      needStemWalls: "no",
-      stemWallType: undefined,
-      needSteps: "no",
-      needExtraFootage: "no",
-      extraFootage: undefined,
-      currentCondition: "original"
-    },
-  });
-
-  const formValues = useWatch({ control });
-  const selectedFinish = watch("garageFinish");
-  const needStemWalls = watch("needStemWalls");
-  const needSteps = watch("needSteps");
-  const needExtraFootage = watch("needExtraFootage");
-  const currentCondition = watch("currentCondition");
-
-  useEffect(() => {
-    if (step >= 3) {
-      calculateCost();
-    }
-  }, [formValues, step]);
-
-  const calculateCost = () => {
-    let total = formValues.garageCapacity * 1000;
-    
-    const finishMultiplier = formValues.garageFinish === "snowfall" ? 1.2 : 1;
-    total *= finishMultiplier;
-    
-    if (formValues.needStemWalls === "yes") {
-      total += formValues.stemWallType === "standard" ? 500 : 1000;
-    }
-    
-    if (formValues.needSteps === "yes") {
-      total += 300;
-    }
-    
-    if (formValues.needExtraFootage === "yes" && formValues.extraFootage) {
-      const footageCosts = {
-        "up-to-50": 200,
-        "51-100": 400,
-        "101-150": 600,
-        "151-200": 800,
-      };
-      total += footageCosts[formValues.extraFootage] || 0;
-    }
-
-    if (formValues.currentCondition === "existing") {
-      total += 200;
-    }
-    
-    setTotalCost(total);
-  };
+  const {
+    step,
+    totalCost,
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formValues,
+    selectedFinish,
+    needStemWalls,
+    needSteps,
+    needExtraFootage,
+    currentCondition,
+    handleNextStep,
+    handlePrevStep,
+  } = useCalculator();
 
   const getStepImage = () => {
     const image = STEP_IMAGES[step as keyof typeof STEP_IMAGES];
@@ -133,276 +81,6 @@ export function CostCalculator() {
     }
     
     return '';
-  };
-
-  const nextStep = async () => {
-    if (step === 2) {
-      if (!formValues.name || !formValues.phone || !formValues.email) {
-        toast({
-          title: "Error",
-          description: "Please fill in all required fields",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from('cost_calculator_submissions')
-          .insert([{
-            location: formValues.location,
-            name: formValues.name,
-            phone: formValues.phone,
-            email: formValues.email,
-            garage_capacity: formValues.garageCapacity,
-            garage_finish: formValues.garageFinish,
-            need_stem_walls: formValues.needStemWalls,
-            stem_wall_type: formValues.stemWallType,
-            need_steps: formValues.needSteps,
-            need_extra_footage: formValues.needExtraFootage,
-            extra_footage: formValues.extraFootage,
-            current_condition: formValues.currentCondition
-          }])
-          .select();
-
-        if (error) throw error;
-
-        if (data && data[0]) {
-          setSubmissionId(data[0].id);
-        }
-
-        toast({
-          title: "Success",
-          description: "Your information has been saved",
-          className: "bg-green-500 text-white border-none",
-        });
-      } catch (error) {
-        console.error('Error saving data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to save your information",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else if (submissionId && step > 2) {
-      try {
-        const { error } = await supabase
-          .from('cost_calculator_submissions')
-          .update({
-            garage_capacity: formValues.garageCapacity,
-            garage_finish: formValues.garageFinish,
-            need_stem_walls: formValues.needStemWalls,
-            stem_wall_type: formValues.stemWallType,
-            need_steps: formValues.needSteps,
-            need_extra_footage: formValues.needExtraFootage,
-            extra_footage: formValues.extraFootage,
-            current_condition: formValues.currentCondition
-          })
-          .eq('id', submissionId);
-
-        if (error) throw error;
-      } catch (error) {
-        console.error('Error updating data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update your information",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-    
-    setStep((prev) => Math.min(prev + 1, 9));
-  };
-
-  const prevStep = async () => {
-    if (submissionId && step > 2) {
-      try {
-        const { error } = await supabase
-          .from('cost_calculator_submissions')
-          .update({
-            garage_capacity: formValues.garageCapacity,
-            garage_finish: formValues.garageFinish,
-            need_stem_walls: formValues.needStemWalls,
-            stem_wall_type: formValues.stemWallType,
-            need_steps: formValues.needSteps,
-            need_extra_footage: formValues.needExtraFootage,
-            extra_footage: formValues.extraFootage,
-            current_condition: formValues.currentCondition
-          })
-          .eq('id', submissionId);
-
-        if (error) throw error;
-      } catch (error) {
-        console.error('Error updating data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update your information",
-          variant: "destructive",
-        });
-      }
-    }
-    setStep((prev) => Math.max(prev - 1, 1));
-  };
-
-  const getFAQs = (step: number) => {
-    switch (step) {
-      case 1:
-        return [
-          {
-            question: "What locations do you serve?",
-            answer: "We currently serve major cities across Texas, including Houston, Dallas, Austin, and San Antonio."
-          },
-          {
-            question: "Do you offer services outside Texas?",
-            answer: "Currently, we are focused on providing our services within Texas to ensure the highest quality of service."
-          },
-          {
-            question: "How long does installation typically take?",
-            answer: "Installation time varies based on the project scope, but typically takes 2-5 business days."
-          },
-          {
-            question: "Do you offer free consultations?",
-            answer: "Yes, we offer free initial consultations to discuss your project needs and provide accurate estimates."
-          }
-        ];
-      case 2:
-        return [
-          {
-            question: "How will you use my contact information?",
-            answer: "Your information is used solely to communicate about your project and will never be shared with third parties."
-          },
-          {
-            question: "When will someone contact me?",
-            answer: "Our team typically reaches out within 1 business day of receiving your information."
-          },
-          {
-            question: "Can I specify preferred contact methods?",
-            answer: "Yes, just let us know your preferred method of contact when filling out the form."
-          },
-          {
-            question: "Is my information secure?",
-            answer: "Yes, we use industry-standard encryption to protect your personal information."
-          }
-        ];
-      case 3:
-        return [
-          {
-            question: "How many cars can fit in different garage sizes?",
-            answer: "A single car garage typically fits one car, a double garage fits two cars, and so on. Consider extra space for storage or workspace when choosing."
-          },
-          {
-            question: "What's the recommended size for my needs?",
-            answer: "Consider your vehicle sizes, storage needs, and available space. We can help you determine the best size during consultation."
-          },
-          {
-            question: "Can I expand the garage later?",
-            answer: "While possible, it's more cost-effective to build the right size initially. Plan for future needs when choosing your garage capacity."
-          },
-          {
-            question: "Do you offer custom sizes?",
-            answer: "Yes, we can customize garage sizes to meet your specific needs while adhering to local building codes."
-          }
-        ];
-      case 4:
-        return [
-          {
-            question: "Does the finish affect the price?",
-            answer: "Yes, different finishes have varying costs. Premium finishes like granite or slate may affect the final price."
-          },
-          {
-            question: "What's the most popular finish?",
-            answer: "The Snowfall finish is our most popular choice, offering a clean and modern look that complements most home styles."
-          },
-          {
-            question: "Will the finish fade or change color over time?",
-            answer: "Our finishes are designed to be long-lasting and resistant to fading. They maintain their color and appearance for many years with proper maintenance."
-          },
-          {
-            question: "How do I choose the best color for my garage?",
-            answer: "Consider your home's exterior colors, architectural style, and personal preferences. We recommend selecting a finish that complements your home's existing color scheme."
-          }
-        ];
-      case 5:
-        return [
-          {
-            question: "What are stem walls?",
-            answer: "Stem walls are vertical concrete surfaces that form the foundation of your garage, providing structural support and stability."
-          },
-          {
-            question: "Do I need stem walls?",
-            answer: "It depends on your garage design and local building requirements. Our team can assess your specific needs during consultation."
-          },
-          {
-            question: "What's the difference between standard and large stem walls?",
-            answer: "Standard stem walls are 4 inches thick, while large stem walls offer additional support for larger structures or specific soil conditions."
-          },
-          {
-            question: "How long do stem walls last?",
-            answer: "Properly constructed stem walls can last the lifetime of your garage with minimal maintenance."
-          }
-        ];
-      case 6:
-        return [
-          {
-            question: "Why might I need steps?",
-            answer: "Steps are necessary when there's a height difference between your house and garage entrance for safe and convenient access."
-          },
-          {
-            question: "What types of steps are available?",
-            answer: "We offer various step designs that can be customized to match your home's style and meet safety requirements."
-          },
-          {
-            question: "Are the steps covered by warranty?",
-            answer: "Yes, our steps are covered under our comprehensive warranty package, ensuring long-lasting quality and safety."
-          },
-          {
-            question: "Can steps be added later?",
-            answer: "While possible, it's more cost-effective to include steps in the initial construction if you think you'll need them."
-          }
-        ];
-      case 7:
-        return [
-          {
-            question: "What is additional square footage?",
-            answer: "Additional square footage refers to extra space added to your garage beyond the standard size for storage or workspace."
-          },
-          {
-            question: "How much extra space should I add?",
-            answer: "Consider your storage needs, workspace requirements, and future plans when deciding on additional square footage."
-          },
-          {
-            question: "Does extra footage affect permits?",
-            answer: "Yes, additional square footage may affect building permits and local zoning requirements. We'll handle all necessary paperwork."
-          },
-          {
-            question: "Can I add space later?",
-            answer: "While possible, it's more cost-effective to include the desired space in the initial construction."
-          }
-        ];
-      case 8:
-        return [
-          {
-            question: "What's the difference between original and existing conditions?",
-            answer: "Original means no previous coating, while existing means there's an old coating that needs removal before application."
-          },
-          {
-            question: "How is existing coating removed?",
-            answer: "We use professional-grade equipment and techniques to safely remove existing coatings without damaging the surface."
-          },
-          {
-            question: "Does removal affect the timeline?",
-            answer: "Yes, removing existing coating adds some time to the project, but it's necessary for proper application."
-          },
-          {
-            question: "Can you apply over existing coating?",
-            answer: "For best results and longevity, we recommend removing existing coatings before applying new ones."
-          }
-        ];
-      default:
-        return [];
-    }
   };
 
   const isNextDisabled = () => {
@@ -485,7 +163,7 @@ export function CostCalculator() {
           />
         );
       case 9:
-        return <PaymentStep onBack={prevStep} formData={formValues} totalCost={totalCost} />;
+        return <PaymentStep onBack={handlePrevStep} formData={formValues} totalCost={totalCost} />;
       default:
         return null;
     }
@@ -503,7 +181,7 @@ export function CostCalculator() {
         </div>
         
         <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'min-h-[600px]'} relative`}>
-          <form onSubmit={handleSubmit(calculateCost)} className="space-y-6 h-full">
+          <form onSubmit={handleSubmit(() => {})} className="space-y-6 h-full">
             <div className="flex-grow">
               {renderStep()}
             </div>
@@ -511,8 +189,8 @@ export function CostCalculator() {
               <div className="absolute bottom-6 left-6 right-6">
                 <FormNavigation
                   step={step}
-                  onNext={nextStep}
-                  onPrev={prevStep}
+                  onNext={handleNextStep}
+                  onPrev={handlePrevStep}
                   isLastStep={step === 8}
                   isNextDisabled={isNextDisabled()}
                 />
@@ -523,25 +201,7 @@ export function CostCalculator() {
 
         <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'min-h-[600px]'} overflow-y-auto`}>
           {(step >= 3 || step <= 2) && (
-            <>
-              <h2 className="text-xl font-bold mb-6 text-[#1A3174] text-left">FAQ's</h2>
-              <Accordion type="single" collapsible className="space-y-4">
-                {getFAQs(step).map((faq, index) => (
-                  <AccordionItem 
-                    key={index} 
-                    value={`item-${index + 1}`} 
-                    className="border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
-                  >
-                    <AccordionTrigger className="px-4 hover:no-underline">
-                      <span className="text-[#1A3174] font-medium">{faq.question}</span>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-4 text-gray-600">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </>
+            <FAQSection step={step} />
           )}
         </div>
       </div>
