@@ -1,8 +1,15 @@
 import { useEffect, useRef } from "react";
 import { Label } from "@/components/ui/label";
+import { MapPin } from "lucide-react";
 
 interface LocationStepProps {
   onLocationChange: (value: string) => void;
+}
+
+declare global {
+  interface Window {
+    google: typeof google;
+  }
 }
 
 export function LocationStep({ onLocationChange }: LocationStepProps) {
@@ -42,7 +49,6 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
     loadGoogleMapsScript();
 
     return () => {
-      // Cleanup script if component unmounts
       const script = document.querySelector('script[src*="maps.googleapis.com/maps/api"]');
       if (script) {
         script.remove();
@@ -60,10 +66,13 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
       </div>
 
       <div className="relative">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+          <MapPin size={20} />
+        </div>
         <input
           ref={inputRef}
           type="text"
-          className="input-modern"
+          className="input-modern pl-10"
           placeholder="Enter your address"
         />
       </div>
