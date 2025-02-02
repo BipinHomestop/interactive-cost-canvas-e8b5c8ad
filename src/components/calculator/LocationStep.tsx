@@ -15,8 +15,6 @@ declare global {
             input: HTMLInputElement,
             opts?: {
               componentRestrictions?: { country: string };
-              bounds?: any;
-              strictBounds?: boolean;
               types?: string[];
             }
           ) => {
@@ -24,8 +22,6 @@ declare global {
             getPlace: () => { formatted_address?: string };
           };
         };
-        LatLng: new (lat: number, lng: number) => any;
-        LatLngBounds: new (sw: any, ne: any) => any;
       };
     };
   }
