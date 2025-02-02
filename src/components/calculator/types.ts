@@ -4,7 +4,7 @@ export interface CalculatorInputs {
   phone: string;
   email: string;
   garageCapacity: number;
-  garageFinish: "snowfall" | "granite" | "slate" | "modern" | "minimal" | "glass" | "classic" | "premium" | "deluxe";
+  garageFinish: "snowfall" | "granite" | "slate";
   needStemWalls: "yes" | "no";
   stemWallType?: "standard" | "large";
   needSteps: "yes" | "no";
@@ -14,21 +14,9 @@ export interface CalculatorInputs {
 }
 
 export interface StepImages {
-  1: string;
-  2: string;
-  3: string;
-  4: Record<"snowfall" | "granite" | "slate" | "modern" | "minimal" | "glass" | "classic" | "premium" | "deluxe", string>;
-  5: Record<"no" | "yes" | "standard" | "large", string>;
-  6: string;
-  7: string;
-  8: string;
-  9: string;
-}
-
-export interface ImageDisplayProps {
-  imageSrc: string;
-  totalCost: number;
-  step: number;
+  [key: number]: string | {
+    [key: string]: string;
+  };
 }
 
 export interface NavigationProps {
@@ -36,4 +24,5 @@ export interface NavigationProps {
   onNext: () => void;
   onPrev: () => void;
   isLastStep: boolean;
+  isNextDisabled?: boolean;
 }

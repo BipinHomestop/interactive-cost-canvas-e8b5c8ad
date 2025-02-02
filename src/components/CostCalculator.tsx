@@ -405,6 +405,29 @@ export function CostCalculator() {
     }
   };
 
+  const isNextDisabled = () => {
+    switch (step) {
+      case 1:
+        return !formValues.location;
+      case 2:
+        return !formValues.name || !formValues.phone || !formValues.email;
+      case 3:
+        return !formValues.garageCapacity;
+      case 4:
+        return !formValues.garageFinish;
+      case 5:
+        return !formValues.needStemWalls || (formValues.needStemWalls === "yes" && !formValues.stemWallType);
+      case 6:
+        return !formValues.needSteps;
+      case 7:
+        return !formValues.needExtraFootage || (formValues.needExtraFootage === "yes" && !formValues.extraFootage);
+      case 8:
+        return !formValues.currentCondition;
+      default:
+        return false;
+    }
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -491,6 +514,7 @@ export function CostCalculator() {
                   onNext={nextStep}
                   onPrev={prevStep}
                   isLastStep={step === 8}
+                  isNextDisabled={isNextDisabled()}
                 />
               </div>
             )}
