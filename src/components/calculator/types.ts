@@ -19,6 +19,12 @@ export interface StepImages {
   };
 }
 
+export interface ImageDisplayProps {
+  imageSrc: string;
+  totalCost: number;
+  step: number;
+}
+
 export interface NavigationProps {
   step: number;
   onNext: () => void;
