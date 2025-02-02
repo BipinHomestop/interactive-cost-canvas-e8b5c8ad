@@ -13,9 +13,16 @@ declare global {
         places: {
           Autocomplete: new (
             input: HTMLInputElement,
-            opts?: google.maps.places.AutocompleteOptions
-          ) => google.maps.places.Autocomplete;
-          AutocompleteOptions: any;
+            opts?: {
+              componentRestrictions?: { country: string };
+              bounds?: any;
+              strictBounds?: boolean;
+              types?: string[];
+            }
+          ) => {
+            addListener: (event: string, handler: () => void) => void;
+            getPlace: () => { formatted_address?: string };
+          };
         };
         LatLng: new (lat: number, lng: number) => any;
         LatLngBounds: new (sw: any, ne: any) => any;
