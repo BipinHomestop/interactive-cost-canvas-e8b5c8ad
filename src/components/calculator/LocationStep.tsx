@@ -8,7 +8,19 @@ interface LocationStepProps {
 
 declare global {
   interface Window {
-    google: typeof google;
+    google: {
+      maps: {
+        places: {
+          Autocomplete: new (
+            input: HTMLInputElement,
+            opts?: google.maps.places.AutocompleteOptions
+          ) => google.maps.places.Autocomplete;
+          AutocompleteOptions: any;
+        };
+        LatLng: new (lat: number, lng: number) => any;
+        LatLngBounds: new (sw: any, ne: any) => any;
+      };
+    };
   }
 }
 
