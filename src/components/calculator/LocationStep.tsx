@@ -36,8 +36,20 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
 
   useEffect(() => {
     const loadGoogleMapsScript = () => {
+      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+      if (!apiKey) {
+        console.error('Google Maps API key is not set');
+        return;
+      }
+
+      // Remove any existing Google Maps scripts to prevent duplicates
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.defer = true;
       script.onload = initializeAutocomplete;
@@ -49,11 +61,6 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
 
       const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
         componentRestrictions: { country: "us" },
-        bounds: new window.google.maps.LatLngBounds(
-          new window.google.maps.LatLng(32.5555, -97.3308), // SW corner of DFW
-          new window.google.maps.LatLng(33.0183, -96.6389)  // NE corner of DFW
-        ),
-        strictBounds: true,
         types: ['address']
       });
 
@@ -91,7 +98,7 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
         <input
           ref={inputRef}
           type="text"
-          className="input-modern pl-10"
+          className="w-full px-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           placeholder="Enter your address"
         />
       </div>
