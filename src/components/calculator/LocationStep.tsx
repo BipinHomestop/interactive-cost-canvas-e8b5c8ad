@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { Label } from "@/components/ui/label";
 import { MapPin } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +33,8 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [manualInput, setManualInput] = useState(false);
+  const [location, setLocation] = useState("");
 
   useEffect(() => {
     const fetchApiKey = async () => {
@@ -44,10 +45,12 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
         setApiKey(GOOGLE_MAPS_API_KEY);
       } catch (error) {
         console.error('Error fetching API key:', error);
+        setManualInput(true);
+        setIsLoading(false);
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to load location services. Please try again later.",
+          title: "Notice",
+          description: "Location suggestions are unavailable. You can enter your address manually.",
         });
       }
     };
@@ -59,7 +62,6 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
     if (!apiKey) return;
 
     const loadGoogleMapsScript = () => {
-      // Remove any existing Google Maps scripts
       const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api"]');
       if (existingScript) {
         existingScript.remove();
@@ -77,12 +79,13 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
       
       script.onerror = () => {
         console.error('Failed to load Google Maps script');
+        setManualInput(true);
+        setIsLoading(false);
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to load location services. Please try again later.",
+          title: "Notice",
+          description: "Location suggestions are unavailable. You can enter your address manually.",
         });
-        setIsLoading(false);
       };
       
       document.head.appendChild(script);
@@ -100,15 +103,17 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
         autocomplete.addListener('place_changed', () => {
           const place = autocomplete.getPlace();
           if (place.formatted_address) {
+            setLocation(place.formatted_address);
             onLocationChange(place.formatted_address);
           }
         });
       } catch (error) {
         console.error('Error initializing autocomplete:', error);
+        setManualInput(true);
         toast({
           variant: "destructive",
-          title: "Error",
-          description: "Failed to initialize location services. Please try again later.",
+          title: "Notice",
+          description: "Location suggestions are unavailable. You can enter your address manually.",
         });
       }
     };
@@ -122,6 +127,12 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
       }
     };
   }, [apiKey, onLocationChange, toast]);
+
+  const handleManualInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setLocation(value);
+    onLocationChange(value);
+  };
 
   return (
     <div className="space-y-6">
@@ -142,8 +153,16 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
           className="w-full px-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
           placeholder={isLoading ? "Loading location services..." : "Enter your address"}
           disabled={isLoading}
+          onChange={manualInput ? handleManualInput : undefined}
+          value={location}
         />
       </div>
+
+      {manualInput && (
+        <p className="text-sm text-gray-500 text-center">
+          Enter your complete address including street, city, state, and ZIP code
+        </p>
+      )}
     </div>
   );
 }
