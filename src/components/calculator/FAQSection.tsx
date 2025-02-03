@@ -179,10 +179,10 @@ export function FAQSection({ step }: FAQSectionProps) {
             value={`item-${index + 1}`} 
             className="border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
           >
-            <AccordionTrigger className="px-4 hover:no-underline">
-              <span className="text-[#1A3174] font-medium">{faq.question}</span>
+            <AccordionTrigger className="px-4 hover:no-underline text-left">
+              <span className="text-[#1A3174] font-medium text-left">{faq.question}</span>
             </AccordionTrigger>
-            <AccordionContent className="px-4 text-gray-600">
+            <AccordionContent className="px-4 text-gray-600 text-left">
               {faq.answer}
             </AccordionContent>
           </AccordionItem>

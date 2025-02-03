@@ -180,7 +180,7 @@ export function CostCalculator() {
           />
         </div>
         
-        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'min-h-[600px]'} relative`}>
+        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} relative ${step === 9 ? 'overflow-y-auto' : ''}`}>
           <form onSubmit={handleSubmit(() => {})} className="space-y-6 h-full">
             <div className="flex-grow">
               {renderStep()}
@@ -199,7 +199,7 @@ export function CostCalculator() {
           </form>
         </div>
 
-        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'min-h-[600px]'} overflow-y-auto`}>
+        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
           {(step >= 3 || step <= 2) && (
             <FAQSection step={step} />
           )}

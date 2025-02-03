@@ -21,9 +21,11 @@ export function CurrentConditionStep({
       <div className="grid grid-cols-2 gap-4">
         <Button
           type="button"
-          variant={condition === "original" ? "default" : "outline"}
+          variant="outline"
           className={`${
-            condition === "original" ? "bg-[#1A3174] text-white" : "bg-white text-[#0A0B3B]"
+            condition === "original"
+              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+              : "bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
           }`}
           onClick={() => onConditionChange("original")}
         >
@@ -31,9 +33,11 @@ export function CurrentConditionStep({
         </Button>
         <Button
           type="button"
-          variant={condition === "existing" ? "default" : "outline"}
+          variant="outline"
           className={`${
-            condition === "existing" ? "bg-[#1A3174] text-white" : "bg-white text-[#0A0B3B]"
+            condition === "existing"
+              ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+              : "bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
           }`}
           onClick={() => onConditionChange("existing")}
         >

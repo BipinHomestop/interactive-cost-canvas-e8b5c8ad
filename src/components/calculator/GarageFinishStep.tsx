@@ -17,8 +17,8 @@ interface GarageFinishStepProps {
 
 export function GarageFinishStep({ selectedFinish, onFinishChange }: GarageFinishStepProps) {
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-center mb-6">Garage Finish</h2>
+    <div className="space-y-4 pb-20">
+      <h2 className="text-2xl font-bold text-[#0A0B3B] text-center mb-6">Garage Finish</h2>
       <div className="grid grid-cols-2 gap-4">
         {GARAGE_FINISHES.map((finish) => (
           <div
