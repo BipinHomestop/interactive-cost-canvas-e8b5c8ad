@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { MapPin } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LocationStepProps {
   onLocationChange: (value: string) => void;
@@ -31,25 +32,34 @@ declare global {
 export function LocationStep({ onLocationChange }: LocationStepProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [apiKey, setApiKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-      
-      if (!apiKey) {
-        console.error('Google Maps API key is not set');
+    const fetchApiKey = async () => {
+      try {
+        const { data: { GOOGLE_MAPS_API_KEY } } = await supabase.functions.invoke('get-secret', {
+          body: { secretName: 'GOOGLE_MAPS_API_KEY' }
+        });
+        setApiKey(GOOGLE_MAPS_API_KEY);
+      } catch (error) {
+        console.error('Error fetching API key:', error);
         toast({
           variant: "destructive",
-          title: "Configuration Error",
-          description: "Unable to load location services. Please contact support.",
+          title: "Error",
+          description: "Failed to load location services. Please try again later.",
         });
-        return;
       }
+    };
 
-      setIsLoading(true);
+    fetchApiKey();
+  }, [toast]);
 
-      // Remove any existing Google Maps scripts to prevent duplicates
+  useEffect(() => {
+    if (!apiKey) return;
+
+    const loadGoogleMapsScript = () => {
+      // Remove any existing Google Maps scripts
       const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api"]');
       if (existingScript) {
         existingScript.remove();
@@ -59,10 +69,12 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.defer = true;
+      
       script.onload = () => {
         initializeAutocomplete();
         setIsLoading(false);
       };
+      
       script.onerror = () => {
         console.error('Failed to load Google Maps script');
         toast({
@@ -72,6 +84,7 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
         });
         setIsLoading(false);
       };
+      
       document.head.appendChild(script);
     };
 
@@ -108,7 +121,7 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
         script.remove();
       }
     };
-  }, [onLocationChange, toast]);
+  }, [apiKey, onLocationChange, toast]);
 
   return (
     <div className="space-y-6">
