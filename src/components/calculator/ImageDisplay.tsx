@@ -35,50 +35,54 @@ const STEP_IMAGES: StepImages = {
   }
 };
 
-// Create an image cache to store preloaded images
+// Global image cache
 const imageCache = new Map<string, HTMLImageElement>();
 
-const preloadImage = (url: string) => {
-  if (!imageCache.has(url)) {
-    const img = new Image();
-    img.src = url;
-    imageCache.set(url, img);
+// Improved preloadImage function with better error handling
+const preloadImage = (url: string): Promise<HTMLImageElement> => {
+  if (imageCache.has(url)) {
+    return Promise.resolve(imageCache.get(url)!);
   }
-  return imageCache.get(url);
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    
+    img.onload = () => {
+      imageCache.set(url, img);
+      resolve(img);
+    };
+    
+    img.onerror = () => {
+      reject(new Error(`Failed to load image: ${url}`));
+    };
+    
+    img.src = url;
+  });
 };
 
-// Preload images function
-const preloadImages = () => {
-  const allImages = new Set<string>();
+// Collect all image URLs from the STEP_IMAGES object
+const getAllImageUrls = () => {
+  const urls = new Set<string>();
   
-  // Get all image URLs from STEP_IMAGES
-  Object.values(STEP_IMAGES).forEach((value) => {
+  const processValue = (value: any) => {
     if (typeof value === 'string') {
-      allImages.add(value);
-    } else if (typeof value === 'object') {
-      Object.values(value).forEach((nestedValue) => {
-        if (typeof nestedValue === 'string') {
-          allImages.add(nestedValue);
-        } else if (typeof nestedValue === 'object') {
-          Object.values(nestedValue).forEach((deepValue) => {
-            if (typeof deepValue === 'string') {
-              allImages.add(deepValue);
-            }
-          });
-        }
-      });
+      urls.add(value);
+    } else if (typeof value === 'object' && value !== null) {
+      Object.values(value).forEach(processValue);
     }
-  });
+  };
 
-  // Preload each image
-  allImages.forEach(preloadImage);
+  Object.values(STEP_IMAGES).forEach(processValue);
+  return Array.from(urls);
 };
 
 export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDisplayProps) {
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
-  const getImageSource = useMemo(() => {
+  // Memoized image source calculation
+  const currentImageSrc = useMemo(() => {
     if (step <= 3) {
       return STEP_IMAGES[step] as string || imageSrc;
     }
@@ -112,31 +116,44 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     return imageSrc;
   }, [step, options, imageSrc]);
 
-  // Preload all images on component mount
+  // Preload all images on mount
   useEffect(() => {
-    preloadImages();
+    const urls = getAllImageUrls();
+    Promise.all(urls.map(url => preloadImage(url).catch(console.error)));
   }, []);
 
-  // Handle image loading state
+  // Handle image loading state changes
   useEffect(() => {
+    if (!currentImageSrc) return;
+
     setIsLoading(true);
-    const img = preloadImage(getImageSource);
-    if (img?.complete) {
-      setIsLoading(false);
-    } else {
-      img?.addEventListener('load', () => setIsLoading(false));
-    }
-  }, [getImageSource]);
-  
+    setImageError(false);
+
+    preloadImage(currentImageSrc)
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setImageError(true);
+      });
+  }, [currentImageSrc]);
+
   return (
     <div className="relative">
       <img
-        src={getImageSource}
+        src={currentImageSrc}
         alt={`Step ${step} visualization`}
         className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
           isLoading ? 'opacity-50' : 'opacity-100'
         } ${isMobile ? "h-[300px]" : "h-[600px]"}`}
+        onError={() => setImageError(true)}
       />
+      {imageError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+          <p className="text-gray-500">Image failed to load</p>
+        </div>
+      )}
       {step >= 3 && (
         <div className="absolute bottom-0 left-0 right-0 bg-[#0A0B3B] text-white p-4 rounded-b-lg">
           <div className="text-2xl font-bold">
