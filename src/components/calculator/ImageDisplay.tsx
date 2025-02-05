@@ -1,8 +1,8 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ImageDisplayProps } from "./types";
+import { ImageDisplayProps, StepImages } from "./types";
 
-const STEP_IMAGES = {
+const STEP_IMAGES: StepImages = {
   4: {
     snowfall: "/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png",
     granite: "/lovable-uploads/1b676e13-3b36-4585-82b2-96f50b9c10c0.png",
@@ -30,20 +30,26 @@ const STEP_IMAGES = {
 export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDisplayProps) {
   const isMobile = useIsMobile();
 
-  const getImageSource = () => {
+  const getImageSource = (): string => {
     if (step === 4 && options?.garageFinish) {
-      return STEP_IMAGES[4][options.garageFinish];
+      const images = STEP_IMAGES[4] as Record<string, string>;
+      return images[options.garageFinish];
     }
     
     if (step === 5) {
+      const stepImages = STEP_IMAGES[5] as Record<string, string | Record<string, string>>;
       if (options?.needStemWalls === 'yes' && options?.stemWallType) {
-        return STEP_IMAGES[5].yes[options.stemWallType];
+        const yesImages = stepImages.yes as Record<string, string>;
+        return yesImages[options.stemWallType];
       }
-      return STEP_IMAGES[5][options?.needStemWalls || 'no'];
+      if (options?.needStemWalls === 'no') {
+        return stepImages.no as string;
+      }
     }
     
     if (step === 6 && options?.needSteps) {
-      return STEP_IMAGES[6][options.needSteps];
+      const stepImages = STEP_IMAGES[6] as Record<string, string>;
+      return stepImages[options.needSteps];
     }
     
     return imageSrc;
@@ -71,3 +77,4 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     </div>
   );
 }
+

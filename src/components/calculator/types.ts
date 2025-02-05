@@ -16,7 +16,9 @@ export interface CalculatorInputs {
 
 export interface StepImages {
   [key: number]: string | {
-    [key: string]: string;
+    [key: string]: string | {
+      [key: string]: string;
+    };
   };
 }
 
@@ -34,3 +36,4 @@ export interface NavigationProps {
   isLastStep: boolean;
   isNextDisabled?: boolean;
 }
+
