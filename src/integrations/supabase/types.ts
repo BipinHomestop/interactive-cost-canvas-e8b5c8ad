@@ -60,6 +60,42 @@ export type Database = {
         }
         Relationships: []
       }
+      garage_finish_image_collections: {
+        Row: {
+          created_at: string | null
+          finish_type: string
+          garage_finish_image: string
+          id: string
+          stem_wall_large_image: string
+          stem_wall_no_image: string
+          stem_wall_standard_image: string
+          steps_no_image: string
+          steps_yes_image: string
+        }
+        Insert: {
+          created_at?: string | null
+          finish_type: string
+          garage_finish_image: string
+          id?: string
+          stem_wall_large_image: string
+          stem_wall_no_image: string
+          stem_wall_standard_image: string
+          steps_no_image: string
+          steps_yes_image: string
+        }
+        Update: {
+          created_at?: string | null
+          finish_type?: string
+          garage_finish_image?: string
+          id?: string
+          stem_wall_large_image?: string
+          stem_wall_no_image?: string
+          stem_wall_standard_image?: string
+          steps_no_image?: string
+          steps_yes_image?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
