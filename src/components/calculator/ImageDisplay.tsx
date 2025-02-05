@@ -10,17 +10,9 @@ const STEP_IMAGES: StepImages = {
   2: "/lovable-uploads/5b5c0d70-9ee6-4985-b1a1-52cc2ce3c41d.png",
   3: "/lovable-uploads/efd78ab5-d4dc-4b0b-9124-b9047ba316af.png",
   8: {
-    original: "/lovable-uploads/cf6b538a-e34d-4762-9965-adcf1ec139a5.png",
-    existing: "/lovable-uploads/3840b81a-a546-4328-8f6e-5461f8d4a263.png"
+    original: "/lovable-uploads/5179bbf9-8767-4d44-9ef6-13bc390f00f8.png",
+    existing: "/lovable-uploads/8d0fa2af-b4b3-4e18-917f-d6c15dbcf881.png"
   }
-};
-
-// Preload images function
-const preloadImages = (images: string[]) => {
-  images.forEach((url) => {
-    const img = new Image();
-    img.src = url;
-  });
 };
 
 export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDisplayProps) {
@@ -32,6 +24,7 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
 
   useEffect(() => {
     const fetchImages = async () => {
+      setIsLoading(true);
       try {
         const { data, error } = await supabase
           .from('garage_finish_image_collections')
@@ -60,21 +53,41 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
           description: "Failed to load images",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchImages();
   }, [toast]);
 
+  // Preload images function
+  const preloadImages = (images: string[]) => {
+    images.forEach((url) => {
+      if (url) {
+        const img = new Image();
+        img.src = url;
+      }
+    });
+  };
+
   useEffect(() => {
     setIsLoading(true);
     const newImage = getImageSource();
-    const img = new Image();
-    img.src = newImage;
-    img.onload = () => {
-      setCurrentImage(newImage);
+    if (newImage) {
+      const img = new Image();
+      img.onload = () => {
+        setCurrentImage(newImage);
+        setIsLoading(false);
+      };
+      img.onerror = () => {
+        console.error('Failed to load image:', newImage);
+        setIsLoading(false);
+      };
+      img.src = newImage;
+    } else {
       setIsLoading(false);
-    };
+    }
   }, [step, options, finishImages]);
 
   const getImageSource = (): string => {
@@ -116,7 +129,7 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
 
     if (step === 8 && options?.currentCondition) {
       const stepImages = STEP_IMAGES[8] as Record<string, string>;
-      return stepImages[options.currentCondition];
+      return stepImages[options.currentCondition] || imageSrc;
     }
     
     return imageSrc;
@@ -124,13 +137,19 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   
   return (
     <div className="relative">
-      <img
-        src={currentImage}
-        alt={`Step ${step} visualization`}
-        className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
-          isLoading ? 'opacity-50' : 'opacity-100'
-        } ${isMobile ? "h-[300px]" : "h-[600px]"}`}
-      />
+      {isLoading ? (
+        <div className={`w-full rounded-lg bg-gray-200 animate-pulse ${
+          isMobile ? "h-[300px]" : "h-[600px]"
+        }`} />
+      ) : (
+        <img
+          src={currentImage}
+          alt={`Step ${step} visualization`}
+          className={`w-full rounded-lg shadow-lg object-cover ${
+            isMobile ? "h-[300px]" : "h-[600px]"
+          }`}
+        />
+      )}
       {step >= 3 && (
         <div className="absolute bottom-0 left-0 right-0 bg-[#0A0B3B] text-white p-4 rounded-b-lg">
           <div className="text-2xl font-bold">
