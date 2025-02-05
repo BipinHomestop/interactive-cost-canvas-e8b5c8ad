@@ -1,13 +1,58 @@
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps } from "./types";
 
-export function ImageDisplay({ imageSrc, totalCost, step }: ImageDisplayProps) {
+const STEP_IMAGES = {
+  4: {
+    snowfall: "/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png",
+    granite: "/lovable-uploads/1b676e13-3b36-4585-82b2-96f50b9c10c0.png",
+    slate: "/lovable-uploads/ce778aca-463e-48c6-a97c-54df92faef72.png",
+    modern: "/lovable-uploads/7d5dc9e5-0c4f-4b51-aa9a-0ff2b7d29bf9.png",
+    minimal: "/lovable-uploads/8b955fc5-c99f-4bff-87c9-f8a0b2e32bd2.png",
+    glass: "/lovable-uploads/4c24b8ad-5c50-4280-8905-dd9a24dbbcbc.png",
+    classic: "/lovable-uploads/92d12e0d-490e-43c8-955b-c49e5a453d04.png",
+    premium: "/lovable-uploads/c18b700b-4c7b-4cac-83af-1a93338d0af3.png",
+    deluxe: "/lovable-uploads/aae22676-da29-4df0-8e61-9ffe09a999b5.png"
+  },
+  5: {
+    no: "/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png",
+    yes: {
+      standard: "/lovable-uploads/2bb89b6f-c394-4d76-93ee-047d82eb9749.png",
+      large: "/lovable-uploads/227500dc-42d6-4f5f-a573-d2aa8a8b5d11.png"
+    }
+  },
+  6: {
+    no: "/lovable-uploads/72033eb4-1949-420d-b7fe-c85dfeb3655c.png",
+    yes: "/lovable-uploads/df962712-ee4f-4d54-931c-000bf94d6296.png"
+  }
+};
+
+export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDisplayProps) {
   const isMobile = useIsMobile();
+
+  const getImageSource = () => {
+    if (step === 4 && options?.garageFinish) {
+      return STEP_IMAGES[4][options.garageFinish];
+    }
+    
+    if (step === 5) {
+      if (options?.needStemWalls === 'yes' && options?.stemWallType) {
+        return STEP_IMAGES[5].yes[options.stemWallType];
+      }
+      return STEP_IMAGES[5][options?.needStemWalls || 'no'];
+    }
+    
+    if (step === 6 && options?.needSteps) {
+      return STEP_IMAGES[6][options.needSteps];
+    }
+    
+    return imageSrc;
+  };
   
   return (
     <div className="relative">
       <img
-        src={imageSrc}
+        src={getImageSource()}
         alt={`Step ${step} visualization`}
         className={`w-full rounded-lg shadow-lg object-cover ${
           isMobile ? "h-[300px]" : "h-[600px]"

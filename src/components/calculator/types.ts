@@ -1,10 +1,11 @@
+
 export interface CalculatorInputs {
   location: string;
   name: string;
   phone: string;
   email: string;
   garageCapacity: number;
-  garageFinish: "snowfall" | "granite" | "slate";
+  garageFinish: "snowfall" | "granite" | "slate" | "modern" | "minimal" | "glass" | "classic" | "premium" | "deluxe";
   needStemWalls: "yes" | "no";
   stemWallType?: "standard" | "large";
   needSteps: "yes" | "no";
@@ -23,6 +24,7 @@ export interface ImageDisplayProps {
   imageSrc: string;
   totalCost: number;
   step: number;
+  options?: Partial<CalculatorInputs>;
 }
 
 export interface NavigationProps {
