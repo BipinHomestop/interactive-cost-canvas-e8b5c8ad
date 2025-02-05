@@ -3,6 +3,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps, StepImages } from "./types";
 
 const STEP_IMAGES: StepImages = {
+  1: "/lovable-uploads/8c274686-82f4-47a2-a2ef-4c03c1963587.png",
+  2: "/lovable-uploads/5b5c0d70-9ee6-4985-b1a1-52cc2ce3c41d.png",
+  3: "/lovable-uploads/bfe88b5d-f19b-4615-8aee-3dffae515600.png",
   4: {
     snowfall: "/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png",
     granite: "/lovable-uploads/1b676e13-3b36-4585-82b2-96f50b9c10c0.png",
@@ -12,10 +15,10 @@ const STEP_IMAGES: StepImages = {
     glass: "/lovable-uploads/4c24b8ad-5c50-4280-8905-dd9a24dbbcbc.png",
     classic: "/lovable-uploads/92d12e0d-490e-43c8-955b-c49e5a453d04.png",
     premium: "/lovable-uploads/c18b700b-4c7b-4cac-83af-1a93338d0af3.png",
-    deluxe: "/lovable-uploads/aae22676-da29-4df0-8e61-9ffe09a999b5.png"
+    deluxe: "/lovable-uploads/bfe88b5d-f19b-4615-8aee-3dffae515600.png"
   },
   5: {
-    no: "/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png",
+    no: "/lovable-uploads/9dea532c-a9e8-4644-a07d-7b8867b1f17d.png",
     yes: {
       standard: "/lovable-uploads/2bb89b6f-c394-4d76-93ee-047d82eb9749.png",
       large: "/lovable-uploads/227500dc-42d6-4f5f-a573-d2aa8a8b5d11.png"
@@ -23,7 +26,11 @@ const STEP_IMAGES: StepImages = {
   },
   6: {
     no: "/lovable-uploads/72033eb4-1949-420d-b7fe-c85dfeb3655c.png",
-    yes: "/lovable-uploads/df962712-ee4f-4d54-931c-000bf94d6296.png"
+    yes: "/lovable-uploads/6b2f30e0-392c-4f2c-aa64-35b30071a687.png"
+  },
+  8: {
+    original: "/lovable-uploads/cf6b538a-e34d-4762-9965-adcf1ec139a5.png",
+    existing: "/lovable-uploads/3840b81a-a546-4328-8f6e-5461f8d4a263.png"
   }
 };
 
@@ -31,6 +38,10 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   const isMobile = useIsMobile();
 
   const getImageSource = (): string => {
+    if (step <= 3) {
+      return STEP_IMAGES[step] as string || imageSrc;
+    }
+    
     if (step === 4 && options?.garageFinish) {
       const images = STEP_IMAGES[4] as Record<string, string>;
       return images[options.garageFinish];
@@ -50,6 +61,11 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     if (step === 6 && options?.needSteps) {
       const stepImages = STEP_IMAGES[6] as Record<string, string>;
       return stepImages[options.needSteps];
+    }
+
+    if (step === 8 && options?.currentCondition) {
+      const stepImages = STEP_IMAGES[8] as Record<string, string>;
+      return stepImages[options.currentCondition];
     }
     
     return imageSrc;
