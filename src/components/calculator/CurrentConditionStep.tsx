@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 
 interface CurrentConditionStepProps {
@@ -12,7 +13,7 @@ export function CurrentConditionStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-[#0A0B3B] mb-2">Current Condition</h2>
+        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Current Condition</h2>
         <p className="text-gray-600">
           The current condition of your concrete.
         </p>
