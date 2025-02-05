@@ -1,3 +1,4 @@
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps, StepImages } from "./types";
 import { useEffect, useState } from "react";
@@ -25,8 +26,8 @@ const STEP_IMAGES: StepImages = {
     }
   },
   6: {
-    no: "/lovable-uploads/72033eb4-1949-420d-b7fe-c85dfeb3655c.png",
-    yes: "/lovable-uploads/6b2f30e0-392c-4f2c-aa64-35b30071a687.png"
+    no: "/lovable-uploads/e41d431b-f2f4-45b2-8fe8-eda9ec59023f.png",
+    yes: "/lovable-uploads/0555046f-fb66-410d-a93d-397b62a2a7ad.png"
   },
   8: {
     original: "/lovable-uploads/cf6b538a-e34d-4762-9965-adcf1ec139a5.png",
