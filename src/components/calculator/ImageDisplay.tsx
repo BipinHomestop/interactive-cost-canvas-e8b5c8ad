@@ -1,14 +1,34 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ImageDisplayProps, StepImages, GarageFinishImages } from "./types";
+import { ImageDisplayProps, StepImages } from "./types";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
 
 const STEP_IMAGES: StepImages = {
   1: "/lovable-uploads/68de81cd-8ab3-48fb-a096-8672f01e69ae.png",
   2: "/lovable-uploads/5b5c0d70-9ee6-4985-b1a1-52cc2ce3c41d.png",
   3: "/lovable-uploads/efd78ab5-d4dc-4b0b-9124-b9047ba316af.png",
+  4: {
+    snowfall: "/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png",
+    granite: "/lovable-uploads/1b676e13-3b36-4585-82b2-96f50b9c10c0.png",
+    slate: "/lovable-uploads/ce778aca-463e-48c6-a97c-54df92faef72.png",
+    modern: "/lovable-uploads/7d5dc9e5-0c4f-4b51-aa9a-0ff2b7d29bf9.png",
+    minimal: "/lovable-uploads/8b955fc5-c99f-4bff-87c9-f8a0b2e32bd2.png",
+    glass: "/lovable-uploads/4c24b8ad-5c50-4280-8905-dd9a24dbbcbc.png",
+    classic: "/lovable-uploads/92d12e0d-490e-43c8-955b-c49e5a453d04.png",
+    premium: "/lovable-uploads/c18b700b-4c7b-4cac-83af-1a93338d0af3.png",
+    deluxe: "/lovable-uploads/bfe88b5d-f19b-4615-8aee-3dffae515600.png"
+  },
+  5: {
+    no: "/lovable-uploads/2bb89b6f-c394-4d76-93ee-047d82eb9749.png",
+    yes: {
+      standard: "/lovable-uploads/9dea532c-a9e8-4644-a07d-7b8867b1f17d.png",
+      large: "/lovable-uploads/e4f042a9-30ad-46b2-8fdd-0abb1945e9d1.png"
+    }
+  },
+  6: {
+    no: "/lovable-uploads/e41d431b-f2f4-45b2-8fe8-eda9ec59023f.png",
+    yes: "/lovable-uploads/0555046f-fb66-410d-a93d-397b62a2a7ad.png"
+  },
   8: {
     original: "/lovable-uploads/cf6b538a-e34d-4762-9965-adcf1ec139a5.png",
     existing: "/lovable-uploads/3840b81a-a546-4328-8f6e-5461f8d4a263.png"
@@ -16,8 +36,30 @@ const STEP_IMAGES: StepImages = {
 };
 
 // Preload images function
-const preloadImages = (images: string[]) => {
-  images.forEach((url) => {
+const preloadImages = () => {
+  const allImages = new Set<string>();
+  
+  // Get all image URLs from STEP_IMAGES
+  Object.values(STEP_IMAGES).forEach((value) => {
+    if (typeof value === 'string') {
+      allImages.add(value);
+    } else if (typeof value === 'object') {
+      Object.values(value).forEach((nestedValue) => {
+        if (typeof nestedValue === 'string') {
+          allImages.add(nestedValue);
+        } else if (typeof nestedValue === 'object') {
+          Object.values(nestedValue).forEach((deepValue) => {
+            if (typeof deepValue === 'string') {
+              allImages.add(deepValue);
+            }
+          });
+        }
+      });
+    }
+  });
+
+  // Preload each image
+  allImages.forEach((url) => {
     const img = new Image();
     img.src = url;
   });
@@ -27,44 +69,11 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState<string>(imageSrc);
-  const [finishImages, setFinishImages] = useState<GarageFinishImages[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('garage_finish_image_collections')
-          .select('*');
-        
-        if (error) throw error;
-        
-        if (data) {
-          setFinishImages(data);
-          // Preload all images from the collections
-          data.forEach((collection) => {
-            preloadImages([
-              collection.garage_finish_image,
-              collection.stem_wall_standard_image,
-              collection.stem_wall_large_image,
-              collection.stem_wall_no_image,
-              collection.steps_yes_image,
-              collection.steps_no_image,
-            ]);
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching images:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load images",
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchImages();
-  }, [toast]);
+    // Preload all images when component mounts
+    preloadImages();
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -75,7 +84,7 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
       setCurrentImage(newImage);
       setIsLoading(false);
     };
-  }, [step, options, finishImages]);
+  }, [step, options]);
 
   const getImageSource = (): string => {
     if (step <= 3) {
@@ -83,35 +92,24 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     }
     
     if (step === 4 && options?.garageFinish) {
-      const selectedFinishImages = finishImages.find(
-        collection => collection.finish_type === options.garageFinish
-      );
-      return selectedFinishImages?.garage_finish_image || imageSrc;
+      const images = STEP_IMAGES[4] as Record<string, string>;
+      return images[options.garageFinish];
     }
     
     if (step === 5) {
-      const selectedFinishImages = options?.garageFinish ? 
-        finishImages.find(collection => collection.finish_type === options.garageFinish) : 
-        null;
-
+      const stepImages = STEP_IMAGES[5] as Record<string, string | Record<string, string>>;
       if (options?.needStemWalls === 'yes' && options?.stemWallType) {
-        return options.stemWallType === 'standard' 
-          ? selectedFinishImages?.stem_wall_standard_image || imageSrc
-          : selectedFinishImages?.stem_wall_large_image || imageSrc;
+        const yesImages = stepImages.yes as Record<string, string>;
+        return yesImages[options.stemWallType];
       }
       if (options?.needStemWalls === 'no') {
-        return selectedFinishImages?.stem_wall_no_image || imageSrc;
+        return stepImages.no as string;
       }
     }
     
     if (step === 6 && options?.needSteps) {
-      const selectedFinishImages = options?.garageFinish ? 
-        finishImages.find(collection => collection.finish_type === options.garageFinish) : 
-        null;
-
-      return options.needSteps === 'yes'
-        ? selectedFinishImages?.steps_yes_image || imageSrc
-        : selectedFinishImages?.steps_no_image || imageSrc;
+      const stepImages = STEP_IMAGES[6] as Record<string, string>;
+      return stepImages[options.needSteps];
     }
 
     if (step === 8 && options?.currentCondition) {

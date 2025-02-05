@@ -14,16 +14,6 @@ export interface CalculatorInputs {
   currentCondition: "original" | "existing";
 }
 
-export interface GarageFinishImages {
-  finish_type: string;
-  garage_finish_image: string;
-  stem_wall_standard_image: string;
-  stem_wall_large_image: string;
-  stem_wall_no_image: string;
-  steps_yes_image: string;
-  steps_no_image: string;
-}
-
 export interface StepImages {
   [key: number]: string | {
     [key: string]: string | {
@@ -46,3 +36,4 @@ export interface NavigationProps {
   isLastStep: boolean;
   isNextDisabled?: boolean;
 }
+
