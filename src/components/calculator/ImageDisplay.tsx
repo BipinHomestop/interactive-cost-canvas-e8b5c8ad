@@ -31,7 +31,7 @@ const STEP_IMAGES: StepImages = {
   },
   8: {
     original: "/lovable-uploads/6e7d835c-cdef-49a0-919b-f7bb0d06ca03.png",
-    existing: "[UPLOAD IMAGE 2]"
+    existing: "/lovable-uploads/6e7d835c-cdef-49a0-919b-f7bb0d06ca03.png" // Temporarily using the same image until you upload the correct one
   }
 };
 
