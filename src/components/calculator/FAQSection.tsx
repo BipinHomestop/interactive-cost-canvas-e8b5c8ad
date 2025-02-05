@@ -164,6 +164,25 @@ export function FAQSection({ step }: FAQSectionProps) {
             answer: "For best results and longevity, we recommend removing existing coatings before applying new ones."
           }
         ];
+      case 9:
+        return [
+          {
+            question: "What payment methods do you accept?",
+            answer: "We accept all major credit cards and PayPal for secure and convenient payments."
+          },
+          {
+            question: "Is the deposit refundable?",
+            answer: "Yes, the deposit is fully refundable if you cancel within 48 hours of booking."
+          },
+          {
+            question: "How is the final price calculated?",
+            answer: "The final price includes all selected features, materials, and labor costs. Any additional costs are clearly broken down in your quote."
+          },
+          {
+            question: "When will I be charged?",
+            answer: "You'll only be charged the deposit amount today. The remaining balance is due upon completion of the project."
+          }
+        ];
       default:
         return [];
     }

@@ -111,7 +111,7 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-primary mb-2">Where's Your Project Located?</h2>
+        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Where's Your Project Located?</h2>
         <p className="text-gray-600 mb-8">
           Select your location from the DFW area to get started with your garage renovation estimate
         </p>
@@ -121,7 +121,7 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">
           <MapPin size={20} />
         </div>
-        <Select onValueChange={onLocationChange}>
+        <Select onValueChange={onLocationChange} required>
           <SelectTrigger className="w-full pl-10">
             <SelectValue placeholder="Select your location" />
           </SelectTrigger>
@@ -136,7 +136,7 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
       </div>
 
       <p className="text-sm text-gray-500 text-center">
-        Please select your city from the dropdown above
+        Please select your city from the dropdown above <span className="text-red-500">*</span>
       </p>
     </div>
   );

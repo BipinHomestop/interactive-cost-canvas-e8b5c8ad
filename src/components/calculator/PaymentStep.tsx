@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -78,7 +77,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="space-y-8 pb-6">
+    <div className="space-y-8 pb-12">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-semibold mb-4">Price Breakdown</h3>
         <div className="space-y-2">
@@ -102,7 +101,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
             <Button
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal",
+                "w-full justify-start text-left font-normal hover:border-[#1A3174] hover:text-[#1A3174]",
                 !date && "text-muted-foreground"
               )}
             >
@@ -117,6 +116,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
               onSelect={setDate}
               initialFocus
               disabled={(date) => date < new Date()}
+              className="[&_.rdp-day:hover:not([disabled])]:bg-[#1A3174]/90 [&_.rdp-day:hover:not([disabled])]:text-white"
             />
           </PopoverContent>
         </Popover>
