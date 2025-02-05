@@ -1,7 +1,7 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps, StepImages } from "./types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 const STEP_IMAGES: StepImages = {
   1: "/lovable-uploads/68de81cd-8ab3-48fb-a096-8672f01e69ae.png",
@@ -35,6 +35,18 @@ const STEP_IMAGES: StepImages = {
   }
 };
 
+// Create an image cache to store preloaded images
+const imageCache = new Map<string, HTMLImageElement>();
+
+const preloadImage = (url: string) => {
+  if (!imageCache.has(url)) {
+    const img = new Image();
+    img.src = url;
+    imageCache.set(url, img);
+  }
+  return imageCache.get(url);
+};
+
 // Preload images function
 const preloadImages = () => {
   const allImages = new Set<string>();
@@ -59,34 +71,14 @@ const preloadImages = () => {
   });
 
   // Preload each image
-  allImages.forEach((url) => {
-    const img = new Image();
-    img.src = url;
-  });
+  allImages.forEach(preloadImage);
 };
 
 export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDisplayProps) {
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
-  const [currentImage, setCurrentImage] = useState<string>(imageSrc);
 
-  useEffect(() => {
-    // Preload all images when component mounts
-    preloadImages();
-  }, []);
-
-  useEffect(() => {
-    setIsLoading(true);
-    const newImage = getImageSource();
-    const img = new Image();
-    img.src = newImage;
-    img.onload = () => {
-      setCurrentImage(newImage);
-      setIsLoading(false);
-    };
-  }, [step, options]);
-
-  const getImageSource = (): string => {
+  const getImageSource = useMemo(() => {
     if (step <= 3) {
       return STEP_IMAGES[step] as string || imageSrc;
     }
@@ -118,12 +110,28 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     }
     
     return imageSrc;
-  };
+  }, [step, options, imageSrc]);
+
+  // Preload all images on component mount
+  useEffect(() => {
+    preloadImages();
+  }, []);
+
+  // Handle image loading state
+  useEffect(() => {
+    setIsLoading(true);
+    const img = preloadImage(getImageSource);
+    if (img?.complete) {
+      setIsLoading(false);
+    } else {
+      img?.addEventListener('load', () => setIsLoading(false));
+    }
+  }, [getImageSource]);
   
   return (
     <div className="relative">
       <img
-        src={currentImage}
+        src={getImageSource}
         alt={`Step ${step} visualization`}
         className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
           isLoading ? 'opacity-50' : 'opacity-100'
