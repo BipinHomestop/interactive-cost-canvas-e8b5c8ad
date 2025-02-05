@@ -1,4 +1,3 @@
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps, StepImages } from "./types";
 import { useEffect, useState, useMemo } from "react";
@@ -31,7 +30,7 @@ const STEP_IMAGES: StepImages = {
   },
   8: {
     original: "/lovable-uploads/6e7d835c-cdef-49a0-919b-f7bb0d06ca03.png",
-    existing: "/lovable-uploads/6e7d835c-cdef-49a0-919b-f7bb0d06ca03.png" // Temporarily using the same image until you upload the correct one
+    existing: "/lovable-uploads/75969665-c7eb-443e-908d-5d6c1fdc27d8.png"
   }
 };
 
@@ -167,4 +166,3 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     </div>
   );
 }
-
