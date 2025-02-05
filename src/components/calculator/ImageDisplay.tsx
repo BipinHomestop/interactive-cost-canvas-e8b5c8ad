@@ -1,4 +1,3 @@
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps, StepImages } from "./types";
 import { useEffect, useState } from "react";
@@ -6,7 +5,7 @@ import { useEffect, useState } from "react";
 const STEP_IMAGES: StepImages = {
   1: "/lovable-uploads/68de81cd-8ab3-48fb-a096-8672f01e69ae.png",
   2: "/lovable-uploads/5b5c0d70-9ee6-4985-b1a1-52cc2ce3c41d.png",
-  3: "/lovable-uploads/bfe88b5d-f19b-4615-8aee-3dffae515600.png",
+  3: "/lovable-uploads/efd78ab5-d4dc-4b0b-9124-b9047ba316af.png",
   4: {
     snowfall: "/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png",
     granite: "/lovable-uploads/1b676e13-3b36-4585-82b2-96f50b9c10c0.png",
@@ -19,10 +18,10 @@ const STEP_IMAGES: StepImages = {
     deluxe: "/lovable-uploads/bfe88b5d-f19b-4615-8aee-3dffae515600.png"
   },
   5: {
-    no: "/lovable-uploads/9dea532c-a9e8-4644-a07d-7b8867b1f17d.png",
+    no: "/lovable-uploads/2bb89b6f-c394-4d76-93ee-047d82eb9749.png",
     yes: {
-      standard: "/lovable-uploads/2bb89b6f-c394-4d76-93ee-047d82eb9749.png",
-      large: "/lovable-uploads/227500dc-42d6-4f5f-a573-d2aa8a8b5d11.png"
+      standard: "/lovable-uploads/9dea532c-a9e8-4644-a07d-7b8867b1f17d.png",
+      large: "/lovable-uploads/e4f042a9-30ad-46b2-8fdd-0abb1945e9d1.png"
     }
   },
   6: {
@@ -142,4 +141,3 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     </div>
   );
 }
-
