@@ -1,9 +1,10 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps, StepImages } from "./types";
+import { useEffect, useState } from "react";
 
 const STEP_IMAGES: StepImages = {
-  1: "/lovable-uploads/8c274686-82f4-47a2-a2ef-4c03c1963587.png",
+  1: "/lovable-uploads/68de81cd-8ab3-48fb-a096-8672f01e69ae.png",
   2: "/lovable-uploads/5b5c0d70-9ee6-4985-b1a1-52cc2ce3c41d.png",
   3: "/lovable-uploads/bfe88b5d-f19b-4615-8aee-3dffae515600.png",
   4: {
@@ -34,8 +35,56 @@ const STEP_IMAGES: StepImages = {
   }
 };
 
+// Preload images function
+const preloadImages = () => {
+  const allImages = new Set<string>();
+  
+  // Get all image URLs from STEP_IMAGES
+  Object.values(STEP_IMAGES).forEach((value) => {
+    if (typeof value === 'string') {
+      allImages.add(value);
+    } else if (typeof value === 'object') {
+      Object.values(value).forEach((nestedValue) => {
+        if (typeof nestedValue === 'string') {
+          allImages.add(nestedValue);
+        } else if (typeof nestedValue === 'object') {
+          Object.values(nestedValue).forEach((deepValue) => {
+            if (typeof deepValue === 'string') {
+              allImages.add(deepValue);
+            }
+          });
+        }
+      });
+    }
+  });
+
+  // Preload each image
+  allImages.forEach((url) => {
+    const img = new Image();
+    img.src = url;
+  });
+};
+
 export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDisplayProps) {
   const isMobile = useIsMobile();
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentImage, setCurrentImage] = useState<string>(imageSrc);
+
+  useEffect(() => {
+    // Preload all images when component mounts
+    preloadImages();
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const newImage = getImageSource();
+    const img = new Image();
+    img.src = newImage;
+    img.onload = () => {
+      setCurrentImage(newImage);
+      setIsLoading(false);
+    };
+  }, [step, options]);
 
   const getImageSource = (): string => {
     if (step <= 3) {
@@ -74,11 +123,11 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   return (
     <div className="relative">
       <img
-        src={getImageSource()}
+        src={currentImage}
         alt={`Step ${step} visualization`}
-        className={`w-full rounded-lg shadow-lg object-cover ${
-          isMobile ? "h-[300px]" : "h-[600px]"
-        }`}
+        className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
+          isLoading ? 'opacity-50' : 'opacity-100'
+        } ${isMobile ? "h-[300px]" : "h-[600px]"}`}
       />
       {step >= 3 && (
         <div className="absolute bottom-0 left-0 right-0 bg-[#0A0B3B] text-white p-4 rounded-b-lg">
