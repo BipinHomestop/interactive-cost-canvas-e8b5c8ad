@@ -30,8 +30,8 @@ const STEP_IMAGES: StepImages = {
     yes: "/lovable-uploads/0555046f-fb66-410d-a93d-397b62a2a7ad.png"
   },
   8: {
-    original: "/lovable-uploads/cf6b538a-e34d-4762-9965-adcf1ec139a5.png",
-    existing: "/lovable-uploads/3840b81a-a546-4328-8f6e-5461f8d4a263.png"
+    original: "/lovable-uploads/e17af16a-6954-4640-866c-956648305454.png",
+    existing: "/lovable-uploads/0f29553d-8103-43d0-a2b7-50630320aaea.png"
   }
 };
 
