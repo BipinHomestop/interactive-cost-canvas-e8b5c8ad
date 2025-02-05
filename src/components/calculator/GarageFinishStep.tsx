@@ -1,3 +1,4 @@
+
 const GARAGE_FINISHES = [
   { value: "snowfall", label: "Snowfall (Most Popular)", image: "/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png" },
   { value: "granite", label: "Granite", image: "/lovable-uploads/1b676e13-3b36-4585-82b2-96f50b9c10c0.png" },
@@ -17,8 +18,8 @@ interface GarageFinishStepProps {
 
 export function GarageFinishStep({ selectedFinish, onFinishChange }: GarageFinishStepProps) {
   return (
-    <div className="space-y-4 pb-20">
-      <h2 className="text-2xl font-bold text-[#0A0B3B] text-center mb-6">Garage Finish</h2>
+    <div className="space-y-4 overflow-y-auto max-h-[400px] pb-20">
+      <h2 className="text-2xl font-bold text-[#1A3174] text-center mb-6">Garage Finish</h2>
       <div className="grid grid-cols-2 gap-4">
         {GARAGE_FINISHES.map((finish) => (
           <div
@@ -32,7 +33,7 @@ export function GarageFinishStep({ selectedFinish, onFinishChange }: GarageFinis
           >
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full overflow-hidden">
-                <img src={finish.image} alt={finish.label} className="w-full h-full object-cover" />
+                <img src={finish.image} alt={finish.label} className="w-full h-full object-cover" loading="eager" />
               </div>
               <div>
                 <p className="font-medium">{finish.label}</p>

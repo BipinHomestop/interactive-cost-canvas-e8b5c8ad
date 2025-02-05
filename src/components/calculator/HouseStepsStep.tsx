@@ -13,7 +13,7 @@ export function HouseStepsStep({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-[#0A0B3B] mb-2">House Steps</h2>
+        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">House Steps</h2>
         <p className="text-gray-600">
           Do you need steps from your house to the garage?
         </p>

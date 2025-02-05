@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -77,7 +78,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-6">
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="font-semibold mb-4">Price Breakdown</h3>
         <div className="space-y-2">
@@ -162,7 +163,11 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button variant="outline" onClick={onBack}>
+        <Button 
+          variant="outline" 
+          onClick={onBack}
+          className="border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10"
+        >
           Back
         </Button>
         <Button className="bg-[#1A3174] hover:bg-[#1A3174]/90">
