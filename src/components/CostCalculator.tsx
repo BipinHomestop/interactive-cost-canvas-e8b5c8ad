@@ -172,7 +172,7 @@ export function CostCalculator() {
   return (
     <div className="w-full px-4 lg:px-8">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-3`}>
-        <div className={`${isMobile ? 'w-full mb-6' : 'w-[30%]'}`}>
+        <div className={`${isMobile ? 'w-full mb-6' : 'w-[40%]'}`}>
           <ImageDisplay
             imageSrc={getStepImage()}
             totalCost={totalCost}
@@ -199,7 +199,7 @@ export function CostCalculator() {
           </form>
         </div>
 
-        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
+        <div className={`${isMobile ? 'w-full mt-6' : 'w-[20%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
           {(step >= 3 || step <= 2) && (
             <FAQSection step={step} />
           )}
