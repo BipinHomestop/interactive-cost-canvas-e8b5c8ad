@@ -98,24 +98,25 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
     loadImage();
   }, [step, options]);
 
+  const containerHeight = isMobile ? "h-[300px]" : "h-[600px]";
+
   return (
-    <div className="relative">
-      {currentImageSrc && !imageError && (
+    <div className={`relative ${containerHeight}`}>
+      {currentImageSrc && !imageError ? (
         <img
           src={currentImageSrc}
           alt={`Step ${step} visualization`}
           className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
             isLoading ? 'opacity-50' : 'opacity-100'
-          } ${isMobile ? "h-[300px]" : "h-[600px]"}`}
+          } ${containerHeight}`}
           onError={() => {
             console.error('Image failed to load:', currentImageSrc);
             setImageError(true);
           }}
         />
-      )}
-      {imageError && (
+      ) : (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
-          <p className="text-gray-500">Image failed to load</p>
+          <p className="text-gray-500">Image not available</p>
         </div>
       )}
       {step >= 3 && (
