@@ -16,50 +16,76 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
       setImageError(false);
       
       try {
-        let imageType = 'default';
+        let imageData;
         
-        if (step === 4 && options?.garageFinish) {
-          imageType = `finish_${options.garageFinish}`;
-        } else if (step === 5 && options?.needStemWalls) {
-          if (options.needStemWalls === 'no') {
-            imageType = 'stemwalls_no';
-          } else if (options.stemWallType && typeof options.stemWallType === 'string') {
-            imageType = `stemwalls_${options.stemWallType}`;
+        // For steps 5 and 6, fetch from garage_finish_image_collections
+        if ((step === 5 || step === 6) && options?.garageFinish) {
+          const { data: finishCollection, error: finishError } = await supabase
+            .from('garage_finish_image_collections')
+            .select('*')
+            .eq('finish_type', options.garageFinish)
+            .maybeSingle();
+
+          if (finishError) throw finishError;
+
+          if (finishCollection) {
+            if (step === 5) {
+              // Handle stem walls images
+              if (options.needStemWalls === 'no') {
+                imageData = { image_path: finishCollection.stem_wall_no_image };
+              } else if (options.stemWallType === 'standard') {
+                imageData = { image_path: finishCollection.stem_wall_standard_image };
+              } else if (options.stemWallType === 'large') {
+                imageData = { image_path: finishCollection.stem_wall_large_image };
+              }
+            } else if (step === 6) {
+              // Handle steps images
+              imageData = {
+                image_path: options.needSteps === 'yes' 
+                  ? finishCollection.steps_yes_image 
+                  : finishCollection.steps_no_image
+              };
+            }
           }
-        } else if (step === 6 && options?.needSteps) {
-          imageType = `steps_${options.needSteps}`;
-        }
-
-        console.log('Loading image with options:', { step, options });
-
-        const { data: imageData, error } = await supabase
-          .from('calculator_step_images')
-          .select('image_path')
-          .eq('step_number', step)
-          .eq('image_type', imageType)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching image:', error);
-          throw error;
-        }
-
-        if (imageData) {
-          console.log('Found image data:', imageData);
-          setCurrentImageSrc(imageData.image_path);
         } else {
-          console.log('No image data found, falling back to default');
-          // Fallback to default image for the step
-          const { data: defaultImage } = await supabase
+          // For other steps, fetch from calculator_step_images
+          let imageType = 'default';
+          
+          if (step === 4 && options?.garageFinish) {
+            imageType = `finish_${options.garageFinish}`;
+          } else if (step === 8 && options?.currentCondition) {
+            imageType = options.currentCondition;
+          }
+
+          const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
             .eq('step_number', step)
-            .eq('image_type', 'default')
+            .eq('image_type', imageType)
             .maybeSingle();
-            
-          if (defaultImage) {
-            setCurrentImageSrc(defaultImage.image_path);
+
+          if (stepError) throw stepError;
+          imageData = stepImage;
+
+          if (!stepImage) {
+            // Fallback to default image
+            const { data: defaultImage } = await supabase
+              .from('calculator_step_images')
+              .select('image_path')
+              .eq('step_number', step)
+              .eq('image_type', 'default')
+              .maybeSingle();
+              
+            imageData = defaultImage;
           }
+        }
+
+        if (imageData) {
+          console.log('Setting image:', imageData.image_path);
+          setCurrentImageSrc(imageData.image_path);
+        } else {
+          console.log('No image found for:', { step, options });
+          setImageError(true);
         }
       } catch (error) {
         console.error('Error in loadImage:', error);
