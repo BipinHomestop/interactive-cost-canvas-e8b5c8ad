@@ -13,7 +13,7 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
   useEffect(() => {
     const loadImage = async () => {
       setIsLoading(true);
-      console.log('Loading image with options:', { step, options });
+      setImageError(false);
       
       try {
         let imageType = 'default';
@@ -23,19 +23,21 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
         } else if (step === 5 && options?.needStemWalls) {
           if (options.needStemWalls === 'no') {
             imageType = 'stemwalls_no';
-          } else if (options.stemWallType) {
+          } else if (options.stemWallType && typeof options.stemWallType === 'string') {
             imageType = `stemwalls_${options.stemWallType}`;
           }
         } else if (step === 6 && options?.needSteps) {
           imageType = `steps_${options.needSteps}`;
         }
 
+        console.log('Loading image with options:', { step, options });
+
         const { data: imageData, error } = await supabase
           .from('calculator_step_images')
           .select('image_path')
           .eq('step_number', step)
           .eq('image_type', imageType)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error('Error fetching image:', error);
@@ -46,14 +48,14 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           console.log('Found image data:', imageData);
           setCurrentImageSrc(imageData.image_path);
         } else {
-          console.log('No image data found');
+          console.log('No image data found, falling back to default');
           // Fallback to default image for the step
           const { data: defaultImage } = await supabase
             .from('calculator_step_images')
             .select('image_path')
             .eq('step_number', step)
             .eq('image_type', 'default')
-            .single();
+            .maybeSingle();
             
           if (defaultImage) {
             setCurrentImageSrc(defaultImage.image_path);
@@ -72,14 +74,14 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
   return (
     <div className="relative">
-      {currentImageSrc && (
+      {currentImageSrc && !imageError && (
         <img
           src={currentImageSrc}
           alt={`Step ${step} visualization`}
           className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
             isLoading ? 'opacity-50' : 'opacity-100'
           } ${isMobile ? "h-[300px]" : "h-[600px]"}`}
-          onError={(e) => {
+          onError={() => {
             console.error('Image failed to load:', currentImageSrc);
             setImageError(true);
           }}
