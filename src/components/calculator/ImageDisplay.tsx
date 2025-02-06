@@ -12,24 +12,40 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
 
   useEffect(() => {
     const loadImage = async () => {
+      console.log('Loading image with options:', { step, options });
+      
       if (step === 4 && options?.garageFinish) {
-        const { data: imageData } = await supabase
+        console.log('Fetching garage finish image for:', options.garageFinish);
+        const { data: imageData, error } = await supabase
           .from('garage_finish_image_collections')
           .select('garage_finish_image')
           .eq('finish_type', options.garageFinish)
           .single();
         
+        if (error) {
+          console.error('Error fetching image:', error);
+        }
+        
         if (imageData) {
+          console.log('Found image data:', imageData);
           setCurrentImageSrc(imageData.garage_finish_image);
+        } else {
+          console.log('No image data found');
         }
       } else if (step === 5 && options?.needStemWalls) {
-        const { data: imageData } = await supabase
+        console.log('Fetching stem wall image for:', { finish: options.garageFinish, stemWalls: options.needStemWalls });
+        const { data: imageData, error } = await supabase
           .from('garage_finish_image_collections')
           .select('stem_wall_standard_image, stem_wall_large_image, stem_wall_no_image')
           .eq('finish_type', options?.garageFinish || 'snowfall')
           .single();
         
+        if (error) {
+          console.error('Error fetching stem wall image:', error);
+        }
+        
         if (imageData) {
+          console.log('Found stem wall image data:', imageData);
           if (options.needStemWalls === 'no') {
             setCurrentImageSrc(imageData.stem_wall_no_image);
           } else if (options.stemWallType === 'standard') {
@@ -39,16 +55,23 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
           }
         }
       } else if (step === 6 && options?.needSteps) {
-        const { data: imageData } = await supabase
+        console.log('Fetching steps image for:', { finish: options.garageFinish, steps: options.needSteps });
+        const { data: imageData, error } = await supabase
           .from('garage_finish_image_collections')
           .select('steps_yes_image, steps_no_image')
           .eq('finish_type', options?.garageFinish || 'snowfall')
           .single();
         
+        if (error) {
+          console.error('Error fetching steps image:', error);
+        }
+        
         if (imageData) {
+          console.log('Found steps image data:', imageData);
           setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
         }
       } else {
+        console.log('Using default image:', imageSrc);
         setCurrentImageSrc(imageSrc);
       }
     };
@@ -67,7 +90,10 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
         className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
           isLoading ? 'opacity-50' : 'opacity-100'
         } ${isMobile ? "h-[300px]" : "h-[600px]"}`}
-        onError={() => setImageError(true)}
+        onError={(e) => {
+          console.error('Image failed to load:', currentImageSrc);
+          setImageError(true);
+        }}
       />
       {imageError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
