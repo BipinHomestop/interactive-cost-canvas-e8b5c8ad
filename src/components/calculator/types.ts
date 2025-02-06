@@ -23,7 +23,6 @@ export interface StepImages {
 }
 
 export interface ImageDisplayProps {
-  imageSrc: string;
   totalCost: number;
   step: number;
   options?: Partial<CalculatorInputs>;

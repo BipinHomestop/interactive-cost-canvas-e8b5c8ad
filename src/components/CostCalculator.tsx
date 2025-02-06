@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -13,7 +14,6 @@ import { FormNavigation } from "./calculator/FormNavigation";
 import { FAQSection } from "./calculator/FAQSection";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { StepImages } from "./calculator/types";
 
 export function CostCalculator() {
   const isMobile = useIsMobile();
@@ -33,16 +33,6 @@ export function CostCalculator() {
     handleNextStep,
     handlePrevStep,
   } = useCalculator();
-
-  const getStepImage = () => {
-    if (step <= 3) return `/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png`;
-    if (step === 4) return `/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png`;
-    if (step === 5) return `/lovable-uploads/2bb89b6f-c394-4d76-93ee-047d82eb9749.png`;
-    if (step === 6) return `/lovable-uploads/72033eb4-1949-420d-b7fe-c85dfeb3655c.png`;
-    if (step === 7) return `/lovable-uploads/df962712-ee4f-4d54-931c-000bf94d6296.png`;
-    if (step === 8) return `/lovable-uploads/9fcb107b-3e3b-4008-a68c-5da69b27da6e.png`;
-    return `/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png`;
-  };
 
   const isNextDisabled = () => {
     switch (step) {
@@ -135,7 +125,6 @@ export function CostCalculator() {
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-3`}>
         <div className={`${isMobile ? 'w-full mb-6' : 'w-[35%]'}`}>
           <ImageDisplay
-            imageSrc={getStepImage()}
             totalCost={totalCost}
             step={step}
             options={{
