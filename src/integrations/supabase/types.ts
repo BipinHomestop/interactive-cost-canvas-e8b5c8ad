@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      calculator_step_images: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_path: string
+          image_type: string
+          step_number: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_path: string
+          image_type: string
+          step_number: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_path?: string
+          image_type?: string
+          step_number?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cost_calculator_submissions: {
         Row: {
           created_at: string
