@@ -13,23 +13,24 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   useEffect(() => {
     const loadImage = async () => {
       if (step === 4 && options?.garageFinish) {
-        const { data: imageData } = await supabase
+        const { data: imageDataArray } = await supabase
           .from('garage_finish_image_collections')
           .select('garage_finish_image')
           .eq('finish_type', options.garageFinish)
-          .single();
+          .limit(1);
         
-        if (imageData) {
-          setCurrentImageSrc(imageData.garage_finish_image);
+        if (imageDataArray && imageDataArray.length > 0) {
+          setCurrentImageSrc(imageDataArray[0].garage_finish_image);
         }
       } else if (step === 5 && options?.needStemWalls) {
-        const { data: imageData } = await supabase
+        const { data: imageDataArray } = await supabase
           .from('garage_finish_image_collections')
           .select('stem_wall_standard_image, stem_wall_large_image, stem_wall_no_image')
           .eq('finish_type', options?.garageFinish || 'snowfall')
-          .single();
+          .limit(1);
         
-        if (imageData) {
+        if (imageDataArray && imageDataArray.length > 0) {
+          const imageData = imageDataArray[0];
           if (options.needStemWalls === 'no') {
             setCurrentImageSrc(imageData.stem_wall_no_image);
           } else if (options.stemWallType === 'standard') {
@@ -39,13 +40,14 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
           }
         }
       } else if (step === 6 && options?.needSteps) {
-        const { data: imageData } = await supabase
+        const { data: imageDataArray } = await supabase
           .from('garage_finish_image_collections')
           .select('steps_yes_image, steps_no_image')
           .eq('finish_type', options?.garageFinish || 'snowfall')
-          .single();
+          .limit(1);
         
-        if (imageData) {
+        if (imageDataArray && imageDataArray.length > 0) {
+          const imageData = imageDataArray[0];
           setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
         }
       } else {
