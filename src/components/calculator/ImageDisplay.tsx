@@ -12,53 +12,63 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
 
   useEffect(() => {
     const loadImage = async () => {
-      if (step === 4 && options?.garageFinish) {
-        const { data: imageDataArray } = await supabase
-          .from('garage_finish_image_collections')
-          .select('garage_finish_image')
-          .eq('finish_type', options.garageFinish)
-          .limit(1);
-        
-        if (imageDataArray && imageDataArray.length > 0) {
-          setCurrentImageSrc(imageDataArray[0].garage_finish_image);
-        }
-      } else if (step === 5 && options?.needStemWalls) {
-        const { data: imageDataArray } = await supabase
-          .from('garage_finish_image_collections')
-          .select('stem_wall_standard_image, stem_wall_large_image, stem_wall_no_image')
-          .eq('finish_type', options?.garageFinish || 'snowfall')
-          .limit(1);
-        
-        if (imageDataArray && imageDataArray.length > 0) {
-          const imageData = imageDataArray[0];
-          if (options.needStemWalls === 'no') {
-            setCurrentImageSrc(imageData.stem_wall_no_image);
-          } else if (options.stemWallType === 'standard') {
-            setCurrentImageSrc(imageData.stem_wall_standard_image);
-          } else if (options.stemWallType === 'large') {
-            setCurrentImageSrc(imageData.stem_wall_large_image);
+      try {
+        if (step === 4 && options?.garageFinish) {
+          const { data: imageDataArray, error } = await supabase
+            .from('garage_finish_image_collections')
+            .select('garage_finish_image')
+            .eq('finish_type', options.garageFinish)
+            .limit(1);
+          
+          if (error) throw error;
+          
+          if (imageDataArray && imageDataArray.length > 0) {
+            setCurrentImageSrc(imageDataArray[0].garage_finish_image);
           }
+        } else if (step === 5 && options?.needStemWalls) {
+          const { data: imageDataArray, error } = await supabase
+            .from('garage_finish_image_collections')
+            .select('stem_wall_standard_image, stem_wall_large_image, stem_wall_no_image')
+            .eq('finish_type', options?.garageFinish || 'snowfall')
+            .limit(1);
+          
+          if (error) throw error;
+          
+          if (imageDataArray && imageDataArray.length > 0) {
+            const imageData = imageDataArray[0];
+            if (options.needStemWalls === 'no') {
+              setCurrentImageSrc(imageData.stem_wall_no_image);
+            } else if (options.stemWallType === 'standard') {
+              setCurrentImageSrc(imageData.stem_wall_standard_image);
+            } else if (options.stemWallType === 'large') {
+              setCurrentImageSrc(imageData.stem_wall_large_image);
+            }
+          }
+        } else if (step === 6 && options?.needSteps) {
+          const { data: imageDataArray, error } = await supabase
+            .from('garage_finish_image_collections')
+            .select('steps_yes_image, steps_no_image')
+            .eq('finish_type', options?.garageFinish || 'snowfall')
+            .limit(1);
+          
+          if (error) throw error;
+          
+          if (imageDataArray && imageDataArray.length > 0) {
+            const imageData = imageDataArray[0];
+            setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
+          }
+        } else {
+          setCurrentImageSrc(imageSrc);
         }
-      } else if (step === 6 && options?.needSteps) {
-        const { data: imageDataArray } = await supabase
-          .from('garage_finish_image_collections')
-          .select('steps_yes_image, steps_no_image')
-          .eq('finish_type', options?.garageFinish || 'snowfall')
-          .limit(1);
-        
-        if (imageDataArray && imageDataArray.length > 0) {
-          const imageData = imageDataArray[0];
-          setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
-        }
-      } else {
-        setCurrentImageSrc(imageSrc);
+      } catch (error) {
+        console.error('Error loading image:', error);
+        setImageError(true);
       }
     };
 
     setIsLoading(true);
-    loadImage()
-      .catch(console.error)
-      .finally(() => setIsLoading(false));
+    setImageError(false);
+    loadImage().finally(() => setIsLoading(false));
   }, [step, options, imageSrc]);
 
   return (
