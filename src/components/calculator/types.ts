@@ -37,3 +37,13 @@ export interface NavigationProps {
   isNextDisabled?: boolean;
 }
 
+export interface ImageCollection {
+  id: string;
+  finish_type: string;
+  garage_finish_image: string;
+  stem_wall_standard_image: string;
+  stem_wall_large_image: string;
+  stem_wall_no_image: string;
+  steps_yes_image: string;
+  steps_no_image: string;
+}
