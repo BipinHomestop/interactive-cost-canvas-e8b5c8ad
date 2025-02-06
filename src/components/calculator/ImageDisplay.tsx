@@ -51,17 +51,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           // For other steps, fetch from calculator_step_images
           let imageType = 'default';
           
-          if (step === 4) {
-            // Use the last selected stem wall type for the finish preview
-            if (options?.needStemWalls === 'no') {
-              imageType = 'finish_no_stem_wall';
-            } else if (options?.stemWallType === 'standard') {
-              imageType = 'finish_standard_stem_wall';
-            } else if (options?.stemWallType === 'large') {
-              imageType = 'finish_large_stem_wall';
-            } else {
-              imageType = `finish_${options?.garageFinish}`;
-            }
+          if (step === 4 && options?.garageFinish) {
+            imageType = `finish_${options.garageFinish}`;
           } else if (step === 7) {
             // Handle extra footage images
             if (options?.needExtraFootage === 'no') {

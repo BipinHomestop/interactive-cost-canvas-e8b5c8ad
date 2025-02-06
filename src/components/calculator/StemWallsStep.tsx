@@ -1,6 +1,5 @@
 
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 
 interface StemWallsStepProps {
   needStemWalls: string;
@@ -15,13 +14,6 @@ export function StemWallsStep({
   onStemWallsChange,
   onStemWallTypeChange,
 }: StemWallsStepProps) {
-  // Set standard as default when yes is selected
-  useEffect(() => {
-    if (needStemWalls === "yes" && !stemWallType) {
-      onStemWallTypeChange("standard");
-    }
-  }, [needStemWalls, stemWallType, onStemWallTypeChange]);
-
   return (
     <div className="space-y-6">
       <div>
