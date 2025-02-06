@@ -53,6 +53,13 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           
           if (step === 4 && options?.garageFinish) {
             imageType = `finish_${options.garageFinish}`;
+          } else if (step === 7) {
+            // Handle extra footage images
+            if (options?.needExtraFootage === 'no') {
+              imageType = 'no-extra-footage';
+            } else if (options?.extraFootage) {
+              imageType = options.extraFootage;
+            }
           } else if (step === 8 && options?.currentCondition) {
             imageType = options.currentCondition;
           }
