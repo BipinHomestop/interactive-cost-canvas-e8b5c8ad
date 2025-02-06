@@ -13,22 +13,11 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   useEffect(() => {
     const loadImage = async () => {
       try {
-        if (step === 4 && options?.garageFinish) {
+        // Only fetch from database for steps 4-6, otherwise use provided imageSrc
+        if (step >= 4 && step <= 6) {
           const { data: imageDataArray, error } = await supabase
             .from('garage_finish_image_collections')
-            .select('garage_finish_image')
-            .eq('finish_type', options.garageFinish)
-            .limit(1);
-          
-          if (error) throw error;
-          
-          if (imageDataArray && imageDataArray.length > 0) {
-            setCurrentImageSrc(imageDataArray[0].garage_finish_image);
-          }
-        } else if (step === 5 && options?.needStemWalls) {
-          const { data: imageDataArray, error } = await supabase
-            .from('garage_finish_image_collections')
-            .select('stem_wall_standard_image, stem_wall_large_image, stem_wall_no_image')
+            .select('garage_finish_image, stem_wall_standard_image, stem_wall_large_image, stem_wall_no_image, steps_yes_image, steps_no_image')
             .eq('finish_type', options?.garageFinish || 'snowfall')
             .limit(1);
           
@@ -36,26 +25,20 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
           
           if (imageDataArray && imageDataArray.length > 0) {
             const imageData = imageDataArray[0];
-            if (options.needStemWalls === 'no') {
-              setCurrentImageSrc(imageData.stem_wall_no_image);
-            } else if (options.stemWallType === 'standard') {
-              setCurrentImageSrc(imageData.stem_wall_standard_image);
-            } else if (options.stemWallType === 'large') {
-              setCurrentImageSrc(imageData.stem_wall_large_image);
+            
+            if (step === 4) {
+              setCurrentImageSrc(imageData.garage_finish_image);
+            } else if (step === 5 && options?.needStemWalls) {
+              if (options.needStemWalls === 'no') {
+                setCurrentImageSrc(imageData.stem_wall_no_image);
+              } else if (options.stemWallType === 'standard') {
+                setCurrentImageSrc(imageData.stem_wall_standard_image);
+              } else if (options.stemWallType === 'large') {
+                setCurrentImageSrc(imageData.stem_wall_large_image);
+              }
+            } else if (step === 6 && options?.needSteps) {
+              setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
             }
-          }
-        } else if (step === 6 && options?.needSteps) {
-          const { data: imageDataArray, error } = await supabase
-            .from('garage_finish_image_collections')
-            .select('steps_yes_image, steps_no_image')
-            .eq('finish_type', options?.garageFinish || 'snowfall')
-            .limit(1);
-          
-          if (error) throw error;
-          
-          if (imageDataArray && imageDataArray.length > 0) {
-            const imageData = imageDataArray[0];
-            setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
           }
         } else {
           setCurrentImageSrc(imageSrc);
