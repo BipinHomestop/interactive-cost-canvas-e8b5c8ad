@@ -9,43 +9,69 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   const [imageError, setImageError] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState<string>(imageSrc);
 
+  // Fallback image that we know exists
+  const fallbackImage = 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=800&q=80';
+
   useEffect(() => {
     const loadImage = async () => {
       try {
         setIsLoading(true);
         setImageError(false);
         
+        // First try to load the provided image
         const img = new Image();
         img.src = imageSrc;
-        await img.decode();
-        setCurrentImageSrc(imageSrc);
         
-        console.log('Step:', step);
-        console.log('Loading image:', imageSrc);
+        // Add a timeout to avoid hanging
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Image load timeout')), 5000);
+        });
+
+        // Race between image loading and timeout
+        await Promise.race([
+          img.decode(),
+          timeoutPromise
+        ]);
+
+        setCurrentImageSrc(imageSrc);
+        console.log('Successfully loaded image:', imageSrc);
 
       } catch (error) {
-        console.error('Error loading image:', error);
-        setImageError(true);
-        setCurrentImageSrc('/lovable-uploads/093c6d4b-f6c3-44e7-ab98-c4ce9efbf48d.png'); // Default fallback
+        console.error('Error loading primary image:', error);
+        
+        try {
+          // Try to load fallback image
+          const fallbackImg = new Image();
+          fallbackImg.src = fallbackImage;
+          await fallbackImg.decode();
+          setCurrentImageSrc(fallbackImage);
+          console.log('Using fallback image');
+        } catch (fallbackError) {
+          console.error('Even fallback image failed:', fallbackError);
+          setImageError(true);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     loadImage();
-  }, [step, options, imageSrc]);
+  }, [imageSrc, step]);
 
   const handleImageError = () => {
     console.error('Image failed to load:', currentImageSrc);
     setImageError(true);
-    setCurrentImageSrc('/lovable-uploads/093c6d4b-f6c3-44e7-ab98-c4ce9efbf48d.png'); // Default fallback
+    setCurrentImageSrc(fallbackImage);
   };
 
   return (
     <div className="relative">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
-          <p className="text-gray-500">Loading image...</p>
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <p className="text-gray-500 mt-2">Loading image...</p>
+          </div>
         </div>
       )}
       <img
@@ -58,7 +84,10 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
       />
       {imageError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
-          <p className="text-gray-500">Image failed to load. Please try again.</p>
+          <div className="text-center p-4">
+            <p className="text-gray-500 mb-2">Image failed to load.</p>
+            <p className="text-sm text-gray-400">Using fallback image</p>
+          </div>
         </div>
       )}
       {step >= 3 && (
