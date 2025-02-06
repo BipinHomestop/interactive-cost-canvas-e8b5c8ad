@@ -13,9 +13,15 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   useEffect(() => {
     const loadImage = async () => {
       try {
-        // For steps 1-3, use default image
-        if (step <= 3) {
-          setCurrentImageSrc('/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png');
+        // For steps 1-3, use new default images
+        if (step === 1) {
+          setCurrentImageSrc('/lovable-uploads/9cc794a8-66b7-4080-8cb0-29903773fff7.png');
+          return;
+        } else if (step === 2) {
+          setCurrentImageSrc('/lovable-uploads/a6b75b78-2636-4a60-90d9-322a63baecea.png');
+          return;
+        } else if (step === 3) {
+          setCurrentImageSrc('/lovable-uploads/a5cfff15-4903-4fef-936f-5c60a0b82bcc.png');
           return;
         }
 
@@ -32,12 +38,9 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
           if (imageDataArray && imageDataArray.length > 0) {
             const imageData = imageDataArray[0];
 
-            // Step 4: Garage Finish
             if (step === 4) {
               setCurrentImageSrc(imageData.garage_finish_image);
-            }
-            // Step 5: Stem Walls
-            else if (step === 5) {
+            } else if (step === 5) {
               if (options.needStemWalls === 'no') {
                 setCurrentImageSrc(imageData.stem_wall_no_image);
               } else if (options.stemWallType === 'standard') {
@@ -45,19 +48,25 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
               } else if (options.stemWallType === 'large') {
                 setCurrentImageSrc(imageData.stem_wall_large_image);
               }
-            }
-            // Step 6: Steps
-            else if (step === 6) {
+            } else if (step === 6) {
               setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
             }
           }
         }
-        // For steps 7-9, use specific images
+        // For step 7
         else if (step === 7) {
           setCurrentImageSrc('/lovable-uploads/df962712-ee4f-4d54-931c-000bf94d6296.png');
-        } else if (step === 8) {
-          setCurrentImageSrc('/lovable-uploads/9fcb107b-3e3b-4008-a68c-5da69b27da6e.png');
-        } else {
+        }
+        // For step 8, show different images based on current condition
+        else if (step === 8) {
+          if (options?.currentCondition === 'original') {
+            setCurrentImageSrc('/lovable-uploads/27bef253-bd78-4bf1-ae5f-5e580e60c21a.png');
+          } else {
+            setCurrentImageSrc('/lovable-uploads/40e4b96a-7407-4e11-a29c-ae777c505c2a.png');
+          }
+        }
+        // Default image for other steps
+        else {
           setCurrentImageSrc('/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png');
         }
       } catch (error) {
