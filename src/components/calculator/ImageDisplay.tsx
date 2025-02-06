@@ -13,22 +13,31 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
   useEffect(() => {
     const loadImage = async () => {
       try {
-        // Only fetch from database for steps 4-6, otherwise use provided imageSrc
-        if (step >= 4 && step <= 6) {
+        // For steps 1-3, use default image
+        if (step <= 3) {
+          setCurrentImageSrc('/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png');
+          return;
+        }
+
+        // For steps 4-6, fetch from database
+        if (step >= 4 && step <= 6 && options?.garageFinish) {
           const { data: imageDataArray, error } = await supabase
             .from('garage_finish_image_collections')
             .select('garage_finish_image, stem_wall_standard_image, stem_wall_large_image, stem_wall_no_image, steps_yes_image, steps_no_image')
-            .eq('finish_type', options?.garageFinish || 'snowfall')
+            .eq('finish_type', options.garageFinish)
             .limit(1);
-          
+
           if (error) throw error;
-          
+
           if (imageDataArray && imageDataArray.length > 0) {
             const imageData = imageDataArray[0];
-            
+
+            // Step 4: Garage Finish
             if (step === 4) {
               setCurrentImageSrc(imageData.garage_finish_image);
-            } else if (step === 5 && options?.needStemWalls) {
+            }
+            // Step 5: Stem Walls
+            else if (step === 5) {
               if (options.needStemWalls === 'no') {
                 setCurrentImageSrc(imageData.stem_wall_no_image);
               } else if (options.stemWallType === 'standard') {
@@ -36,12 +45,20 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
               } else if (options.stemWallType === 'large') {
                 setCurrentImageSrc(imageData.stem_wall_large_image);
               }
-            } else if (step === 6 && options?.needSteps) {
+            }
+            // Step 6: Steps
+            else if (step === 6) {
               setCurrentImageSrc(options.needSteps === 'yes' ? imageData.steps_yes_image : imageData.steps_no_image);
             }
           }
+        }
+        // For steps 7-9, use specific images
+        else if (step === 7) {
+          setCurrentImageSrc('/lovable-uploads/df962712-ee4f-4d54-931c-000bf94d6296.png');
+        } else if (step === 8) {
+          setCurrentImageSrc('/lovable-uploads/9fcb107b-3e3b-4008-a68c-5da69b27da6e.png');
         } else {
-          setCurrentImageSrc(imageSrc);
+          setCurrentImageSrc('/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png');
         }
       } catch (error) {
         console.error('Error loading image:', error);
@@ -53,6 +70,12 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     setImageError(false);
     loadImage().finally(() => setIsLoading(false));
   }, [step, options, imageSrc]);
+
+  useEffect(() => {
+    console.log('Current Image:', currentImageSrc);
+    console.log('Step:', step);
+    console.log('Options:', options);
+  }, [currentImageSrc, step, options]);
 
   return (
     <div className="relative">
