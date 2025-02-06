@@ -35,13 +35,15 @@ export function CostCalculator() {
   } = useCalculator();
 
   const getStepImage = () => {
-    if (step <= 3) return `/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png`;
-    if (step === 4) return `/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png`;
-    if (step === 5) return `/lovable-uploads/2bb89b6f-c394-4d76-93ee-047d82eb9749.png`;
-    if (step === 6) return `/lovable-uploads/72033eb4-1949-420d-b7fe-c85dfeb3655c.png`;
-    if (step === 7) return `/lovable-uploads/df962712-ee4f-4d54-931c-000bf94d6296.png`;
-    if (step === 8) return `/lovable-uploads/9fcb107b-3e3b-4008-a68c-5da69b27da6e.png`;
-    return `/lovable-uploads/4f83d853-09d7-4c01-a413-8afc3510d7aa.png`;
+    if (step === 1) return '/lovable-uploads/62e2af60-d299-4d29-8ca5-c9c80043fb8a.png';
+    if (step === 2) return '/lovable-uploads/9705bd48-08d2-400c-b01d-5740be6ec27c.png';
+    if (step === 3) return '/lovable-uploads/093c6d4b-f6c3-44e7-ab98-c4ce9efbf48d.png';
+    if (step === 8) {
+      return formValues.currentCondition === 'original' 
+        ? '/lovable-uploads/43dc3634-2c4b-4290-b0db-7f703160ab5c.png'
+        : '/lovable-uploads/7bd831b9-3219-44b8-8aac-aaa4681fa3f3.png';
+    }
+    return '/lovable-uploads/093c6d4b-f6c3-44e7-ab98-c4ce9efbf48d.png'; // Default image for other steps
   };
 
   const isNextDisabled = () => {

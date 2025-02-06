@@ -2,7 +2,6 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps } from "./types";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDisplayProps) {
   const isMobile = useIsMobile();
@@ -16,24 +15,18 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
         setIsLoading(true);
         setImageError(false);
         
-        // Default fallback image from Unsplash
-        const defaultImage = 'https://images.unsplash.com/photo-1501854140801-50d01698950b';
-
-        // Use the default image for all steps
         const img = new Image();
-        img.src = defaultImage;
+        img.src = imageSrc;
         await img.decode();
-        setCurrentImageSrc(defaultImage);
+        setCurrentImageSrc(imageSrc);
         
-        // Log for debugging
         console.log('Step:', step);
-        console.log('Loading default image:', defaultImage);
+        console.log('Loading image:', imageSrc);
 
       } catch (error) {
         console.error('Error loading image:', error);
         setImageError(true);
-        // Set default image on error
-        setCurrentImageSrc('https://images.unsplash.com/photo-1501854140801-50d01698950b');
+        setCurrentImageSrc('/lovable-uploads/093c6d4b-f6c3-44e7-ab98-c4ce9efbf48d.png'); // Default fallback
       } finally {
         setIsLoading(false);
       }
@@ -42,17 +35,10 @@ export function ImageDisplay({ imageSrc, totalCost, step, options }: ImageDispla
     loadImage();
   }, [step, options, imageSrc]);
 
-  useEffect(() => {
-    console.log('Current Image:', currentImageSrc);
-    console.log('Step:', step);
-    console.log('Options:', options);
-  }, [currentImageSrc, step, options]);
-
   const handleImageError = () => {
     console.error('Image failed to load:', currentImageSrc);
     setImageError(true);
-    // Set default image on error
-    setCurrentImageSrc('https://images.unsplash.com/photo-1501854140801-50d01698950b');
+    setCurrentImageSrc('/lovable-uploads/093c6d4b-f6c3-44e7-ab98-c4ce9efbf48d.png'); // Default fallback
   };
 
   return (
