@@ -47,13 +47,24 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
               };
             }
           }
+        } else if (step === 4 && options?.garageFinish) {
+          // For step 4, fetch from garage_finish_image_collections
+          const { data: finishCollection, error: finishError } = await supabase
+            .from('garage_finish_image_collections')
+            .select('garage_finish_image')
+            .eq('finish_type', options.garageFinish)
+            .maybeSingle();
+
+          if (finishError) throw finishError;
+          
+          if (finishCollection) {
+            imageData = { image_path: finishCollection.garage_finish_image };
+          }
         } else {
           // For other steps, fetch from calculator_step_images
           let imageType = 'default';
           
-          if (step === 4 && options?.garageFinish) {
-            imageType = `finish_${options.garageFinish}`;
-          } else if (step === 7) {
+          if (step === 7) {
             // Handle extra footage images
             if (options?.needExtraFootage === 'no') {
               imageType = 'no-extra-footage';
@@ -75,40 +86,15 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           imageData = stepImage;
 
           if (!stepImage) {
-            console.log('No image found for:', { step, options, imageType });
-            // Try to fetch the image without finish_ prefix for step 4
-            if (step === 4 && options?.garageFinish) {
-              const { data: altImage } = await supabase
-                .from('calculator_step_images')
-                .select('image_path')
-                .eq('step_number', step)
-                .eq('image_type', options.garageFinish)
-                .maybeSingle();
-                
-              if (altImage) {
-                imageData = altImage;
-              } else {
-                // Fallback to default image
-                const { data: defaultImage } = await supabase
-                  .from('calculator_step_images')
-                  .select('image_path')
-                  .eq('step_number', step)
-                  .eq('image_type', 'default')
-                  .maybeSingle();
-                  
-                imageData = defaultImage;
-              }
-            } else {
-              // Fallback to default image for other steps
-              const { data: defaultImage } = await supabase
-                .from('calculator_step_images')
-                .select('image_path')
-                .eq('step_number', step)
-                .eq('image_type', 'default')
-                .maybeSingle();
-                
-              imageData = defaultImage;
-            }
+            // Fallback to default image
+            const { data: defaultImage } = await supabase
+              .from('calculator_step_images')
+              .select('image_path')
+              .eq('step_number', step)
+              .eq('image_type', 'default')
+              .maybeSingle();
+              
+            imageData = defaultImage;
           }
         }
 
