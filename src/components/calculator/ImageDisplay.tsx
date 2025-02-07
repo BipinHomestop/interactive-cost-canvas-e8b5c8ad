@@ -60,18 +60,49 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           if (finishCollection) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
+        } else if (step === 7) {
+          // Handle extra footage images
+          let imageType = 'default';
+
+          if (options?.needExtraFootage === 'no') {
+            imageType = 'no-extra-footage';
+          } else if (options?.needExtraFootage === 'yes') {
+            if (!options.extraFootage) {
+              imageType = 'default';
+            } else {
+              imageType = options.extraFootage;
+            }
+          }
+
+          console.log('Fetching image for step 7 with type:', imageType);
+          
+          const { data: stepImage, error: stepError } = await supabase
+            .from('calculator_step_images')
+            .select('image_path')
+            .eq('step_number', step)
+            .eq('image_type', imageType)
+            .maybeSingle();
+
+          if (stepError) throw stepError;
+          
+          if (stepImage) {
+            imageData = stepImage;
+          } else {
+            // Fallback to default image
+            const { data: defaultImage } = await supabase
+              .from('calculator_step_images')
+              .select('image_path')
+              .eq('step_number', step)
+              .eq('image_type', 'default')
+              .maybeSingle();
+              
+            imageData = defaultImage;
+          }
         } else {
           // For other steps, fetch from calculator_step_images
           let imageType = 'default';
           
-          if (step === 7) {
-            // Handle extra footage images
-            if (options?.needExtraFootage === 'no') {
-              imageType = 'no-extra-footage';
-            } else if (options?.extraFootage) {
-              imageType = options.extraFootage;
-            }
-          } else if (step === 8 && options?.currentCondition) {
+          if (step === 8 && options?.currentCondition) {
             imageType = options.currentCondition;
           }
 
