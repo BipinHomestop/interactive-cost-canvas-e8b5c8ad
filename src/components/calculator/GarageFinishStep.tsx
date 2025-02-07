@@ -1,14 +1,17 @@
 
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
 const GARAGE_FINISHES = [
-  { value: "snowfall", label: "Snowfall (Most Popular)", image: "/lovable-uploads/8c5fc18c-04f5-4038-8b7c-26b5ab584d2f.png" },
-  { value: "granite", label: "Granite", image: "/lovable-uploads/1b676e13-3b36-4585-82b2-96f50b9c10c0.png" },
-  { value: "slate", label: "Slate", image: "/lovable-uploads/ce778aca-463e-48c6-a97c-54df92faef72.png" },
-  { value: "modern", label: "Modern", image: "/lovable-uploads/7d5dc9e5-0c4f-4b51-aa9a-0ff2b7d29bf9.png" },
-  { value: "minimal", label: "Minimal", image: "/lovable-uploads/8b955fc5-c99f-4bff-87c9-f8a0b2e32bd2.png" },
-  { value: "glass", label: "Glass", image: "/lovable-uploads/4c24b8ad-5c50-4280-8905-dd9a24dbbcbc.png" },
-  { value: "classic", label: "Classic", image: "/lovable-uploads/92d12e0d-490e-43c8-955b-c49e5a453d04.png" },
-  { value: "premium", label: "Premium", image: "/lovable-uploads/c18b700b-4c7b-4cac-83af-1a93338d0af3.png" },
-  { value: "deluxe", label: "Deluxe", image: "/lovable-uploads/aae22676-da29-4df0-8e61-9ffe09a999b5.png" },
+  { value: "snowfall", label: "Snowfall (Most Popular)" },
+  { value: "granite", label: "Granite" },
+  { value: "slate", label: "Slate" },
+  { value: "modern", label: "Modern" },
+  { value: "minimal", label: "Minimal" },
+  { value: "glass", label: "Glass" },
+  { value: "classic", label: "Classic" },
+  { value: "premium", label: "Premium" },
+  { value: "deluxe", label: "Deluxe" },
 ];
 
 interface GarageFinishStepProps {
@@ -17,6 +20,35 @@ interface GarageFinishStepProps {
 }
 
 export function GarageFinishStep({ selectedFinish, onFinishChange }: GarageFinishStepProps) {
+  const [finishImages, setFinishImages] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const loadOptionImages = async () => {
+      try {
+        const { data: images, error } = await supabase
+          .from('calculator_step_images')
+          .select('image_type, image_path')
+          .eq('step_number', 4)
+          .like('image_type', 'option-%');
+
+        if (error) throw error;
+
+        const imageMap = images.reduce((acc: Record<string, string>, img) => {
+          // Remove 'option-' prefix to match with finish values
+          const finishType = img.image_type.replace('option-', '');
+          acc[finishType] = img.image_path;
+          return acc;
+        }, {});
+
+        setFinishImages(imageMap);
+      } catch (error) {
+        console.error('Error loading finish images:', error);
+      }
+    };
+
+    loadOptionImages();
+  }, []);
+
   return (
     <div className="h-[500px] flex flex-col">
       <h2 className="text-2xl font-bold text-[#1A3174] text-center mb-6">Garage Finish</h2>
@@ -34,7 +66,12 @@ export function GarageFinishStep({ selectedFinish, onFinishChange }: GarageFinis
             >
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full overflow-hidden">
-                  <img src={finish.image} alt={finish.label} className="w-full h-full object-cover" loading="eager" />
+                  <img 
+                    src={finishImages[finish.value] || '/placeholder.svg'} 
+                    alt={finish.label} 
+                    className="w-full h-full object-cover" 
+                    loading="eager" 
+                  />
                 </div>
                 <div>
                   <p className="font-medium">{finish.label}</p>

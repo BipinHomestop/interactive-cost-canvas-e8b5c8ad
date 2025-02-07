@@ -75,15 +75,40 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           imageData = stepImage;
 
           if (!stepImage) {
-            // Fallback to default image
-            const { data: defaultImage } = await supabase
-              .from('calculator_step_images')
-              .select('image_path')
-              .eq('step_number', step)
-              .eq('image_type', 'default')
-              .maybeSingle();
-              
-            imageData = defaultImage;
+            console.log('No image found for:', { step, options, imageType });
+            // Try to fetch the image without finish_ prefix for step 4
+            if (step === 4 && options?.garageFinish) {
+              const { data: altImage } = await supabase
+                .from('calculator_step_images')
+                .select('image_path')
+                .eq('step_number', step)
+                .eq('image_type', options.garageFinish)
+                .maybeSingle();
+                
+              if (altImage) {
+                imageData = altImage;
+              } else {
+                // Fallback to default image
+                const { data: defaultImage } = await supabase
+                  .from('calculator_step_images')
+                  .select('image_path')
+                  .eq('step_number', step)
+                  .eq('image_type', 'default')
+                  .maybeSingle();
+                  
+                imageData = defaultImage;
+              }
+            } else {
+              // Fallback to default image for other steps
+              const { data: defaultImage } = await supabase
+                .from('calculator_step_images')
+                .select('image_path')
+                .eq('step_number', step)
+                .eq('image_type', 'default')
+                .maybeSingle();
+                
+              imageData = defaultImage;
+            }
           }
         }
 
