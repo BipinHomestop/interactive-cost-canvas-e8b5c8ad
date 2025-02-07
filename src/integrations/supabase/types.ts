@@ -96,6 +96,7 @@ export type Database = {
           stem_wall_large_image: string
           stem_wall_no_image: string
           stem_wall_standard_image: string
+          stemwall_yes_image: string
           steps_no_image: string
           steps_yes_image: string
         }
@@ -107,6 +108,7 @@ export type Database = {
           stem_wall_large_image: string
           stem_wall_no_image: string
           stem_wall_standard_image: string
+          stemwall_yes_image?: string
           steps_no_image: string
           steps_yes_image: string
         }
@@ -118,6 +120,7 @@ export type Database = {
           stem_wall_large_image?: string
           stem_wall_no_image?: string
           stem_wall_standard_image?: string
+          stemwall_yes_image?: string
           steps_no_image?: string
           steps_yes_image?: string
         }
