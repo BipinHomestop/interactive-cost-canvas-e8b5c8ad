@@ -64,15 +64,10 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           }
         } else if (step === 7) {
           // Handle extra footage images
-          let imageType: string;
+          let imageType = 'no-extra-footage';
           
-          if (options?.needExtraFootage === 'no') {
-            imageType = 'no-extra-footage';
-          } else if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
+          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
             imageType = options.extraFootage;
-          } else {
-            // Default case when no selection has been made yet
-            imageType = 'no-extra-footage';
           }
 
           console.log('Fetching image for step 7 with type:', imageType);
@@ -86,6 +81,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
           if (stepError) throw stepError;
           imageData = stepImage;
+          
+          console.log('Step 7 image data:', imageData);
         } else if (step === 8 && options?.currentCondition) {
           // Handle current condition images
           const { data: stepImage, error: stepError } = await supabase
