@@ -62,12 +62,21 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           if (finishCollection) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
-        } else if (step === 7 && options?.needExtraFootage) {
-          // Handle extra footage images based on selection
-          let imageType = options.needExtraFootage === 'no' 
-            ? 'no-extra-footage' 
-            : options.extraFootage || 'up-to-50'; // Default to 'up-to-50' if extraFootage not selected yet
+        } else if (step === 7) {
+          // Handle extra footage images
+          let imageType: string;
+          
+          if (options?.needExtraFootage === 'no') {
+            imageType = 'no-extra-footage';
+          } else if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
+            imageType = options.extraFootage;
+          } else {
+            // Default case when no selection has been made yet
+            imageType = 'no-extra-footage';
+          }
 
+          console.log('Fetching image for step 7 with type:', imageType);
+          
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
