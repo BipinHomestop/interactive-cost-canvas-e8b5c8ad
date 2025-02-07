@@ -62,28 +62,19 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           }
         } else if (step === 7) {
           // Handle extra footage images based on selection
-          let imageType = 'default';
+          let imageType = options?.needExtraFootage === 'no' 
+            ? 'no-extra-footage' 
+            : options?.extraFootage || '';
 
-          if (options?.needExtraFootage === 'no') {
-            imageType = 'no-extra-footage';
-          } else if (options?.needExtraFootage === 'yes') {
-            if (options.extraFootage) {
-              imageType = options.extraFootage;
-            }
-          }
+          if (imageType) {
+            const { data: stepImage, error: stepError } = await supabase
+              .from('calculator_step_images')
+              .select('image_path')
+              .eq('step_number', step)
+              .eq('image_type', imageType)
+              .maybeSingle();
 
-          console.log('Fetching image for step 7 with type:', imageType);
-          
-          const { data: stepImage, error: stepError } = await supabase
-            .from('calculator_step_images')
-            .select('image_path')
-            .eq('step_number', step)
-            .eq('image_type', imageType)
-            .maybeSingle();
-
-          if (stepError) throw stepError;
-          
-          if (stepImage) {
+            if (stepError) throw stepError;
             imageData = stepImage;
           }
         } else {
@@ -103,18 +94,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
           if (stepError) throw stepError;
           imageData = stepImage;
-
-          if (!stepImage) {
-            // Fallback to default image
-            const { data: defaultImage } = await supabase
-              .from('calculator_step_images')
-              .select('image_path')
-              .eq('step_number', step)
-              .eq('image_type', 'default')
-              .maybeSingle();
-              
-            imageData = defaultImage;
-          }
         }
 
         if (imageData) {
