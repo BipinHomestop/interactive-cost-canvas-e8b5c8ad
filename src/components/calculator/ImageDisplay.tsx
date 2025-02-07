@@ -33,6 +33,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
               // Handle stem walls images
               if (options.needStemWalls === 'no') {
                 imageData = { image_path: finishCollection.stem_wall_no_image };
+              } else if (options.needStemWalls === 'yes' && !options.stemWallType) {
+                imageData = { image_path: finishCollection.stemwall_yes_image };
               } else if (options.stemWallType === 'standard') {
                 imageData = { image_path: finishCollection.stem_wall_standard_image };
               } else if (options.stemWallType === 'large') {
@@ -60,30 +62,11 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           if (finishCollection) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
-        } else if (step === 7) {
+        } else if (step === 7 && options?.needExtraFootage) {
           // Handle extra footage images based on selection
-          let imageType = options?.needExtraFootage === 'no' 
+          let imageType = options.needExtraFootage === 'no' 
             ? 'no-extra-footage' 
-            : options?.extraFootage || '';
-
-          if (imageType) {
-            const { data: stepImage, error: stepError } = await supabase
-              .from('calculator_step_images')
-              .select('image_path')
-              .eq('step_number', step)
-              .eq('image_type', imageType)
-              .maybeSingle();
-
-            if (stepError) throw stepError;
-            imageData = stepImage;
-          }
-        } else {
-          // For other steps, fetch from calculator_step_images
-          let imageType = 'default';
-          
-          if (step === 8 && options?.currentCondition) {
-            imageType = options.currentCondition;
-          }
+            : options.extraFootage || 'up-to-50'; // Default to 'up-to-50' if extraFootage not selected yet
 
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
@@ -94,9 +77,31 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
           if (stepError) throw stepError;
           imageData = stepImage;
+        } else if (step === 8 && options?.currentCondition) {
+          // Handle current condition images
+          const { data: stepImage, error: stepError } = await supabase
+            .from('calculator_step_images')
+            .select('image_path')
+            .eq('step_number', step)
+            .eq('image_type', options.currentCondition)
+            .maybeSingle();
+
+          if (stepError) throw stepError;
+          imageData = stepImage;
+        } else {
+          // For other steps, fetch default images from calculator_step_images
+          const { data: stepImage, error: stepError } = await supabase
+            .from('calculator_step_images')
+            .select('image_path')
+            .eq('step_number', step)
+            .eq('image_type', 'default')
+            .maybeSingle();
+
+          if (stepError) throw stepError;
+          imageData = stepImage;
         }
 
-        if (imageData) {
+        if (imageData?.image_path) {
           console.log('Setting image:', imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
