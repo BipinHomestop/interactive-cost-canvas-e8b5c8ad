@@ -67,14 +67,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           let imageType = 'no-extra-footage';
           
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            // Map the extraFootage values to match database image_type values
-            const imageTypeMap: { [key: string]: string } = {
-              'up-to-50': 'up-to-50',
-              '51-100': '51-100',
-              '101-150': '101-150',
-              '151-200': '151-200'
-            };
-            imageType = imageTypeMap[options.extraFootage] || 'no-extra-footage';
+            // Direct mapping since database values match the options
+            imageType = options.extraFootage;
           }
           
           console.log('Fetching image for step 7 with image_type:', imageType);
@@ -87,6 +81,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
           if (stepError) throw stepError;
           imageData = stepImage;
+          
+          console.log('Step 7 image data:', imageData);
         } else if (step === 8 && options?.currentCondition) {
           // Handle current condition images
           const { data: stepImage, error: stepError } = await supabase
@@ -128,7 +124,9 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
     };
 
     loadImage();
-  }, [step, options]);
+  }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
+      options?.needSteps, options?.needExtraFootage, options?.extraFootage, 
+      options?.currentCondition]);
 
   const containerHeight = isMobile ? "h-[300px]" : "h-[600px]";
 
