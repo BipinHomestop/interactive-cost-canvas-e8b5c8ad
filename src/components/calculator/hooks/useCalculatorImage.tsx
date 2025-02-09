@@ -39,11 +39,34 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
                 imageData = { image_path: finishCollection.stem_wall_large_image };
               }
             } else if (step === 6) {
-              imageData = {
-                image_path: options.needSteps === 'yes' 
-                  ? finishCollection.steps_yes_image 
-                  : finishCollection.steps_no_image
-              };
+              const imagePath = options.needSteps === 'yes' 
+                ? finishCollection.steps_yes_image 
+                : finishCollection.steps_no_image;
+
+              imageData = { image_path: imagePath };
+
+              // Update the last selected image for step 6
+              const { error: updateError } = await supabase
+                .from('calculator_step_images')
+                .update({ is_last_selected: false })
+                .eq('step_number', 6);
+
+              if (updateError) throw updateError;
+
+              const { error: insertError } = await supabase
+                .from('calculator_step_images')
+                .insert({
+                  step_number: 6,
+                  image_type: options.needSteps === 'yes' ? 'steps-yes' : 'steps-no',
+                  image_path: imagePath,
+                  is_last_selected: true
+                })
+                .select()
+                .single();
+
+              if (insertError && !insertError.message.includes('duplicate key')) {
+                throw insertError;
+              }
             }
           }
         } else if (step === 4 && options?.garageFinish) {
@@ -58,6 +81,17 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           if (finishCollection) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
+        } else if (step === 9) {
+          // For the finish step, get the last selected image from step 6
+          const { data: lastSelectedImage, error: lastSelectedError } = await supabase
+            .from('calculator_step_images')
+            .select('image_path')
+            .eq('step_number', 6)
+            .eq('is_last_selected', true)
+            .maybeSingle();
+
+          if (lastSelectedError) throw lastSelectedError;
+          imageData = lastSelectedImage;
         } else if (step === 7) {
           let imageType = 'no-extra-footage';
 
