@@ -67,8 +67,10 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
         } else if (step === 7) {
           let imageType = 'no-extra-footage';
           
-          if (options?.needExtraFootage === 'yes') {
-            imageType = options.extraFootage || 'yes-extra-footage';
+          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
+            imageType = options.extraFootage;
+          } else if (options?.needExtraFootage === 'yes') {
+            imageType = 'yes-extra-footage';
           }
 
           console.log('Step 7: Fetching image for type:', imageType);
