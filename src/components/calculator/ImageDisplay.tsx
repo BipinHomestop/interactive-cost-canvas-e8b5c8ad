@@ -1,4 +1,3 @@
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps } from "./types";
 import { useEffect, useState } from "react";
@@ -63,12 +62,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          console.log('Step 7: Loading image with options:', {
-            needExtraFootage: options?.needExtraFootage,
-            extraFootage: options?.extraFootage
-          });
-
           let imageType;
+          
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
             imageType = options.extraFootage;
             console.log('Step 7: Fetching extra footage image for type:', imageType);
@@ -89,9 +84,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             throw stepError;
           }
 
-          console.log('Step 7 query result:', stepImage);
+          console.log('Step 7: Database query result:', stepImage);
           imageData = stepImage;
-
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           console.log('Step 8: Fetching image for condition type:', imageType);
@@ -130,7 +124,7 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           console.error(`No image found for step ${step} with options:`, {
             step,
             options,
-            imageType: options?.extraFootage || options?.currentCondition,
+            imageType: options?.extraFootage || 'no-extra-footage',
             imageData
           });
           setImageError(true);
