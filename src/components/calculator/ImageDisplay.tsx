@@ -1,4 +1,3 @@
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps } from "./types";
 import { useEffect, useState } from "react";
@@ -63,32 +62,27 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          // For step 7, directly use hardcoded URLs based on selection
-          let image_path = '';
+          console.log('Step 7: Loading image for option:', options?.needExtraFootage, options?.extraFootage);
+          
+          let imageType = 'no-extra-footage';
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            switch (options.extraFootage) {
-              case 'up-to-50':
-                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/up-to-50.jpg';
-                break;
-              case '51-100':
-                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/51-100.jpg';
-                break;
-              case '101-150':
-                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/101-150.jpg';
-                break;
-              case '151-200':
-                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/151-200.jpg';
-                break;
-            }
-          } else {
-            // Default image for 'no' option
-            image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/no-extra-footage.jpg';
+            imageType = options.extraFootage;
           }
-          imageData = { image_path };
-          if (image_path) {
-            console.log('Step 7: Selected option:', options?.extraFootage || 'no extra footage');
-            console.log('Setting image for step 7:', image_path);
+
+          const { data: stepImage, error: stepError } = await supabase
+            .from('calculator_step_images')
+            .select('image_path')
+            .eq('step_number', 7)
+            .eq('image_type', imageType)
+            .maybeSingle();
+
+          if (stepError) {
+            console.error('Error fetching step 7 image:', stepError);
+            throw stepError;
           }
+
+          console.log('Step 7: Found image data:', stepImage);
+          imageData = stepImage;
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           console.log('Step 8: Fetching image for condition type:', imageType);
@@ -121,6 +115,7 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
         }
 
         if (imageData?.image_path) {
+          console.log(`Setting image for step ${step}:`, imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
           console.error(`No image found for step ${step} with options:`, {
