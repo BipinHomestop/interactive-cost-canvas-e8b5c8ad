@@ -62,19 +62,10 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          // Handle all extra footage scenarios
           let imageType = 'no-extra-footage';
 
           if (options?.needExtraFootage === 'yes') {
-            if (options?.extraFootage) {
-              // Use specific footage range image
-              imageType = options.extraFootage;
-              console.log('Step 7: Using specific footage range:', imageType);
-            } else {
-              // Default "yes" image before selecting footage range
-              imageType = 'yes-extra-footage';
-              console.log('Step 7: Using default yes image');
-            }
+            imageType = options?.extraFootage || 'yes-extra-footage';
           }
 
           console.log('Step 7: Fetching image for type:', imageType);
@@ -86,16 +77,13 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             .eq('image_type', imageType)
             .maybeSingle();
 
-          if (stepError) {
-            console.error('Error fetching step 7 image:', stepError);
-            throw stepError;
-          }
-
+          if (stepError) throw stepError;
           imageData = stepImage;
+          
           console.log('Step 7: Found image:', imageData);
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
-          console.log('Step 8: Fetching image for condition:', imageType);
+          console.log('Step 8: Fetching image for type:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
@@ -104,12 +92,9 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             .eq('image_type', imageType)
             .maybeSingle();
 
-          if (stepError) {
-            console.error('Error fetching step 8 image:', stepError);
-            throw stepError;
-          }
-          
+          if (stepError) throw stepError;
           imageData = stepImage;
+          
           console.log('Step 8: Found image:', imageData);
         } else {
           // For steps 1,2,3, fetch default images
