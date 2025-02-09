@@ -68,15 +68,15 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
             imageType = options.extraFootage;
-            console.log('Step 7: Using image type for extra footage:', imageType);
           } else {
             imageType = 'no-extra-footage';
-            console.log('Step 7: Using default no-extra-footage image type');
           }
+          
+          console.log('Step 7: Fetching image for type:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
-            .select('image_path')
+            .select('*')  // Select all columns to debug
             .eq('step_number', 7)
             .eq('image_type', imageType)
             .maybeSingle();
@@ -90,12 +90,12 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           imageData = stepImage;
         } else if (step === 8) {
           // Handle current condition images
-          let imageType = options?.currentCondition || 'original';
-          console.log('Step 8: Using image type:', imageType);
+          const imageType = options?.currentCondition || 'original';
+          console.log('Step 8: Fetching image for type:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
-            .select('image_path')
+            .select('*')  // Select all columns to debug
             .eq('step_number', 8)
             .eq('image_type', imageType)
             .maybeSingle();
@@ -124,7 +124,11 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           console.log(`Setting image for step ${step}:`, imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
-          console.error(`No image found for step ${step} with options:`, options);
+          console.error(`No image found for step ${step} with options:`, {
+            step,
+            options,
+            imageData
+          });
           setImageError(true);
         }
       } catch (error) {
@@ -136,9 +140,16 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
     };
 
     loadImage();
-  }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
-      options?.needSteps, options?.needExtraFootage, options?.extraFootage, 
-      options?.currentCondition]);
+  }, [
+    step,
+    options?.garageFinish,
+    options?.needStemWalls,
+    options?.stemWallType,
+    options?.needSteps,
+    options?.needExtraFootage,
+    options?.extraFootage,
+    options?.currentCondition
+  ]);
 
   const containerHeight = isMobile ? "h-[300px]" : "h-[600px]";
 
