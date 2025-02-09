@@ -17,6 +17,7 @@ export function AdditionalFootageStep({
   const handleNeedExtraFootageChange = (value: string) => {
     console.log('Changing needExtraFootage to:', value);
     onNeedExtraFootageChange(value);
+    // Clear extraFootage when selecting 'no'
     if (value === 'no') {
       onExtraFootageChange('');
     }

@@ -63,7 +63,7 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          console.log('Loading step 7 image with options:', {
+          console.log('Step 7: Loading image with options:', {
             needExtraFootage: options?.needExtraFootage,
             extraFootage: options?.extraFootage
           });
