@@ -77,102 +77,104 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="space-y-8 pb-12">
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="font-semibold mb-4">Price Breakdown</h3>
-        <div className="space-y-2">
-          {renderPriceBreakdown().map((item, index) => (
-            <div key={index} className="flex justify-between text-sm">
-              <span>{item.label}</span>
-              <span>${item.price.toFixed(2)}</span>
-            </div>
-          ))}
-          <div className="border-t pt-2 mt-4 flex justify-between font-semibold">
-            <span>Total</span>
-            <span>${totalCost.toFixed(2)}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="font-semibold">Choose Installation Date</h3>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full justify-start text-left font-normal hover:border-[#1A3174] hover:text-[#1A3174]",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : "Pick a date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-              disabled={(date) => date < new Date()}
-              className="[&_.rdp-day:hover:not([disabled])]:bg-[#1A3174]/90 [&_.rdp-day:hover:not([disabled])]:text-white"
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      <div>
-        <h3 className="font-semibold mb-4">Choose how to pay the deposit</h3>
-        <RadioGroup defaultValue="credit" className="space-y-4">
-          <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="credit" id="credit" />
-              <Label htmlFor="credit" className="font-medium">
-                Pay $100.00 deposit with credit or debit card
-              </Label>
+    <div className="h-[600px] overflow-y-auto px-2">
+      <div className="space-y-8 pb-12">
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h3 className="font-semibold mb-4">Price Breakdown</h3>
+          <div className="space-y-2">
+            {renderPriceBreakdown().map((item, index) => (
+              <div key={index} className="flex justify-between text-sm">
+                <span>{item.label}</span>
+                <span>${item.price.toFixed(2)}</span>
+              </div>
+            ))}
+            <div className="border-t pt-2 mt-4 flex justify-between font-semibold">
+              <span>Total</span>
+              <span>${totalCost.toFixed(2)}</span>
             </div>
           </div>
-          
-          <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="paypal" id="paypal" />
-              <Label htmlFor="paypal" className="font-medium">
-                Pay $100.00 deposit with PayPal
-              </Label>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="font-semibold">Choose Installation Date</h3>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal hover:border-[#1A3174] hover:text-[#1A3174]",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+                disabled={(date) => date < new Date()}
+                className="[&_.rdp-day:hover:not([disabled])]:bg-[#1A3174]/90 [&_.rdp-day:hover:not([disabled])]:text-white"
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div>
+          <h3 className="font-semibold mb-4">Choose how to pay the deposit</h3>
+          <RadioGroup defaultValue="credit" className="space-y-4">
+            <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="credit" id="credit" />
+                <Label htmlFor="credit" className="font-medium">
+                  Pay $100.00 deposit with credit or debit card
+                </Label>
+              </div>
             </div>
+            
+            <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="paypal" id="paypal" />
+                <Label htmlFor="paypal" className="font-medium">
+                  Pay $100.00 deposit with PayPal
+                </Label>
+              </div>
+            </div>
+          </RadioGroup>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex space-x-2">
+            <Input placeholder="Enter coupon code" className="flex-1" />
+            <Button variant="default" className="bg-[#1A3174]">Apply</Button>
           </div>
-        </RadioGroup>
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex space-x-2">
-          <Input placeholder="Enter coupon code" className="flex-1" />
-          <Button variant="default" className="bg-[#1A3174]">Apply</Button>
+          <p className="text-gray-500 text-sm">No coupon applied</p>
         </div>
-        <p className="text-gray-500 text-sm">No coupon applied</p>
-      </div>
 
-      <div className="space-y-4">
-        <Input placeholder="Card number" />
-        <div className="grid grid-cols-2 gap-4">
-          <Input placeholder="MM" />
-          <Input placeholder="YYYY" />
+        <div className="space-y-4">
+          <Input placeholder="Card number" />
+          <div className="grid grid-cols-2 gap-4">
+            <Input placeholder="MM" />
+            <Input placeholder="YYYY" />
+          </div>
+          <Input placeholder="CVV" />
         </div>
-        <Input placeholder="CVV" />
-      </div>
 
-      <div className="flex justify-between pt-4">
-        <Button 
-          variant="outline" 
-          onClick={onBack}
-          className="border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10"
-        >
-          Back
-        </Button>
-        <Button className="bg-[#1A3174] hover:bg-[#1A3174]/90">
-          Complete your order
-        </Button>
+        <div className="flex justify-between pt-4 sticky bottom-0 bg-white py-4">
+          <Button 
+            variant="outline" 
+            onClick={onBack}
+            className="border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10"
+          >
+            Back
+          </Button>
+          <Button className="bg-[#1A3174] hover:bg-[#1A3174]/90">
+            Complete your order
+          </Button>
+        </div>
       </div>
     </div>
   );

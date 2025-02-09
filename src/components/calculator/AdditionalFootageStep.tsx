@@ -31,14 +31,15 @@ export function AdditionalFootageStep({
         if (error) throw error;
 
         const imageMap = data.reduce((acc: Record<string, string>, img) => {
-          acc[img.image_type] = img.image_path;
+          const footageType = img.image_type;
+          acc[footageType] = img.image_path;
           return acc;
         }, {});
 
         setImages(imageMap);
+        setLoading(false);
       } catch (error) {
         console.error('Error loading images:', error);
-      } finally {
         setLoading(false);
       }
     };
@@ -54,7 +55,7 @@ export function AdditionalFootageStep({
   };
 
   return (
-    <div className="space-y-6 h-[400px] overflow-y-auto pr-2">
+    <div className="space-y-6 h-[400px] overflow-y-auto">
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Additional Square Footage</h2>
         <p className="text-gray-600">
@@ -99,35 +100,23 @@ export function AdditionalFootageStep({
             ) : (
               <>
                 {["up-to-50", "51-100", "101-150", "151-200"].map((value) => (
-                  <div
+                  <Button
                     key={value}
-                    className={`relative cursor-pointer group transition-all rounded-lg overflow-hidden border-2 ${
+                    variant="outline"
+                    className={`p-4 border-2 h-auto ${
                       extraFootage === value
-                        ? "border-[#1A3174]"
-                        : "border-transparent hover:border-[#1A3174]/50"
+                        ? "border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                        : "border-gray-200 hover:border-[#1A3174]/50 bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
                     }`}
                     onClick={() => onExtraFootageChange(value)}
                   >
-                    <div className="aspect-video relative">
-                      <img
-                        src={images[value] || '/placeholder.svg'}
-                        alt={`${value} sq ft`}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className={`absolute inset-0 flex items-center justify-center ${
-                        extraFootage === value
-                          ? "bg-[#1A3174]/60"
-                          : "bg-black/40 group-hover:bg-[#1A3174]/40"
-                      }`}>
-                        <span className="text-white font-medium text-sm">
-                          {value === "up-to-50" ? "Up to 50 sq ft" :
-                           value === "51-100" ? "51-100 sq ft" :
-                           value === "101-150" ? "101-150 sq ft" :
-                           "151-200 sq ft"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                    <span className="font-medium">
+                      {value === "up-to-50" ? "Up to 50 sq ft" :
+                       value === "51-100" ? "51-100 sq ft" :
+                       value === "101-150" ? "101-150 sq ft" :
+                       "151-200 sq ft"}
+                    </span>
+                  </Button>
                 ))}
               </>
             )}

@@ -1,5 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button";
 
 const GARAGE_FINISHES = [
   { value: "snowfall", label: "Snowfall (Most Popular)" },
@@ -19,65 +21,24 @@ interface GarageFinishStepProps {
 }
 
 export function GarageFinishStep({ selectedFinish, onFinishChange }: GarageFinishStepProps) {
-  const [finishImages, setFinishImages] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    const loadOptionImages = async () => {
-      try {
-        const { data: images, error } = await supabase
-          .from('calculator_step_images')
-          .select('image_type, image_path')
-          .eq('step_number', 4)
-          .like('image_type', 'option-%');
-
-        if (error) throw error;
-
-        const imageMap = images.reduce((acc: Record<string, string>, img) => {
-          const finishType = img.image_type.replace('option-', '');
-          acc[finishType] = img.image_path;
-          return acc;
-        }, {});
-
-        setFinishImages(imageMap);
-      } catch (error) {
-        console.error('Error loading finish images:', error);
-      }
-    };
-
-    loadOptionImages();
-  }, []);
-
   return (
     <div className="h-[400px] overflow-y-auto">
       <h2 className="text-2xl font-bold text-[#1A3174] text-center mb-6">Garage Finish</h2>
-      <div className="overflow-y-auto flex-1">
-        <div className="grid grid-cols-2 gap-4 pb-20">
-          {GARAGE_FINISHES.map((finish) => (
-            <div
-              key={finish.value}
-              className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                selectedFinish === finish.value
-                  ? "border-primary bg-[#1A3174] text-white"
-                  : "border-gray-200 hover:border-primary/50 bg-white text-[#0A0B3B]"
-              }`}
-              onClick={() => onFinishChange(finish.value)}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full overflow-hidden">
-                  <img 
-                    src={finishImages[finish.value] || '/placeholder.svg'} 
-                    alt={finish.label} 
-                    className="w-full h-full object-cover" 
-                    loading="eager" 
-                  />
-                </div>
-                <div>
-                  <p className="font-medium">{finish.label}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-2 gap-4 pb-20">
+        {GARAGE_FINISHES.map((finish) => (
+          <Button
+            key={finish.value}
+            variant="outline"
+            className={`p-4 border-2 h-auto ${
+              selectedFinish === finish.value
+                ? "border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                : "border-gray-200 hover:border-[#1A3174]/50 bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
+            }`}
+            onClick={() => onFinishChange(finish.value)}
+          >
+            <p className="font-medium">{finish.label}</p>
+          </Button>
+        ))}
       </div>
     </div>
   );
