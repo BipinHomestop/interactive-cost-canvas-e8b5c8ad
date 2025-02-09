@@ -15,7 +15,6 @@ export type Database = {
           id: string
           image_path: string
           image_type: string
-          is_last_selected: boolean | null
           step_number: number
           updated_at: string | null
         }
@@ -24,7 +23,6 @@ export type Database = {
           id?: string
           image_path: string
           image_type: string
-          is_last_selected?: boolean | null
           step_number: number
           updated_at?: string | null
         }
@@ -33,7 +31,6 @@ export type Database = {
           id?: string
           image_path?: string
           image_type?: string
-          is_last_selected?: boolean | null
           step_number?: number
           updated_at?: string | null
         }
