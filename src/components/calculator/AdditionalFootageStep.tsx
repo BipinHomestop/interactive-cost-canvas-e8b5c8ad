@@ -1,5 +1,8 @@
 
 import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 
 interface AdditionalFootageStepProps {
   needExtraFootage: string;
@@ -14,22 +17,44 @@ export function AdditionalFootageStep({
   onNeedExtraFootageChange,
   onExtraFootageChange,
 }: AdditionalFootageStepProps) {
+  const [images, setImages] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadImages = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('calculator_step_images')
+          .select('image_type, image_path')
+          .eq('step_number', 7);
+
+        if (error) throw error;
+
+        const imageMap = data.reduce((acc: Record<string, string>, img) => {
+          acc[img.image_type] = img.image_path;
+          return acc;
+        }, {});
+
+        setImages(imageMap);
+      } catch (error) {
+        console.error('Error loading images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadImages();
+  }, []);
+
   const handleNeedExtraFootageChange = (value: string) => {
-    console.log('Changing needExtraFootage to:', value);
     onNeedExtraFootageChange(value);
-    // Clear extraFootage when selecting 'no'
     if (value === 'no') {
       onExtraFootageChange('');
     }
   };
 
-  const handleExtraFootageChange = (value: string) => {
-    console.log('Changing extraFootage to:', value);
-    onExtraFootageChange(value);
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-[400px] overflow-y-auto pr-2">
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Additional Square Footage</h2>
         <p className="text-gray-600">
@@ -67,54 +92,45 @@ export function AdditionalFootageStep({
 
         {needExtraFootage === "yes" && (
           <div className="grid grid-cols-2 gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              className={`border-2 ${
-                extraFootage === "up-to-50"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
-                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-              }`}
-              onClick={() => handleExtraFootageChange("up-to-50")}
-            >
-              Up to 50 sq ft
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className={`border-2 ${
-                extraFootage === "51-100"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
-                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-              }`}
-              onClick={() => handleExtraFootageChange("51-100")}
-            >
-              51-100 sq ft
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className={`border-2 ${
-                extraFootage === "101-150"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
-                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-              }`}
-              onClick={() => handleExtraFootageChange("101-150")}
-            >
-              101-150 sq ft
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className={`border-2 ${
-                extraFootage === "151-200"
-                  ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
-                  : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-              }`}
-              onClick={() => handleExtraFootageChange("151-200")}
-            >
-              151-200 sq ft
-            </Button>
+            {loading ? (
+              <div className="col-span-2 flex justify-center">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <>
+                {["up-to-50", "51-100", "101-150", "151-200"].map((value) => (
+                  <div
+                    key={value}
+                    className={`relative cursor-pointer group transition-all rounded-lg overflow-hidden border-2 ${
+                      extraFootage === value
+                        ? "border-[#1A3174]"
+                        : "border-transparent hover:border-[#1A3174]/50"
+                    }`}
+                    onClick={() => onExtraFootageChange(value)}
+                  >
+                    <div className="aspect-video relative">
+                      <img
+                        src={images[value] || '/placeholder.svg'}
+                        alt={`${value} sq ft`}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className={`absolute inset-0 flex items-center justify-center ${
+                        extraFootage === value
+                          ? "bg-[#1A3174]/60"
+                          : "bg-black/40 group-hover:bg-[#1A3174]/40"
+                      }`}>
+                        <span className="text-white font-medium text-sm">
+                          {value === "up-to-50" ? "Up to 50 sq ft" :
+                           value === "51-100" ? "51-100 sq ft" :
+                           value === "101-150" ? "101-150 sq ft" :
+                           "151-200 sq ft"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
       </div>
