@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -14,9 +13,13 @@ import { FormNavigation } from "./calculator/FormNavigation";
 import { FAQSection } from "./calculator/FAQSection";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export function CostCalculator() {
   const isMobile = useIsMobile();
+  const [showFAQ, setShowFAQ] = useState(false);
   const {
     step,
     totalCost,
@@ -120,6 +123,10 @@ export function CostCalculator() {
     }
   };
 
+  const toggleFAQ = () => {
+    setShowFAQ(!showFAQ);
+  };
+
   return (
     <div className="w-full px-4 lg:px-8">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-3`}>
@@ -155,7 +162,33 @@ export function CostCalculator() {
           </form>
         </div>
 
-        <div className={`${isMobile ? 'w-full mt-6' : 'w-[30%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} overflow-y-auto`}>
+        {isMobile && (
+          <Button
+            onClick={toggleFAQ}
+            className="w-full mb-3 flex items-center justify-center gap-2"
+            variant="outline"
+          >
+            {showFAQ ? (
+              <>
+                Hide FAQ <ChevronUp className="h-4 w-4" />
+              </>
+            ) : (
+              <>
+                Show FAQ <ChevronDown className="h-4 w-4" />
+              </>
+            )}
+          </Button>
+        )}
+
+        <div 
+          className={`
+            ${isMobile ? 'w-full mt-0' : 'w-[30%]'} 
+            bg-white rounded-xl shadow-lg p-6 
+            ${isMobile ? 'h-auto' : 'h-[600px]'} 
+            overflow-y-auto
+            ${isMobile && !showFAQ ? 'hidden' : ''}
+          `}
+        >
           {(step >= 3 || step <= 2 || step === 9) && (
             <FAQSection step={step} />
           )}
