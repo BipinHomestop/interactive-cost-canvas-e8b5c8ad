@@ -18,9 +18,9 @@ export const useCalculator = () => {
     currentCondition
   } = useFormState();
 
+  const { step, handleNextStep, handlePrevStep } = useStepNavigation(saveSubmission);
   const { totalCost } = useCostCalculation(formValues, step);
   const { submissionId, saveSubmission } = useSubmission();
-  const { step, handleNextStep, handlePrevStep } = useStepNavigation(saveSubmission);
 
   return {
     step,
@@ -35,7 +35,7 @@ export const useCalculator = () => {
     needSteps,
     needExtraFootage,
     currentCondition,
-    handleNextStep: () => handleNextStep(formValues),
-    handlePrevStep: () => handlePrevStep(formValues),
+    handleNextStep: () => handleNextStep(formValues as CalculatorInputs),
+    handlePrevStep: () => handlePrevStep(formValues as CalculatorInputs),
   };
 };
