@@ -64,35 +64,48 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           }
         } else if (step === 7) {
           // Handle extra footage images
-          let imageType = 'no-extra-footage';
+          let imageType;
           
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            // Direct mapping since database values match the options
             imageType = options.extraFootage;
+            console.log('Step 7: Using image type for extra footage:', imageType);
+          } else {
+            imageType = 'no-extra-footage';
+            console.log('Step 7: Using default no-extra-footage image type');
           }
           
-          console.log('Fetching image for step 7 with image_type:', imageType);
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
-            .eq('step_number', step)
+            .eq('step_number', 7)
             .eq('image_type', imageType)
             .maybeSingle();
 
-          if (stepError) throw stepError;
-          imageData = stepImage;
+          if (stepError) {
+            console.error('Error fetching step 7 image:', stepError);
+            throw stepError;
+          }
           
-          console.log('Step 7 image data:', imageData);
-        } else if (step === 8 && options?.currentCondition) {
+          console.log('Step 7 query result:', stepImage);
+          imageData = stepImage;
+        } else if (step === 8) {
           // Handle current condition images
+          let imageType = options?.currentCondition || 'original';
+          console.log('Step 8: Using image type:', imageType);
+          
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
-            .eq('step_number', step)
-            .eq('image_type', options.currentCondition)
+            .eq('step_number', 8)
+            .eq('image_type', imageType)
             .maybeSingle();
 
-          if (stepError) throw stepError;
+          if (stepError) {
+            console.error('Error fetching step 8 image:', stepError);
+            throw stepError;
+          }
+          
+          console.log('Step 8 query result:', stepImage);
           imageData = stepImage;
         } else {
           // For other steps, fetch default images from calculator_step_images
@@ -108,11 +121,10 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
         }
 
         if (imageData?.image_path) {
-          console.log('Setting image for step', step, 'with options:', options);
-          console.log('Image data:', imageData);
+          console.log(`Setting image for step ${step}:`, imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
-          console.log('No image found for:', { step, options });
+          console.error(`No image found for step ${step} with options:`, options);
           setImageError(true);
         }
       } catch (error) {
