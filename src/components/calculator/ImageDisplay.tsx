@@ -69,8 +69,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
             imageType = options.extraFootage;
           }
-
-          console.log('Fetching image for step 7 with type:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
@@ -81,8 +79,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
           if (stepError) throw stepError;
           imageData = stepImage;
-          
-          console.log('Step 7 image data:', imageData);
         } else if (step === 8 && options?.currentCondition) {
           // Handle current condition images
           const { data: stepImage, error: stepError } = await supabase
@@ -108,7 +104,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
         }
 
         if (imageData?.image_path) {
-          console.log('Setting image:', imageData.image_path);
+          console.log('Setting image for step', step, 'with options:', options);
+          console.log('Image data:', imageData);
           setCurrentImageSrc(imageData.image_path);
         } else {
           console.log('No image found for:', { step, options });
