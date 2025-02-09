@@ -129,8 +129,8 @@ export function CostCalculator() {
 
   return (
     <div className="w-full px-4 lg:px-8">
-      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-3`}>
-        <div className={`${isMobile ? 'w-full mb-6' : 'w-[35%]'}`}>
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-0 sm:gap-3`}>
+        <div className={`${isMobile ? 'w-full' : 'w-[35%]'}`}>
           <ImageDisplay
             totalCost={totalCost}
             step={step}
@@ -143,9 +143,9 @@ export function CostCalculator() {
           />
         </div>
         
-        <div className={`${isMobile ? 'w-full' : 'w-[35%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'h-auto' : 'h-[600px]'} relative ${step === 9 ? 'overflow-y-auto' : ''}`}>
-          <form onSubmit={handleSubmit(() => {})} className="space-y-6 h-full">
-            <div className="flex-grow">
+        <div className={`${isMobile ? 'w-full mt-3' : 'w-[35%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'min-h-[400px]' : 'h-[600px]'} relative`}>
+          <form onSubmit={handleSubmit(() => {})} className="h-full">
+            <div className="flex-grow pb-20">
               {renderStep()}
             </div>
             {step < 9 && (
@@ -165,7 +165,7 @@ export function CostCalculator() {
         {isMobile && (
           <Button
             onClick={toggleFAQ}
-            className="w-full mb-3 flex items-center justify-center gap-2"
+            className="w-full mt-3 mb-3 flex items-center justify-center gap-2"
             variant="outline"
           >
             {showFAQ ? (
