@@ -39,6 +39,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           imageData = await db.getStepImage(8, imageType);
+          console.log('Step 8 image data:', imageData); // Debug log
         } else {
           imageData = await db.getStepImage(step, 'default');
         }

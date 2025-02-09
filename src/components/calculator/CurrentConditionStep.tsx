@@ -57,36 +57,22 @@ export function CurrentConditionStep({
             <LoadingSpinner />
           </div>
         ) : (
-          <>
-            {["original", "existing"].map((value) => (
-              <div
-                key={value}
-                className={`relative cursor-pointer group transition-all rounded-lg overflow-hidden border-2 ${
-                  condition === value
-                    ? "border-[#1A3174]"
-                    : "border-transparent hover:border-[#1A3174]/50"
-                }`}
-                onClick={() => onConditionChange(value)}
-              >
-                <div className="aspect-video relative">
-                  <img
-                    src={images[value] || '/placeholder.svg'}
-                    alt={`${value} condition`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className={`absolute inset-0 flex items-center justify-center ${
-                    condition === value
-                      ? "bg-[#1A3174]/60"
-                      : "bg-black/40 group-hover:bg-[#1A3174]/40"
-                  }`}>
-                    <span className="text-white font-medium">
-                      {value === "original" ? "Original Concrete" : "Existing Coating"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </>
+          ["original", "existing"].map((value) => (
+            <Button
+              key={value}
+              variant="outline"
+              className={`p-4 border-2 h-auto ${
+                condition === value
+                  ? "border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+                  : "border-gray-200 hover:border-[#1A3174]/50 bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
+              }`}
+              onClick={() => onConditionChange(value)}
+            >
+              <span className="font-medium">
+                {value === "original" ? "Original Concrete" : "Existing Coating"}
+              </span>
+            </Button>
+          ))
         )}
       </div>
     </div>
