@@ -63,18 +63,14 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          console.log('Step 7: Loading image for option:', options?.needExtraFootage, options?.extraFootage);
-          
           let imageType = 'no-extra-footage';
           
           if (options?.needExtraFootage === 'yes') {
-            if (options?.extraFootage) {
-              imageType = options.extraFootage;
-            } else {
-              imageType = 'yes-extra-footage';
-            }
+            imageType = options.extraFootage || 'yes-extra-footage';
           }
 
+          console.log('Step 7: Fetching image for type:', imageType);
+          
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
@@ -87,11 +83,11 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             throw stepError;
           }
 
-          console.log('Step 7: Found image data:', stepImage);
+          console.log('Step 7: Found image:', stepImage);
           imageData = stepImage;
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
-          console.log('Step 8: Fetching image for condition type:', imageType);
+          console.log('Step 8: Fetching image for condition:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
@@ -105,10 +101,10 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             throw stepError;
           }
           
-          console.log('Step 8 query result:', stepImage);
+          console.log('Step 8: Found image:', stepImage);
           imageData = stepImage;
         } else {
-          // For other steps (1,2,3), fetch default images from calculator_step_images
+          // For other steps (1,2,3), fetch from calculator_step_images
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
