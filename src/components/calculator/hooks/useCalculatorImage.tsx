@@ -30,25 +30,31 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           if (finishCollection) {
             if (step === 5) {
               let selectedImage = '';
+              let imageType = '';
+              
               if (options.needStemWalls === 'no') {
                 selectedImage = finishCollection.stem_wall_no_image;
+                imageType = 'stem-wall-no';
               } else if (options.needStemWalls === 'yes' && !options.stemWallType) {
                 selectedImage = finishCollection.stemwall_yes_image;
+                imageType = 'stem-wall-yes';
               } else if (options.stemWallType === 'standard') {
                 selectedImage = finishCollection.stem_wall_standard_image;
+                imageType = 'stem-wall-standard';
               } else if (options.stemWallType === 'large') {
                 selectedImage = finishCollection.stem_wall_large_image;
+                imageType = 'stem-wall-large';
               }
 
               if (selectedImage) {
                 imageData = { image_path: selectedImage };
                 
-                // Update the last selected image for step 5
+                // Update the last selected image for step 5 using image_type
                 await supabase
                   .from('calculator_step_images')
                   .update({ is_last_selected: true })
-                  .eq('image_path', selectedImage)
-                  .eq('step_number', 5);
+                  .eq('step_number', 5)
+                  .eq('image_type', imageType);
               }
             } else if (step === 6) {
               imageData = {
