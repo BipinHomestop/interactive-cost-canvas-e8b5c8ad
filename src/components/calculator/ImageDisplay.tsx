@@ -63,27 +63,29 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          // For step 7, use the image type based on extra footage selection
-          const imageType = options?.needExtraFootage === 'yes' && options?.extraFootage 
-            ? options.extraFootage 
-            : 'no-extra-footage';
-
-          console.log('Step 7: Using image type:', imageType);
-
-          const { data: stepImage, error: stepError } = await supabase
-            .from('calculator_step_images')
-            .select('image_path')
-            .eq('step_number', 7)
-            .eq('image_type', imageType)
-            .maybeSingle();
-
-          if (stepError) {
-            console.error('Error fetching step 7 image:', stepError);
-            throw stepError;
+          // For step 7, directly use hardcoded URLs based on selection
+          let image_path = '';
+          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
+            switch (options.extraFootage) {
+              case 'up-to-50':
+                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/up-to-50.jpg';
+                break;
+              case '51-100':
+                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/51-100.jpg';
+                break;
+              case '101-150':
+                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/101-150.jpg';
+                break;
+              case '151-200':
+                image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/151-200.jpg';
+                break;
+            }
+          } else {
+            // Default image for 'no' option
+            image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/no-extra-footage.jpg';
           }
-
-          console.log('Step 7: Database query result:', stepImage);
-          imageData = stepImage;
+          imageData = { image_path };
+          console.log('Step 7: Using image:', image_path);
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           console.log('Step 8: Fetching image for condition type:', imageType);
@@ -103,7 +105,7 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           console.log('Step 8 query result:', stepImage);
           imageData = stepImage;
         } else {
-          // For other steps, fetch default images from calculator_step_images
+          // For other steps (1,2,3), fetch default images from calculator_step_images
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
