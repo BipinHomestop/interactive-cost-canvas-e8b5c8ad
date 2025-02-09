@@ -1,3 +1,4 @@
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps } from "./types";
 import { useEffect, useState } from "react";
@@ -65,8 +66,13 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           console.log('Step 7: Loading image for option:', options?.needExtraFootage, options?.extraFootage);
           
           let imageType = 'no-extra-footage';
-          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            imageType = options.extraFootage;
+          
+          if (options?.needExtraFootage === 'yes') {
+            if (options?.extraFootage) {
+              imageType = options.extraFootage;
+            } else {
+              imageType = 'yes-extra-footage';
+            }
           }
 
           const { data: stepImage, error: stepError } = await supabase
