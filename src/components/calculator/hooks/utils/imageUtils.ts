@@ -8,11 +8,6 @@ export const getStemWallImageType = (options: Partial<CalculatorInputs>) => {
   return `stem-wall-${options.stemWallType}`;
 };
 
-export const getExtraFootageImageType = (options: Partial<CalculatorInputs>) => {
-  if (options.needExtraFootage === 'no') return 'no-extra-footage';
-  return options.extraFootage || 'yes-extra-footage';
-};
-
 export const handleStemWallImage = async (collection: any, options: Partial<CalculatorInputs>) => {
   let imagePath = '';
   

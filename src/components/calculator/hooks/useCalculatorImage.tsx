@@ -36,9 +36,6 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           }
         } else if (step === 9) {
           imageData = await db.getLastSelectedImage(5);
-        } else if (step === 7) {
-          const imageType = imageUtils.getExtraFootageImageType(options);
-          imageData = await db.getStepImage(7, imageType);
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           imageData = await db.getStepImage(8, imageType);
@@ -71,8 +68,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
 
     loadImage();
   }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
-      options?.needSteps, options?.needExtraFootage, options?.extraFootage, 
-      options?.currentCondition, toast]);
+      options?.needSteps, options?.currentCondition, toast]);
 
   return { isLoading, imageError, currentImageSrc, setImageError };
 }
