@@ -68,15 +68,15 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
             imageType = options.extraFootage;
+            console.log('Step 7: Fetching image for extra footage type:', imageType);
           } else {
             imageType = 'no-extra-footage';
+            console.log('Step 7: Fetching no extra footage image');
           }
-          
-          console.log('Step 7: Fetching image for type:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
-            .select('*')  // Select all columns to debug
+            .select('*')
             .eq('step_number', 7)
             .eq('image_type', imageType)
             .maybeSingle();
@@ -91,11 +91,11 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
         } else if (step === 8) {
           // Handle current condition images
           const imageType = options?.currentCondition || 'original';
-          console.log('Step 8: Fetching image for type:', imageType);
+          console.log('Step 8: Fetching image for condition type:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
-            .select('*')  // Select all columns to debug
+            .select('*')
             .eq('step_number', 8)
             .eq('image_type', imageType)
             .maybeSingle();
@@ -127,6 +127,7 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           console.error(`No image found for step ${step} with options:`, {
             step,
             options,
+            imageType: options?.extraFootage || options?.currentCondition,
             imageData
           });
           setImageError(true);
@@ -140,16 +141,9 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
     };
 
     loadImage();
-  }, [
-    step,
-    options?.garageFinish,
-    options?.needStemWalls,
-    options?.stemWallType,
-    options?.needSteps,
-    options?.needExtraFootage,
-    options?.extraFootage,
-    options?.currentCondition
-  ]);
+  }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
+      options?.needSteps, options?.needExtraFootage, options?.extraFootage, 
+      options?.currentCondition]);
 
   const containerHeight = isMobile ? "h-[300px]" : "h-[600px]";
 
