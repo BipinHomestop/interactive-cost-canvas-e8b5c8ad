@@ -38,32 +38,37 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
               } else if (options.stemWallType === 'large') {
                 imageData = { image_path: finishCollection.stem_wall_large_image };
               }
+
+              // Update all images for step 5 to not be last selected
+              const { error: updateError } = await supabase
+                .from('calculator_step_images')
+                .update({ is_last_selected: false })
+                .eq('step_number', 5);
+
+              if (updateError) throw updateError;
+
+              // Insert the new last selected image
+              let imageType = 'stem-wall-no';
+              if (options.needStemWalls === 'yes') {
+                imageType = options.stemWallType ? `stem-wall-${options.stemWallType}` : 'stem-wall-yes';
+              }
+
+              const { error: insertError } = await supabase
+                .from('calculator_step_images')
+                .insert({
+                  step_number: 5,
+                  image_type: imageType,
+                  image_path: imageData?.image_path,
+                  is_last_selected: true
+                });
+
+              if (insertError) throw insertError;
             } else if (step === 6) {
               const imagePath = options.needSteps === 'yes' 
                 ? finishCollection.steps_yes_image 
                 : finishCollection.steps_no_image;
 
               imageData = { image_path: imagePath };
-
-              // Update all images for step 6 to not be last selected
-              const { error: updateError } = await supabase
-                .from('calculator_step_images')
-                .update({ is_last_selected: false })
-                .eq('step_number', 6);
-
-              if (updateError) throw updateError;
-
-              // Insert the new last selected image
-              const { error: insertError } = await supabase
-                .from('calculator_step_images')
-                .insert({
-                  step_number: 6,
-                  image_type: options.needSteps === 'yes' ? 'steps-yes' : 'steps-no',
-                  image_path: imagePath,
-                  is_last_selected: true
-                });
-
-              if (insertError) throw insertError;
             }
           }
         } else if (step === 4 && options?.garageFinish) {
@@ -79,11 +84,11 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 9) {
-          // For the finish step, get the last selected image from step 6
+          // For the finish step, get the last selected image from step 5
           const { data: lastSelectedImage, error: lastSelectedError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
-            .eq('step_number', 6)
+            .eq('step_number', 5)
             .eq('is_last_selected', true)
             .maybeSingle();
 
