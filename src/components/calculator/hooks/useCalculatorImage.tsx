@@ -45,7 +45,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
 
               imageData = { image_path: imagePath };
 
-              // Update the last selected image for step 6
+              // Update all images for step 6 to not be last selected
               const { error: updateError } = await supabase
                 .from('calculator_step_images')
                 .update({ is_last_selected: false })
@@ -53,6 +53,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
 
               if (updateError) throw updateError;
 
+              // Insert the new last selected image
               const { error: insertError } = await supabase
                 .from('calculator_step_images')
                 .insert({
@@ -60,13 +61,9 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
                   image_type: options.needSteps === 'yes' ? 'steps-yes' : 'steps-no',
                   image_path: imagePath,
                   is_last_selected: true
-                })
-                .select()
-                .single();
+                });
 
-              if (insertError && !insertError.message.includes('duplicate key')) {
-                throw insertError;
-              }
+              if (insertError) throw insertError;
             }
           }
         } else if (step === 4 && options?.garageFinish) {
