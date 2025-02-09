@@ -3,6 +3,7 @@ import { useFormState } from "./calculator/use-form-state";
 import { useCostCalculation } from "./calculator/use-cost-calculation";
 import { useSubmission } from "./calculator/use-submission";
 import { useStepNavigation } from "./calculator/use-step-navigation";
+import { CalculatorInputs } from "@/components/calculator/types";
 
 export const useCalculator = () => {
   const {
@@ -18,9 +19,9 @@ export const useCalculator = () => {
     currentCondition
   } = useFormState();
 
+  const { submissionId, saveSubmission } = useSubmission();
   const { step, handleNextStep, handlePrevStep } = useStepNavigation(saveSubmission);
   const { totalCost } = useCostCalculation(formValues, step);
-  const { submissionId, saveSubmission } = useSubmission();
 
   return {
     step,
