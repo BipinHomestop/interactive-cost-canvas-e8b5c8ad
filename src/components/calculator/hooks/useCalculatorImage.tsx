@@ -49,12 +49,14 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
               if (selectedImage) {
                 imageData = { image_path: selectedImage };
                 
-                // Update the last selected image for step 5 using image_type
-                await supabase
+                // Update the last selected image for step 5
+                const { error: updateError } = await supabase
                   .from('calculator_step_images')
                   .update({ is_last_selected: true })
                   .eq('step_number', 5)
                   .eq('image_type', imageType);
+
+                if (updateError) throw updateError;
               }
             } else if (step === 6) {
               imageData = {
