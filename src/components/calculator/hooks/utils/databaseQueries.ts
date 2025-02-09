@@ -28,7 +28,6 @@ export const insertStepImage = async (
   imagePath: string,
   isLastSelected: boolean = false
 ) => {
-  // First try to update existing image
   const { data: existingImage, error: fetchError } = await supabase
     .from('calculator_step_images')
     .select('id')
@@ -39,7 +38,6 @@ export const insertStepImage = async (
   if (fetchError) throw fetchError;
 
   if (existingImage) {
-    // Update existing image
     const { error: updateError } = await supabase
       .from('calculator_step_images')
       .update({
@@ -50,7 +48,6 @@ export const insertStepImage = async (
 
     if (updateError) throw updateError;
   } else {
-    // Insert new image
     const { error: insertError } = await supabase
       .from('calculator_step_images')
       .insert({
