@@ -85,7 +85,10 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             image_path = 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/calculator-images/no-extra-footage.jpg';
           }
           imageData = { image_path };
-          console.log('Step 7: Using image:', image_path);
+          if (image_path) {
+            console.log('Step 7: Selected option:', options?.extraFootage || 'no extra footage');
+            console.log('Setting image for step 7:', image_path);
+          }
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           console.log('Step 8: Fetching image for condition type:', imageType);
@@ -118,7 +121,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
         }
 
         if (imageData?.image_path) {
-          console.log(`Setting image for step ${step}:`, imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
           console.error(`No image found for step ${step} with options:`, {
