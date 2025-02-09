@@ -67,9 +67,17 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           let imageType = 'no-extra-footage';
           
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            imageType = options.extraFootage;
+            // Map the extraFootage values to match database image_type values
+            const imageTypeMap: { [key: string]: string } = {
+              'up-to-50': 'up-to-50',
+              '51-100': '51-100',
+              '101-150': '101-150',
+              '151-200': '151-200'
+            };
+            imageType = imageTypeMap[options.extraFootage] || 'no-extra-footage';
           }
           
+          console.log('Fetching image for step 7 with image_type:', imageType);
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
