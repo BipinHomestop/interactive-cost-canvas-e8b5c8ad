@@ -3,12 +3,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps } from "./types";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState<string>("");
+  const { toast } = useToast();
 
   useEffect(() => {
     const loadImage = async () => {
@@ -83,8 +85,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             throw stepError;
           }
 
-          console.log('Step 7: Found image:', stepImage);
           imageData = stepImage;
+          console.log('Step 7: Found image:', imageData);
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           console.log('Step 8: Fetching image for condition:', imageType);
@@ -101,8 +103,8 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             throw stepError;
           }
           
-          console.log('Step 8: Found image:', stepImage);
           imageData = stepImage;
+          console.log('Step 8: Found image:', imageData);
         } else {
           // For other steps (1,2,3), fetch from calculator_step_images
           const { data: stepImage, error: stepError } = await supabase
@@ -126,10 +128,20 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData
           });
           setImageError(true);
+          toast({
+            title: "Image not found",
+            description: "The image for this step could not be loaded.",
+            variant: "destructive",
+          });
         }
       } catch (error) {
         console.error('Error in loadImage:', error);
         setImageError(true);
+        toast({
+          title: "Error loading image",
+          description: "There was a problem loading the image. Please try again.",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -138,22 +150,29 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
     loadImage();
   }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
       options?.needSteps, options?.needExtraFootage, options?.extraFootage, 
-      options?.currentCondition]);
+      options?.currentCondition, toast]);
 
   const containerHeight = isMobile ? "h-[300px]" : "h-[600px]";
 
   return (
     <div className={`relative ${containerHeight}`}>
-      {currentImageSrc && !imageError ? (
+      {isLoading ? (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1A3174]"></div>
+        </div>
+      ) : currentImageSrc && !imageError ? (
         <img
           src={currentImageSrc}
           alt={`Step ${step} visualization`}
-          className={`w-full rounded-lg shadow-lg object-cover transition-opacity duration-300 ${
-            isLoading ? 'opacity-50' : 'opacity-100'
-          } ${containerHeight}`}
+          className={`w-full rounded-lg shadow-lg object-cover ${containerHeight}`}
           onError={() => {
             console.error('Image failed to load:', currentImageSrc);
             setImageError(true);
+            toast({
+              title: "Image load failed",
+              description: "The image could not be displayed.",
+              variant: "destructive",
+            });
           }}
         />
       ) : (
