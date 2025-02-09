@@ -1,3 +1,4 @@
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ImageDisplayProps } from "./types";
 import { useEffect, useState } from "react";
@@ -62,15 +63,12 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          let imageType;
-          
-          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            imageType = options.extraFootage;
-            console.log('Step 7: Fetching extra footage image for type:', imageType);
-          } else {
-            imageType = 'no-extra-footage';
-            console.log('Step 7: Fetching no extra footage image');
-          }
+          // For step 7, use the image type based on extra footage selection
+          const imageType = options?.needExtraFootage === 'yes' && options?.extraFootage 
+            ? options.extraFootage 
+            : 'no-extra-footage';
+
+          console.log('Step 7: Using image type:', imageType);
 
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
@@ -124,7 +122,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           console.error(`No image found for step ${step} with options:`, {
             step,
             options,
-            imageType: options?.extraFootage || 'no-extra-footage',
             imageData
           });
           setImageError(true);
