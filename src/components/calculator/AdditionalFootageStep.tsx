@@ -14,6 +14,19 @@ export function AdditionalFootageStep({
   onNeedExtraFootageChange,
   onExtraFootageChange,
 }: AdditionalFootageStepProps) {
+  const handleNeedExtraFootageChange = (value: string) => {
+    console.log('Changing needExtraFootage to:', value);
+    onNeedExtraFootageChange(value);
+    if (value === 'no') {
+      onExtraFootageChange('');
+    }
+  };
+
+  const handleExtraFootageChange = (value: string) => {
+    console.log('Changing extraFootage to:', value);
+    onExtraFootageChange(value);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -33,7 +46,7 @@ export function AdditionalFootageStep({
                 ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
-            onClick={() => onNeedExtraFootageChange("yes")}
+            onClick={() => handleNeedExtraFootageChange("yes")}
           >
             Yes
           </Button>
@@ -45,7 +58,7 @@ export function AdditionalFootageStep({
                 ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             }`}
-            onClick={() => onNeedExtraFootageChange("no")}
+            onClick={() => handleNeedExtraFootageChange("no")}
           >
             No
           </Button>
@@ -61,7 +74,7 @@ export function AdditionalFootageStep({
                   ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
-              onClick={() => onExtraFootageChange("up-to-50")}
+              onClick={() => handleExtraFootageChange("up-to-50")}
             >
               Up to 50 sq ft
             </Button>
@@ -73,7 +86,7 @@ export function AdditionalFootageStep({
                   ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
-              onClick={() => onExtraFootageChange("51-100")}
+              onClick={() => handleExtraFootageChange("51-100")}
             >
               51-100 sq ft
             </Button>
@@ -85,7 +98,7 @@ export function AdditionalFootageStep({
                   ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
-              onClick={() => onExtraFootageChange("101-150")}
+              onClick={() => handleExtraFootageChange("101-150")}
             >
               101-150 sq ft
             </Button>
@@ -97,7 +110,7 @@ export function AdditionalFootageStep({
                   ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
               }`}
-              onClick={() => onExtraFootageChange("151-200")}
+              onClick={() => handleExtraFootageChange("151-200")}
             >
               151-200 sq ft
             </Button>

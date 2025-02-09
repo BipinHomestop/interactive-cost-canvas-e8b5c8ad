@@ -63,20 +63,23 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
-          // Handle extra footage images
+          console.log('Loading step 7 image with options:', {
+            needExtraFootage: options?.needExtraFootage,
+            extraFootage: options?.extraFootage
+          });
+
           let imageType;
-          
           if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
             imageType = options.extraFootage;
-            console.log('Step 7: Fetching image for extra footage type:', imageType);
+            console.log('Step 7: Fetching extra footage image for type:', imageType);
           } else {
             imageType = 'no-extra-footage';
             console.log('Step 7: Fetching no extra footage image');
           }
-          
+
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
-            .select('*')
+            .select('image_path')
             .eq('step_number', 7)
             .eq('image_type', imageType)
             .maybeSingle();
@@ -85,17 +88,17 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             console.error('Error fetching step 7 image:', stepError);
             throw stepError;
           }
-          
+
           console.log('Step 7 query result:', stepImage);
           imageData = stepImage;
+
         } else if (step === 8) {
-          // Handle current condition images
           const imageType = options?.currentCondition || 'original';
           console.log('Step 8: Fetching image for condition type:', imageType);
           
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
-            .select('*')
+            .select('image_path')
             .eq('step_number', 8)
             .eq('image_type', imageType)
             .maybeSingle();
