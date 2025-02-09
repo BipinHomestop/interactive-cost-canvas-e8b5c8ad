@@ -32,7 +32,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
           if (finishCollection) {
             if (step === 5) {
-              // Handle stem walls images
               if (options.needStemWalls === 'no') {
                 imageData = { image_path: finishCollection.stem_wall_no_image };
               } else if (options.needStemWalls === 'yes' && !options.stemWallType) {
@@ -43,7 +42,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
                 imageData = { image_path: finishCollection.stem_wall_large_image };
               }
             } else if (step === 6) {
-              // Handle steps images
               imageData = {
                 image_path: options.needSteps === 'yes' 
                   ? finishCollection.steps_yes_image 
@@ -52,7 +50,6 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             }
           }
         } else if (step === 4 && options?.garageFinish) {
-          // For step 4, fetch from garage_finish_image_collections
           const { data: finishCollection, error: finishError } = await supabase
             .from('garage_finish_image_collections')
             .select('garage_finish_image')
@@ -65,12 +62,19 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
         } else if (step === 7) {
+          // Handle all extra footage scenarios
           let imageType = 'no-extra-footage';
-          
-          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            imageType = options.extraFootage;
-          } else if (options?.needExtraFootage === 'yes') {
-            imageType = 'yes-extra-footage';
+
+          if (options?.needExtraFootage === 'yes') {
+            if (options?.extraFootage) {
+              // Use specific footage range image
+              imageType = options.extraFootage;
+              console.log('Step 7: Using specific footage range:', imageType);
+            } else {
+              // Default "yes" image before selecting footage range
+              imageType = 'yes-extra-footage';
+              console.log('Step 7: Using default yes image');
+            }
           }
 
           console.log('Step 7: Fetching image for type:', imageType);
@@ -108,7 +112,7 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
           imageData = stepImage;
           console.log('Step 8: Found image:', imageData);
         } else {
-          // For other steps (1,2,3), fetch from calculator_step_images
+          // For steps 1,2,3, fetch default images
           const { data: stepImage, error: stepError } = await supabase
             .from('calculator_step_images')
             .select('image_path')
