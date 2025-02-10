@@ -78,9 +78,9 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto pb-20">
-        <div className="space-y-6 px-4">
+    <div className="flex flex-col h-full max-h-[calc(100vh-200px)]">
+      <div className="flex-1 overflow-y-auto px-4">
+        <div className="space-y-6 pb-6">
           <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="font-semibold mb-4">Price Breakdown</h3>
             <div className="space-y-2">
