@@ -176,15 +176,15 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       </div>
 
       <div className="sticky bottom-0 left-0 right-0 bg-white py-4 px-4 border-t">
-        <div className="flex justify-between max-w-full">
+        <div className="grid grid-cols-2 gap-4 w-full">
           <Button 
             variant="outline" 
             onClick={onBack}
-            className="border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10"
+            className="w-full border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10"
           >
             Back
           </Button>
-          <Button className="bg-[#1A3174] hover:bg-[#1A3174]/90">
+          <Button className="w-full bg-[#1A3174] hover:bg-[#1A3174]/90">
             Complete your order
           </Button>
         </div>
@@ -192,4 +192,3 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     </div>
   );
 }
-
