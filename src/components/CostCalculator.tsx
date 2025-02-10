@@ -143,11 +143,9 @@ export function CostCalculator() {
           />
         </div>
         
-        <div className={`${isMobile ? 'w-full mt-3' : 'w-[35%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'min-h-[400px]' : 'h-[600px]'} relative`}>
+        <div className={`${isMobile ? 'w-full mt-3' : 'w-[35%]'} bg-white rounded-xl shadow-lg p-6 relative overflow-hidden ${isMobile ? 'min-h-[400px]' : 'h-[600px]'}`}>
           <form onSubmit={handleSubmit(() => {})} className="h-full">
-            <div className="flex-grow pb-20">
-              {renderStep()}
-            </div>
+            {renderStep()}
             {step < 9 && (
               <div className="absolute bottom-6 left-6 right-6">
                 <FormNavigation
