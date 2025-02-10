@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -78,9 +77,9 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="relative flex flex-col h-full max-h-[600px]">
+    <div className="relative flex flex-col h-full">
       <div className="flex-1 overflow-y-auto">
-        <div className="space-y-6 px-4 pb-6">
+        <div className="space-y-6 px-4 pb-20">
           <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="font-semibold mb-4">Price Breakdown</h3>
             <div className="space-y-2">
@@ -175,7 +174,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         </div>
       </div>
 
-      <div className="sticky bottom-0 bg-white pt-4 px-4 pb-4 border-t mt-4">
+      <div className="fixed bottom-6 left-6 right-6 bg-white pt-4 px-4 pb-4 border-t">
         <div className="flex justify-between">
           <Button 
             variant="outline" 
@@ -192,4 +191,3 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     </div>
   );
 }
-
