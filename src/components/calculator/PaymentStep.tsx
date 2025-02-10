@@ -78,9 +78,9 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="relative h-full flex flex-col max-h-[600px]">
-      <div className="flex-1 overflow-y-auto px-4">
-        <div className="space-y-8">
+    <div className="relative flex flex-col h-full max-h-[600px]">
+      <div className="flex-1 overflow-y-auto">
+        <div className="space-y-6 px-4 pb-6">
           <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="font-semibold mb-4">Price Breakdown</h3>
             <div className="space-y-2">
@@ -130,7 +130,11 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
             <RadioGroup defaultValue="credit" className="space-y-4">
               <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="credit" id="credit" />
+                  <RadioGroupItem 
+                    value="credit" 
+                    id="credit"
+                    className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
+                  />
                   <Label htmlFor="credit" className="font-medium">
                     Pay $100.00 deposit with credit or debit card
                   </Label>
@@ -139,7 +143,11 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
               
               <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="paypal" id="paypal" />
+                  <RadioGroupItem 
+                    value="paypal" 
+                    id="paypal"
+                    className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
+                  />
                   <Label htmlFor="paypal" className="font-medium">
                     Pay $100.00 deposit with PayPal
                   </Label>
@@ -184,3 +192,4 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     </div>
   );
 }
+

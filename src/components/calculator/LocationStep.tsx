@@ -1,3 +1,4 @@
+
 import { MapPin } from "lucide-react";
 import {
   Select,
@@ -122,12 +123,16 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
           <MapPin size={20} />
         </div>
         <Select onValueChange={onLocationChange} required>
-          <SelectTrigger className="w-full pl-10">
+          <SelectTrigger className="w-full pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]">
             <SelectValue placeholder="Select your location" />
           </SelectTrigger>
           <SelectContent>
             {DFW_LOCATIONS.map((location) => (
-              <SelectItem key={location} value={location}>
+              <SelectItem 
+                key={location} 
+                value={location}
+                className="hover:bg-[#1A3174]/10 focus:bg-[#1A3174]/10"
+              >
                 {location}
               </SelectItem>
             ))}
@@ -141,3 +146,4 @@ export function LocationStep({ onLocationChange }: LocationStepProps) {
     </div>
   );
 }
+
