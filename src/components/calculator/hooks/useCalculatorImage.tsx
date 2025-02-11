@@ -39,14 +39,20 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           console.log('Loading image for condition:', imageType);
-          imageData = await db.getStepImage(8, imageType);
-          console.log('Step 8 image data:', imageData);
-          
-          if (!imageData?.image_path) {
-            console.error('No image path found for condition:', imageType);
-            setImageError(true);
-            return;
+          const { data, error } = await supabase
+            .from('calculator_step_images')
+            .select('image_path')
+            .eq('step_number', 8)
+            .eq('image_type', imageType)
+            .single();
+
+          if (error) {
+            console.error('Error fetching step image:', error);
+            throw error;
           }
+          
+          imageData = data;
+          console.log('Step 8 image data:', imageData);
         } else {
           imageData = await db.getStepImage(step, 'default');
         }

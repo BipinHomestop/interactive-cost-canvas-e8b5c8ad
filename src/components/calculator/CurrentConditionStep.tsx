@@ -43,9 +43,21 @@ export function CurrentConditionStep({
     loadImages();
   }, []);
 
-  const handleConditionChange = (value: string) => {
+  const handleConditionChange = async (value: string) => {
     console.log('Step 8 - Current Condition Change:', value);
-    onConditionChange(value);
+    
+    try {
+      // First update the last selected status
+      await supabase
+        .from('calculator_step_images')
+        .update({ is_last_selected: true })
+        .eq('step_number', 8)
+        .eq('image_type', value);
+
+      onConditionChange(value);
+    } catch (error) {
+      console.error('Error updating condition:', error);
+    }
   };
 
   return (
