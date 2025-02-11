@@ -42,6 +42,11 @@ export function CurrentConditionStep({
     loadImages();
   }, []);
 
+  const handleConditionChange = (value: string) => {
+    console.log('Step 8 - Current Condition Change:', value);
+    onConditionChange(value);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -66,7 +71,7 @@ export function CurrentConditionStep({
                   ? "border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
                   : "border-gray-200 hover:border-[#1A3174]/50 bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
               }`}
-              onClick={() => onConditionChange(value)}
+              onClick={() => handleConditionChange(value)}
             >
               <span className="font-medium">
                 {value === "original" ? "Original Concrete" : "Existing Coating"}

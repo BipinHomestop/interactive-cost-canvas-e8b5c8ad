@@ -48,10 +48,16 @@ export function AdditionalFootageStep({
   }, []);
 
   const handleNeedExtraFootageChange = (value: string) => {
+    console.log('Step 7 - Need Extra Footage Change:', value);
     onNeedExtraFootageChange(value);
     if (value === 'no') {
       onExtraFootageChange('');
     }
+  };
+
+  const handleExtraFootageChange = (value: string) => {
+    console.log('Step 7 - Extra Footage Type Change:', value);
+    onExtraFootageChange(value);
   };
 
   return (
@@ -108,7 +114,7 @@ export function AdditionalFootageStep({
                         ? "border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
                         : "border-gray-200 hover:border-[#1A3174]/50 bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
                     }`}
-                    onClick={() => onExtraFootageChange(value)}
+                    onClick={() => handleExtraFootageChange(value)}
                   >
                     <span className="font-medium">
                       {value === "up-to-50" ? "Up to 50 sq ft" :
