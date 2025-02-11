@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "../types";
 import * as db from "./utils/databaseQueries";
 import * as imageUtils from "./utils/imageUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useCalculatorImage(step: number, options?: Partial<CalculatorInputs>) {
   const [isLoading, setIsLoading] = useState(true);
