@@ -47,7 +47,6 @@ export function CurrentConditionStep({
     console.log('Step 8 - Condition changed to:', value);
     
     try {
-      // First update the last selected status
       const { error } = await supabase
         .from('calculator_step_images')
         .update({ is_last_selected: true })

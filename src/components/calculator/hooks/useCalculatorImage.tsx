@@ -41,6 +41,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
           console.log('Step 8 - Loading image for condition:', imageType);
+          
           const { data, error } = await supabase
             .from('calculator_step_images')
             .select('image_path')
