@@ -14,6 +14,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
 
   useEffect(() => {
     const loadImage = async () => {
+      console.log('Loading image for step:', step, 'with options:', options);
       setIsLoading(true);
       setImageError(false);
       
@@ -39,7 +40,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           imageData = await db.getLastSelectedImage(5);
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
-          console.log('Loading image for condition:', imageType);
+          console.log('Step 8 - Loading image for condition:', imageType);
           const { data, error } = await supabase
             .from('calculator_step_images')
             .select('image_path')
@@ -53,15 +54,16 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           }
           
           imageData = data;
-          console.log('Step 8 image data:', imageData);
+          console.log('Step 8 - Retrieved image data:', imageData);
         } else {
           imageData = await db.getStepImage(step, 'default');
         }
 
         if (imageData?.image_path) {
-          console.log('Setting image source:', imageData.image_path);
+          console.log('Setting new image source:', imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
+          console.error('No image path found in imageData:', imageData);
           setImageError(true);
           toast({
             title: "Image not found",

@@ -31,7 +31,7 @@ export function CurrentConditionStep({
           return acc;
         }, {});
 
-        console.log('Loaded images for step 8:', imageMap);
+        console.log('Step 8 - Available images:', imageMap);
         setImages(imageMap);
       } catch (error) {
         console.error('Error loading images:', error);
@@ -44,19 +44,25 @@ export function CurrentConditionStep({
   }, []);
 
   const handleConditionChange = async (value: string) => {
-    console.log('Step 8 - Current Condition Change:', value);
+    console.log('Step 8 - Condition changed to:', value);
     
     try {
       // First update the last selected status
-      await supabase
+      const { error } = await supabase
         .from('calculator_step_images')
         .update({ is_last_selected: true })
         .eq('step_number', 8)
         .eq('image_type', value);
 
+      if (error) {
+        console.error('Error updating last selected status:', error);
+        throw error;
+      }
+
+      console.log('Step 8 - Successfully updated last selected status for:', value);
       onConditionChange(value);
     } catch (error) {
-      console.error('Error updating condition:', error);
+      console.error('Error in handleConditionChange:', error);
     }
   };
 
