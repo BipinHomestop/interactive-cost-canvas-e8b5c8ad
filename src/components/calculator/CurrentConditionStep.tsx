@@ -31,6 +31,7 @@ export function CurrentConditionStep({
           return acc;
         }, {});
 
+        console.log('Loaded images for step 8:', imageMap);
         setImages(imageMap);
       } catch (error) {
         console.error('Error loading images:', error);

@@ -38,13 +38,21 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           imageData = await db.getLastSelectedImage(5);
         } else if (step === 8) {
           const imageType = options?.currentCondition || 'original';
+          console.log('Loading image for condition:', imageType);
           imageData = await db.getStepImage(8, imageType);
-          console.log('Step 8 image data:', imageData); // Debug log
+          console.log('Step 8 image data:', imageData);
+          
+          if (!imageData?.image_path) {
+            console.error('No image path found for condition:', imageType);
+            setImageError(true);
+            return;
+          }
         } else {
           imageData = await db.getStepImage(step, 'default');
         }
 
         if (imageData?.image_path) {
+          console.log('Setting image source:', imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
           setImageError(true);
