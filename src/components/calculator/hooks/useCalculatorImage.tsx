@@ -21,6 +21,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
       console.log('Loading image for step:', step, 'with options:', options);
       setIsLoading(true);
       setImageError(false);
+      setCurrentImageSrc(""); // Reset the image source before loading new one
       
       try {
         let imageData;
@@ -42,16 +43,15 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           }
         } else if (step === 9) {
           imageData = await db.getLastSelectedImage(5);
-        } else if (step === 8) {
-          const imageType = options?.currentCondition || 'original';
-          console.log('Step 8 - Loading image for condition:', imageType);
+        } else if (step === 8 && options?.currentCondition) {
+          console.log('Step 8 - Loading image for condition:', options.currentCondition);
           
           const { data, error } = await supabase
             .from('calculator_step_images')
             .select('image_path')
             .eq('step_number', 8)
-            .eq('image_type', imageType)
-            .maybeSingle();
+            .eq('image_type', options.currentCondition)
+            .single();
 
           if (error) {
             console.error('Error fetching step image:', error);

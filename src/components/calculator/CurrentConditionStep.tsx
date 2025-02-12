@@ -47,6 +47,7 @@ export function CurrentConditionStep({
     console.log('Step 8 - Condition changed to:', value);
     
     try {
+      // First, update the last selected status
       const { error } = await supabase
         .from('calculator_step_images')
         .update({ is_last_selected: true })
@@ -58,7 +59,21 @@ export function CurrentConditionStep({
         throw error;
       }
 
+      // Then, set all other images for step 8 to not last selected
+      const { error: resetError } = await supabase
+        .from('calculator_step_images')
+        .update({ is_last_selected: false })
+        .eq('step_number', 8)
+        .neq('image_type', value);
+
+      if (resetError) {
+        console.error('Error resetting other images:', resetError);
+        throw resetError;
+      }
+
       console.log('Step 8 - Successfully updated last selected status for:', value);
+      
+      // Finally, update the UI
       onConditionChange(value);
     } catch (error) {
       console.error('Error in handleConditionChange:', error);
