@@ -77,7 +77,7 @@ export const getStepImage = async (stepNumber: number, imageType: string) => {
   console.log('Fetching image for step:', stepNumber, 'type:', imageType);
   const { data, error } = await supabase
     .from('calculator_step_images')
-    .select('image_path')
+    .select('*')
     .eq('step_number', stepNumber)
     .eq('image_type', imageType)
     .maybeSingle();
@@ -90,3 +90,4 @@ export const getStepImage = async (stepNumber: number, imageType: string) => {
   console.log('Retrieved image data:', data);
   return data;
 };
+

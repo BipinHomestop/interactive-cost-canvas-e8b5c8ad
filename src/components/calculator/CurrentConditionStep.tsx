@@ -26,13 +26,15 @@ export function CurrentConditionStep({
 
         if (error) throw error;
 
-        const imageMap = data.reduce((acc: Record<string, string>, img) => {
-          acc[img.image_type] = img.image_path;
-          return acc;
-        }, {});
+        if (data) {
+          const imageMap = data.reduce((acc: Record<string, string>, img) => {
+            acc[img.image_type] = img.image_path;
+            return acc;
+          }, {});
 
-        console.log('Step 8 - Available images:', imageMap);
-        setImages(imageMap);
+          console.log('Step 8 - Available images:', imageMap);
+          setImages(imageMap);
+        }
       } catch (error) {
         console.error('Error loading images:', error);
       } finally {
@@ -47,7 +49,18 @@ export function CurrentConditionStep({
     console.log('Step 8 - Condition changed to:', value);
     
     try {
-      // First, update the last selected status
+      // First, update all images to not selected
+      const { error: resetError } = await supabase
+        .from('calculator_step_images')
+        .update({ is_last_selected: false })
+        .eq('step_number', 8);
+
+      if (resetError) {
+        console.error('Error resetting other images:', resetError);
+        throw resetError;
+      }
+
+      // Then, set the selected image to last selected
       const { error } = await supabase
         .from('calculator_step_images')
         .update({ is_last_selected: true })
@@ -57,18 +70,6 @@ export function CurrentConditionStep({
       if (error) {
         console.error('Error updating last selected status:', error);
         throw error;
-      }
-
-      // Then, set all other images for step 8 to not last selected
-      const { error: resetError } = await supabase
-        .from('calculator_step_images')
-        .update({ is_last_selected: false })
-        .eq('step_number', 8)
-        .neq('image_type', value);
-
-      if (resetError) {
-        console.error('Error resetting other images:', resetError);
-        throw resetError;
       }
 
       console.log('Step 8 - Successfully updated last selected status for:', value);
