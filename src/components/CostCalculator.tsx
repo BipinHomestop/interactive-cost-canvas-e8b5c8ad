@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -37,6 +38,28 @@ export function CostCalculator() {
     handlePrevStep,
   } = useCalculator();
 
+  const getStepOptions = () => {
+    switch (step) {
+      case 4:
+        return { garageFinish: formValues.garageFinish };
+      case 5:
+        return {
+          garageFinish: formValues.garageFinish,
+          needStemWalls: formValues.needStemWalls,
+          stemWallType: formValues.stemWallType
+        };
+      case 6:
+        return {
+          garageFinish: formValues.garageFinish,
+          needSteps: formValues.needSteps
+        };
+      case 8:
+        return { currentCondition: formValues.currentCondition };
+      default:
+        return {};
+    }
+  };
+
   const isNextDisabled = () => {
     switch (step) {
       case 1:
@@ -63,11 +86,7 @@ export function CostCalculator() {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return (
-          <LocationStep
-            onLocationChange={(value) => setValue("location", value)}
-          />
-        );
+        return <LocationStep onLocationChange={(value) => setValue("location", value)} />;
       case 2:
         return <ContactStep register={register} />;
       case 3:
@@ -123,10 +142,6 @@ export function CostCalculator() {
     }
   };
 
-  const toggleFAQ = () => {
-    setShowFAQ(!showFAQ);
-  };
-
   return (
     <div className="w-full px-4 lg:px-8">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-0 sm:gap-3`}>
@@ -134,12 +149,7 @@ export function CostCalculator() {
           <ImageDisplay
             totalCost={totalCost}
             step={step}
-            options={{
-              garageFinish: formValues.garageFinish,
-              needStemWalls: formValues.needStemWalls,
-              stemWallType: formValues.stemWallType,
-              needSteps: formValues.needSteps
-            }}
+            options={getStepOptions()}
           />
         </div>
         

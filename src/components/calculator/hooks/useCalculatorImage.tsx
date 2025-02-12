@@ -24,26 +24,9 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
       setCurrentImageSrc(""); // Reset the image source before loading new one
       
       try {
-        let imageData;
+        let imageData = null;
         
-        if ((step === 5 || step === 6) && options?.garageFinish) {
-          const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
-          
-          if (finishCollection) {
-            if (step === 5) {
-              imageData = await imageUtils.handleStemWallImage(finishCollection, options);
-            } else if (step === 6) {
-              imageData = imageUtils.handleStepsImage(finishCollection, options.needSteps || 'no');
-            }
-          }
-        } else if (step === 4 && options?.garageFinish) {
-          const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
-          if (finishCollection) {
-            imageData = { image_path: finishCollection.garage_finish_image };
-          }
-        } else if (step === 9) {
-          imageData = await db.getLastSelectedImage(5);
-        } else if (step === 8 && options?.currentCondition) {
+        if (step === 8 && options?.currentCondition) {
           console.log('Step 8 - Loading image for condition:', options.currentCondition);
           
           // Get the specific image for the current condition
@@ -61,11 +44,25 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           
           if (data) {
             imageData = data;
-          } else {
-            console.log('No image found for condition:', options.currentCondition);
-            // Try to get default image for step 8
-            imageData = await db.getStepImage(step, 'default');
+            console.log('Found image for condition:', data);
           }
+        } else if ((step === 5 || step === 6) && options?.garageFinish) {
+          const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
+          
+          if (finishCollection) {
+            if (step === 5) {
+              imageData = await imageUtils.handleStemWallImage(finishCollection, options);
+            } else if (step === 6) {
+              imageData = imageUtils.handleStepsImage(finishCollection, options.needSteps || 'no');
+            }
+          }
+        } else if (step === 4 && options?.garageFinish) {
+          const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
+          if (finishCollection) {
+            imageData = { image_path: finishCollection.garage_finish_image };
+          }
+        } else if (step === 9) {
+          imageData = await db.getLastSelectedImage(5);
         } else {
           // For all other steps, get the default image
           imageData = await db.getStepImage(step, 'default');
