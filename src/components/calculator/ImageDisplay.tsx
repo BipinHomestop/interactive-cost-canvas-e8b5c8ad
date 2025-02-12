@@ -14,12 +14,16 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
 
   const containerHeight = isMobile ? "h-[300px]" : "h-[600px]";
 
+  console.log('ImageDisplay - Current options:', options);
+  console.log('ImageDisplay - Current image source:', currentImageSrc);
+
   return (
     <div className={`relative ${containerHeight}`}>
       {isLoading ? (
         <LoadingSpinner />
       ) : currentImageSrc && !imageError ? (
         <img
+          key={currentImageSrc} // Add key to force re-render when source changes
           src={currentImageSrc}
           alt={`Step ${step} visualization`}
           className={`w-full rounded-lg shadow-lg object-cover ${containerHeight}`}

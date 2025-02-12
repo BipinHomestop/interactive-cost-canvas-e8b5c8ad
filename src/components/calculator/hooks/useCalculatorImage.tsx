@@ -13,7 +13,11 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
   const { toast } = useToast();
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadImage = async () => {
+      if (!isMounted) return;
+      
       console.log('Loading image for step:', step, 'with options:', options);
       setIsLoading(true);
       setImageError(false);
@@ -47,7 +51,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
             .select('image_path')
             .eq('step_number', 8)
             .eq('image_type', imageType)
-            .single();
+            .maybeSingle();
 
           if (error) {
             console.error('Error fetching step image:', error);
@@ -59,6 +63,8 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         } else {
           imageData = await db.getStepImage(step, 'default');
         }
+
+        if (!isMounted) return;
 
         if (imageData?.image_path) {
           console.log('Setting new image source:', imageData.image_path);
@@ -73,6 +79,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           });
         }
       } catch (error) {
+        if (!isMounted) return;
         console.error('Error in loadImage:', error);
         setImageError(true);
         toast({
@@ -81,11 +88,17 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           variant: "destructive",
         });
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     loadImage();
+
+    return () => {
+      isMounted = false;
+    };
   }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
       options?.needSteps, options?.currentCondition, toast]);
 
