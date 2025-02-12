@@ -22,21 +22,23 @@ export function ImageDisplay({ totalCost, step, options }: ImageDisplayProps) {
       {isLoading ? (
         <LoadingSpinner />
       ) : currentImageSrc && !imageError ? (
-        <img
-          key={currentImageSrc} // Add key to force re-render when source changes
-          src={currentImageSrc}
-          alt={`Step ${step} visualization`}
-          className={`w-full rounded-lg shadow-lg object-cover ${containerHeight}`}
-          onError={() => {
-            console.error('Image failed to load:', currentImageSrc);
-            setImageError(true);
-            toast({
-              title: "Image load failed",
-              description: "The image could not be displayed.",
-              variant: "destructive",
-            });
-          }}
-        />
+        <div className="w-full h-full">
+          <img
+            key={currentImageSrc} // Add key to force re-render when source changes
+            src={currentImageSrc}
+            alt={`Step ${step} visualization`}
+            className={`w-full rounded-lg shadow-lg object-cover ${containerHeight}`}
+            onError={() => {
+              console.error('Image failed to load:', currentImageSrc);
+              setImageError(true);
+              toast({
+                title: "Image load failed",
+                description: "The image could not be displayed.",
+                variant: "destructive",
+              });
+            }}
+          />
+        </div>
       ) : (
         <ImageError />
       )}
