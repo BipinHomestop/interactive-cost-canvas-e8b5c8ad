@@ -46,41 +46,28 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         } else if (step === 8 && options?.currentCondition) {
           console.log('Step 8 - Loading image for condition:', options.currentCondition);
           
-          // First, log all available images for step 8
-          const { data: allImages, error: allImagesError } = await supabase
-            .from('calculator_step_images')
-            .select('*')
-            .eq('step_number', 8);
-            
-          console.log('All available images for step 8:', allImages);
-          
-          if (allImagesError) {
-            console.error('Error fetching all images:', allImagesError);
-          }
-
-          // Then try to get the specific image
+          // Get the specific image for the current condition
           const { data, error } = await supabase
             .from('calculator_step_images')
-            .select('*')  // Select all fields for debugging
+            .select('image_path')
             .eq('step_number', 8)
-            .eq('image_type', options.currentCondition);
-
-          console.log('Query result for condition:', options.currentCondition, 'Data:', data);
+            .eq('image_type', options.currentCondition)
+            .maybeSingle();
           
           if (error) {
-            console.error('Error fetching step image:', error);
+            console.error('Error fetching condition image:', error);
             throw error;
           }
           
-          if (data && data.length > 0) {
-            imageData = data[0];
+          if (data) {
+            imageData = data;
           } else {
-            console.error('No image found for condition:', options.currentCondition);
-            throw new Error('Image not found');
+            console.log('No image found for condition:', options.currentCondition);
+            // Try to get default image for step 8
+            imageData = await db.getStepImage(step, 'default');
           }
-          
-          console.log('Step 8 - Retrieved image data:', imageData);
         } else {
+          // For all other steps, get the default image
           imageData = await db.getStepImage(step, 'default');
         }
 
@@ -90,23 +77,13 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           console.log('Setting new image source:', imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
         } else {
-          console.error('No image path found in imageData:', imageData);
+          console.log('No image path found for step:', step);
           setImageError(true);
-          toast({
-            title: "Image not found",
-            description: "The image for this step could not be loaded.",
-            variant: "destructive",
-          });
         }
       } catch (error) {
         if (!isMounted) return;
         console.error('Error in loadImage:', error);
         setImageError(true);
-        toast({
-          title: "Error loading image",
-          description: "There was a problem loading the image. Please try again.",
-          variant: "destructive",
-        });
       } finally {
         if (isMounted) {
           setIsLoading(false);
