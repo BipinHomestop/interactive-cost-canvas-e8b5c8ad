@@ -29,7 +29,6 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         if (step === 8 && options?.currentCondition) {
           console.log('Step 8 - Loading image for condition:', options.currentCondition);
           
-          // Get the specific image for the current condition
           const { data, error } = await supabase
             .from('calculator_step_images')
             .select('image_path')
@@ -45,6 +44,30 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           if (data) {
             imageData = data;
             console.log('Found image for condition:', data);
+          }
+        } else if (step === 7) {
+          console.log('Step 7 - Loading image for extra footage:', options?.extraFootage);
+          
+          let imageType = 'default';
+          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
+            imageType = options.extraFootage;
+          }
+          
+          const { data, error } = await supabase
+            .from('calculator_step_images')
+            .select('image_path')
+            .eq('step_number', 7)
+            .eq('image_type', imageType)
+            .maybeSingle();
+          
+          if (error) {
+            console.error('Error fetching extra footage image:', error);
+            throw error;
+          }
+          
+          if (data) {
+            imageData = data;
+            console.log('Found image for extra footage:', data);
           }
         } else if ((step === 5 || step === 6) && options?.garageFinish) {
           const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
@@ -94,7 +117,8 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
       isMounted = false;
     };
   }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
-      options?.needSteps, options?.currentCondition, toast]);
+      options?.needSteps, options?.currentCondition, options?.needExtraFootage, 
+      options?.extraFootage, toast]);
 
   return { isLoading, imageError, currentImageSrc, setImageError };
 }

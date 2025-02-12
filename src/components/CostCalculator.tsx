@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -52,6 +51,11 @@ export function CostCalculator() {
         return {
           garageFinish: formValues.garageFinish,
           needSteps: formValues.needSteps
+        };
+      case 7:
+        return { 
+          needExtraFootage: formValues.needExtraFootage,
+          extraFootage: formValues.extraFootage
         };
       case 8:
         return { currentCondition: formValues.currentCondition };
@@ -140,6 +144,10 @@ export function CostCalculator() {
       default:
         return null;
     }
+  };
+
+  const toggleFAQ = () => {
+    setShowFAQ(!showFAQ);
   };
 
   return (
