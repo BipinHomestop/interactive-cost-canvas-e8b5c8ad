@@ -49,9 +49,13 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           console.log('Step 7 - Loading image for extra footage:', options?.extraFootage);
           
           let imageType = 'default';
-          if (options?.needExtraFootage === 'yes' && options?.extraFootage) {
-            imageType = options.extraFootage;
+          if (options?.needExtraFootage === 'no') {
+            imageType = 'no';
+          } else if (options?.needExtraFootage === 'yes') {
+            imageType = options?.extraFootage || 'yes';
           }
+          
+          console.log('Using image type for step 7:', imageType);
           
           const { data, error } = await supabase
             .from('calculator_step_images')
