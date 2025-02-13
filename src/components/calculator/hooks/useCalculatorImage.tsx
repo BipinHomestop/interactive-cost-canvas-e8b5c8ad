@@ -52,7 +52,11 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           if (options?.needExtraFootage === 'no') {
             imageType = 'no';
           } else if (options?.needExtraFootage === 'yes') {
-            imageType = options?.extraFootage || 'yes';
+            if (options?.extraFootage) {
+              imageType = options.extraFootage;
+            } else {
+              imageType = 'yes';
+            }
           }
           
           console.log('Using image type for step 7:', imageType);
