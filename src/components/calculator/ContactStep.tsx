@@ -9,7 +9,7 @@ export function ContactStep({
 }: ContactStepProps) {
   return <div className="space-y-6">
       <div>
-        <h2 className="font-bold mb-2 text-[1A3174]">Contact Information</h2>
+        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Contact Information</h2>
         <p className="text-gray-600">
           Please provide your contact details so we can send you the estimate.
         </p>
