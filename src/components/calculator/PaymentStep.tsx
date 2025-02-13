@@ -78,35 +78,33 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-xl mx-auto space-y-8 pb-6">
-          <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
-            <h3 className="text-lg font-semibold mb-4">Price Breakdown</h3>
-            <div className="space-y-3">
+    <div className="flex flex-col h-full max-h-[calc(100vh-200px)]">
+      <div className="flex-1 overflow-y-auto px-4">
+        <div className="space-y-6 pb-6">
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h3 className="font-semibold mb-4">Price Breakdown</h3>
+            <div className="space-y-2">
               {renderPriceBreakdown().map((item, index) => (
                 <div key={index} className="flex justify-between text-sm">
-                  <span className="text-gray-700">{item.label}</span>
-                  <span className="font-medium">${item.price.toFixed(2)}</span>
+                  <span>{item.label}</span>
+                  <span>${item.price.toFixed(2)}</span>
                 </div>
               ))}
-              <div className="border-t pt-3 mt-3">
-                <div className="flex justify-between font-semibold text-lg">
-                  <span>Total</span>
-                  <span className="text-[#1A3174]">${totalCost.toFixed(2)}</span>
-                </div>
+              <div className="border-t pt-2 mt-4 flex justify-between font-semibold">
+                <span>Total</span>
+                <span>${totalCost.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Choose Installation Date</h3>
+            <h3 className="font-semibold">Choose Installation Date</h3>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal hover:border-[#1A3174] hover:text-[#1A3174]",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -114,33 +112,46 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
                   {date ? format(date, "PPP") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
                   selected={date}
                   onSelect={setDate}
                   initialFocus
                   disabled={(date) => date < new Date()}
+                  className="[&_.rdp-day:hover:not([disabled])]:bg-[#1A3174]/90 [&_.rdp-day:hover:not([disabled])]:text-white"
                 />
               </PopoverContent>
             </Popover>
           </div>
 
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Choose how to pay the deposit</h3>
+          <div>
+            <h3 className="font-semibold mb-4">Choose how to pay the deposit</h3>
             <RadioGroup defaultValue="credit" className="space-y-4">
-              <div className="flex items-center space-x-2 border rounded-lg p-4">
-                <RadioGroupItem value="credit" id="credit" />
-                <Label htmlFor="credit" className="flex-grow">
-                  Pay $100.00 deposit with credit or debit card
-                </Label>
+              <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem 
+                    value="credit" 
+                    id="credit"
+                    className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
+                  />
+                  <Label htmlFor="credit" className="font-medium">
+                    Pay $100.00 deposit with credit or debit card
+                  </Label>
+                </div>
               </div>
               
-              <div className="flex items-center space-x-2 border rounded-lg p-4">
-                <RadioGroupItem value="paypal" id="paypal" />
-                <Label htmlFor="paypal" className="flex-grow">
-                  Pay $100.00 deposit with PayPal
-                </Label>
+              <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem 
+                    value="paypal" 
+                    id="paypal"
+                    className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
+                  />
+                  <Label htmlFor="paypal" className="font-medium">
+                    Pay $100.00 deposit with PayPal
+                  </Label>
+                </div>
               </div>
             </RadioGroup>
           </div>
@@ -148,32 +159,28 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
           <div className="space-y-4">
             <div className="flex space-x-2">
               <Input placeholder="Enter coupon code" className="flex-1" />
-              <Button variant="default" className="bg-[#1A3174] hover:bg-[#1A3174]/90">
-                Apply
-              </Button>
+              <Button variant="default" className="bg-[#1A3174]">Apply</Button>
             </div>
-            <p className="text-sm text-gray-500">No coupon applied</p>
+            <p className="text-gray-500 text-sm">No coupon applied</p>
           </div>
 
           <div className="space-y-4">
-            <div className="space-y-4">
-              <Input placeholder="Card number" />
-              <div className="grid grid-cols-3 gap-4">
-                <Input placeholder="MM" />
-                <Input placeholder="YY" />
-                <Input placeholder="CVV" />
-              </div>
+            <Input placeholder="Card number" />
+            <div className="grid grid-cols-2 gap-4">
+              <Input placeholder="MM" />
+              <Input placeholder="YYYY" />
             </div>
+            <Input placeholder="CVV" />
           </div>
         </div>
       </div>
 
-      <div className="sticky bottom-0 left-0 right-0 bg-white py-4 px-4 border-t mt-auto">
-        <div className="max-w-xl mx-auto flex gap-4">
+      <div className="sticky bottom-0 left-0 right-0 bg-white py-4 px-4 border-t">
+        <div className="flex gap-4 w-full">
           <Button 
             variant="outline" 
             onClick={onBack}
-            className="flex-1 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
+            className="flex-1 bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
           >
             Back
           </Button>
