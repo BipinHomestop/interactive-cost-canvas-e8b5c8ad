@@ -9,6 +9,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PaymentStepProps {
   onBack: () => void;
@@ -79,8 +80,8 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-200px)]">
-      <div className="flex-1 overflow-y-auto px-4">
-        <div className="space-y-6 pb-6">
+      <ScrollArea className="flex-1">
+        <div className="space-y-6 px-4 pb-6">
           <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="font-semibold mb-4">Price Breakdown</h3>
             <div className="space-y-2">
@@ -166,14 +167,14 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
           <div className="space-y-4">
             <Input placeholder="Card number" />
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <Input placeholder="MM" />
-              <Input placeholder="YYYY" />
+              <Input placeholder="YY" />
+              <Input placeholder="CVV" />
             </div>
-            <Input placeholder="CVV" />
           </div>
         </div>
-      </div>
+      </ScrollArea>
 
       <div className="sticky bottom-0 left-0 right-0 bg-white py-4 px-4 border-t">
         <div className="flex gap-4 w-full">
