@@ -153,7 +153,7 @@ export function CostCalculator() {
 
   return (
     <div className="w-full">
-      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-0`}>
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
         <div className={`${isMobile ? 'w-full' : 'w-[35%]'}`}>
           <ImageDisplay
             totalCost={totalCost}
