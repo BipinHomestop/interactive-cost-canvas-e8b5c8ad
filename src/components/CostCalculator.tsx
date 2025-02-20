@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -151,8 +152,8 @@ export function CostCalculator() {
   };
 
   return (
-    <div className="w-full px-4 lg:px-8">
-      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-0 sm:gap-3`}>
+    <div className="w-full">
+      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch max-w-[1400px] mx-auto gap-0`}>
         <div className={`${isMobile ? 'w-full' : 'w-[35%]'}`}>
           <ImageDisplay
             totalCost={totalCost}
@@ -161,7 +162,7 @@ export function CostCalculator() {
           />
         </div>
         
-        <div className={`${isMobile ? 'w-full mt-3' : 'w-[35%]'} bg-white rounded-xl shadow-lg p-6 ${isMobile ? 'min-h-[400px]' : 'h-[600px]'} relative`}>
+        <div className={`${isMobile ? 'w-full mt-3' : 'w-[35%] border-x border-gray-200'} bg-white p-6 ${isMobile ? 'min-h-[400px]' : 'h-[600px]'} relative`}>
           <form onSubmit={handleSubmit(() => {})} className="h-full">
             <div className="flex-grow pb-20">
               {renderStep()}
@@ -201,7 +202,7 @@ export function CostCalculator() {
         <div 
           className={`
             ${isMobile ? 'w-full mt-0' : 'w-[30%]'} 
-            bg-white rounded-xl shadow-lg p-6 
+            bg-white p-6 
             ${isMobile ? 'h-auto' : 'h-[600px]'} 
             overflow-y-auto
             ${isMobile && !showFAQ ? 'hidden' : ''}
