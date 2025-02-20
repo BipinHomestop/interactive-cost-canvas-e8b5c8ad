@@ -5,7 +5,7 @@ import { Phone } from "lucide-react";
 
 const Index = () => {
   return <div className="h-screen flex flex-col bg-card-DEFAULT">
-      <nav className="bg-white shadow-sm py-4 px-6">
+      <nav className="bg-white shadow-lg py-4 px-6 z-50">
         <div className="flex justify-between items-center">
           <div className="text-2xl font-bold text-[#1A3174]">
             GarageCalc
