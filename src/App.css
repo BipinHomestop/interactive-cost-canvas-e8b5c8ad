@@ -1,16 +1,19 @@
+
 #root {
-  margin: 0 auto;
+  margin: 0;
+  padding: 0;
+  width: 100%;
   text-align: center;
 }
 
 @media (max-width: 640px) {
   #root {
-    padding: 1rem;
+    padding: 0;
   }
 }
 
 @media (min-width: 641px) {
   #root {
-    padding: 2rem;
+    padding: 0;
   }
 }
