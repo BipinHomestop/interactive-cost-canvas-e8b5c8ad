@@ -1,18 +1,31 @@
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Car } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface GarageCapacityStepProps {
   onCapacityChange: (value: number) => void;
 }
 
 export function GarageCapacityStep({ onCapacityChange }: GarageCapacityStepProps) {
+  const [capacity, setCapacity] = useState(1);
+
+  const increment = () => {
+    if (capacity < 4) {
+      const newCapacity = capacity + 1;
+      setCapacity(newCapacity);
+      onCapacityChange(newCapacity);
+    }
+  };
+
+  const decrement = () => {
+    if (capacity > 1) {
+      const newCapacity = capacity - 1;
+      setCapacity(newCapacity);
+      onCapacityChange(newCapacity);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -22,21 +35,28 @@ export function GarageCapacityStep({ onCapacityChange }: GarageCapacityStepProps
         </p>
       </div>
 
-      <div className="relative">
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">
-          <Car size={20} />
+      <div className="flex items-center justify-center gap-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={decrement}
+          disabled={capacity <= 1}
+          className="h-14 w-14 border-2 hover:border-[#1A3174] hover:text-[#1A3174]"
+        >
+          <Minus className="h-6 w-6" />
+        </Button>
+        <div className="w-20 h-14 flex items-center justify-center text-2xl font-bold border-2 rounded-md">
+          {capacity}
         </div>
-        <Select onValueChange={(value) => onCapacityChange(Number(value))} required>
-          <SelectTrigger className="w-full pl-10 h-14 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]">
-            <SelectValue placeholder="Select garage capacity" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="1">1 Car Garage</SelectItem>
-            <SelectItem value="2">2 Car Garage</SelectItem>
-            <SelectItem value="3">3 Car Garage</SelectItem>
-            <SelectItem value="4">4 Car Garage</SelectItem>
-          </SelectContent>
-        </Select>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={increment}
+          disabled={capacity >= 4}
+          className="h-14 w-14 border-2 hover:border-[#1A3174] hover:text-[#1A3174]"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
       </div>
 
       <p className="text-sm text-gray-500 text-center">
