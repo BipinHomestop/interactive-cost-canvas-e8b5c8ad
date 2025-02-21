@@ -1,10 +1,12 @@
+
 interface PriceOverlayProps {
   totalCost: number;
 }
+
 export function PriceOverlay({
   totalCost
 }: PriceOverlayProps) {
-  return <div className="absolute bottom-0 left-0 right-0 bg-[#0A0B3B] text-white p-4">
+  return <div className="absolute bottom-0 left-0 right-0 bg-[#0A0B3B] text-white py-6 px-4">
       <div className="text-2xl font-bold">
         Your Price: ${totalCost.toLocaleString()}
       </div>
