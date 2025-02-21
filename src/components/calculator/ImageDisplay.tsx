@@ -24,7 +24,7 @@ export function ImageDisplay({
   const containerHeight = isMobile ? "h-[300px]" : "h-full";
 
   return <div className={`relative ${containerHeight} flex flex-col`}>
-      <div className="flex-grow">
+      <div className="h-[80%]">
         {isLoading ? <LoadingSpinner /> : currentImageSrc && !imageError ? (
           <div className="w-full h-full">
             <img 
