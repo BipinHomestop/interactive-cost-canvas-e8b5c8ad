@@ -16,7 +16,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-
 export function CostCalculator() {
   const isMobile = useIsMobile();
   const [showFAQ, setShowFAQ] = useState(false);
@@ -36,7 +35,6 @@ export function CostCalculator() {
     handleNextStep,
     handlePrevStep
   } = useCalculator();
-
   const getStepOptions = () => {
     switch (step) {
       case 4:
@@ -67,7 +65,6 @@ export function CostCalculator() {
         return {};
     }
   };
-
   const isNextDisabled = () => {
     switch (step) {
       case 1:
@@ -90,7 +87,6 @@ export function CostCalculator() {
         return false;
     }
   };
-
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -98,7 +94,7 @@ export function CostCalculator() {
       case 2:
         return <ContactStep register={register} />;
       case 3:
-        return <GarageCapacityStep onCapacityChange={value => setValue("garageCapacity", value)} />;
+        return <GarageCapacityStep capacity={formValues.garageCapacity} onCapacityChange={([value]) => setValue("garageCapacity", value)} />;
       case 4:
         return <GarageFinishStep selectedFinish={selectedFinish} onFinishChange={value => setValue("garageFinish", value as "snowfall" | "granite" | "slate")} />;
       case 5:
@@ -115,11 +111,9 @@ export function CostCalculator() {
         return null;
     }
   };
-
   const toggleFAQ = () => {
     setShowFAQ(!showFAQ);
   };
-
   return <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
         <div className={`${isMobile ? 'w-full' : 'w-[40%]'} h-full`}>
