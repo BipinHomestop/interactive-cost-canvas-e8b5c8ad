@@ -27,41 +27,39 @@ export function GarageCapacityStep({ onCapacityChange }: GarageCapacityStepProps
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">How Many Cars Is Your Garage?</h2>
-        <p className="text-gray-600 mb-8">
-          Select the capacity of your garage to help us provide an accurate estimate
-        </p>
-      </div>
-
-      <div className="flex items-center justify-center gap-4">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={decrement}
-          disabled={capacity <= 1}
-          className="h-14 w-14 border-2 hover:border-[#1A3174] hover:text-[#1A3174]"
-        >
-          <Minus className="h-6 w-6" />
-        </Button>
-        <div className="w-20 h-14 flex items-center justify-center text-2xl font-bold border-2 rounded-md">
-          {capacity}
+    <div className="space-y-12 max-w-md mx-auto py-8">
+      <div className="text-center space-y-8">
+        <div className="space-y-4">
+          <div className="text-[120px] font-bold text-[#1A3174] leading-none">
+            {capacity}
+          </div>
+          <div className="text-4xl font-bold text-[#1A3174]">
+            CAR
+          </div>
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={increment}
-          disabled={capacity >= 4}
-          className="h-14 w-14 border-2 hover:border-[#1A3174] hover:text-[#1A3174]"
-        >
-          <Plus className="h-6 w-6" />
-        </Button>
+        
+        <div className="flex items-center justify-center gap-16 relative">
+          <div className="h-px w-32 bg-gray-200 absolute"></div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={decrement}
+            disabled={capacity <= 1}
+            className="relative z-10 h-14 w-14 rounded-full border-2 border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90 hover:border-[#1A3174]/90"
+          >
+            <Minus className="h-6 w-6" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={increment}
+            disabled={capacity >= 4}
+            className="relative z-10 h-14 w-14 rounded-full border-2 border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90 hover:border-[#1A3174]/90"
+          >
+            <Plus className="h-6 w-6" />
+          </Button>
+        </div>
       </div>
-
-      <p className="text-sm text-gray-500 text-center">
-        Please select your garage capacity <span className="text-red-500">*</span>
-      </p>
     </div>
   );
 }
