@@ -6,7 +6,7 @@ interface PriceOverlayProps {
 export function PriceOverlay({
   totalCost
 }: PriceOverlayProps) {
-  return <div className="absolute bottom-0 left-0 right-0 bg-[#0A0B3B] text-white py-6 px-4 h-full">
+  return <div className="absolute inset-0 bg-[#0A0B3B] text-white py-6 px-4">
       <div className="text-2xl font-bold">
         Your Price: ${totalCost.toLocaleString()}
       </div>

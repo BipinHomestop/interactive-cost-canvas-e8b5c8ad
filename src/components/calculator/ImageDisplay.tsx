@@ -23,8 +23,8 @@ export function ImageDisplay({
 
   const containerHeight = isMobile ? "h-[300px]" : "h-full";
 
-  return <div className={`relative ${containerHeight} flex flex-col`}>
-      <div className="h-[80%]">
+  return <div className={`relative ${containerHeight}`}>
+      <div className="h-[80%] relative">
         {isLoading ? <LoadingSpinner /> : currentImageSrc && !imageError ? (
           <div className="w-full h-full">
             <img 
@@ -47,6 +47,6 @@ export function ImageDisplay({
           <ImageError />
         )}
       </div>
-      {step >= 3 && <div className="h-[20%]"><PriceOverlay totalCost={totalCost} /></div>}
+      {step >= 3 && <div className="h-[20%] relative"><PriceOverlay totalCost={totalCost} /></div>}
     </div>;
 }
