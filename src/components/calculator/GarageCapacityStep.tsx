@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Garage } from "lucide-react";
+import { Car } from "lucide-react";
 
 interface GarageCapacityStepProps {
   onCapacityChange: (value: number) => void;
@@ -24,10 +24,10 @@ export function GarageCapacityStep({ onCapacityChange }: GarageCapacityStepProps
 
       <div className="relative">
         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 z-10">
-          <Garage size={20} />
+          <Car size={20} />
         </div>
         <Select onValueChange={(value) => onCapacityChange(Number(value))} required>
-          <SelectTrigger className="w-full pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]">
+          <SelectTrigger className="w-full pl-10 h-14 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]">
             <SelectValue placeholder="Select garage capacity" />
           </SelectTrigger>
           <SelectContent>
