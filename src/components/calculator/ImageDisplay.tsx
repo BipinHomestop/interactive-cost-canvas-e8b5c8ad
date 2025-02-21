@@ -13,9 +13,7 @@ export function ImageDisplay({
   options
 }: ImageDisplayProps) {
   const isMobile = useIsMobile();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const {
     isLoading,
     imageError,
@@ -25,27 +23,30 @@ export function ImageDisplay({
 
   const containerHeight = isMobile ? "h-[300px]" : "h-full";
 
-  console.log('ImageDisplay - Current options:', options);
-  console.log('ImageDisplay - Current image source:', currentImageSrc);
-
-  return <div className={`relative ${containerHeight}`}>
-      {isLoading ? <LoadingSpinner /> : currentImageSrc && !imageError ? <div className="w-full h-full">
-          <img 
-            key={currentImageSrc}
-            src={currentImageSrc} 
-            alt={`Step ${step} visualization`} 
-            onError={() => {
-              console.error('Image failed to load:', currentImageSrc);
-              setImageError(true);
-              toast({
-                title: "Image load failed",
-                description: "The image could not be displayed.",
-                variant: "destructive"
-              });
-            }} 
-            className="background:white" 
-          />
-        </div> : <ImageError />}
-      {step >= 3 && <PriceOverlay totalCost={totalCost} />}
+  return <div className={`relative ${containerHeight} flex flex-col`}>
+      <div className="flex-grow">
+        {isLoading ? <LoadingSpinner /> : currentImageSrc && !imageError ? (
+          <div className="w-full h-full">
+            <img 
+              key={currentImageSrc}
+              src={currentImageSrc} 
+              alt={`Step ${step} visualization`} 
+              onError={() => {
+                console.error('Image failed to load:', currentImageSrc);
+                setImageError(true);
+                toast({
+                  title: "Image load failed",
+                  description: "The image could not be displayed.",
+                  variant: "destructive"
+                });
+              }} 
+              className="w-full h-full object-cover" 
+            />
+          </div>
+        ) : (
+          <ImageError />
+        )}
+      </div>
+      {step >= 3 && <div className="h-[20%]"><PriceOverlay totalCost={totalCost} /></div>}
     </div>;
 }
