@@ -81,17 +81,17 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-200px)]">
       <ScrollArea className="flex-1">
-        <div className="space-y-6 px-4 pb-6">
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h3 className="font-semibold mb-4">Price Breakdown</h3>
-            <div className="space-y-2">
+        <div className="space-y-8 px-6 pb-8">
+          <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <h3 className="font-semibold text-lg mb-4">Price Breakdown</h3>
+            <div className="space-y-3">
               {renderPriceBreakdown().map((item, index) => (
                 <div key={index} className="flex justify-between text-sm">
-                  <span>{item.label}</span>
-                  <span>${item.price.toFixed(2)}</span>
+                  <span className="text-gray-600">{item.label}</span>
+                  <span className="font-medium">${item.price.toFixed(2)}</span>
                 </div>
               ))}
-              <div className="border-t pt-2 mt-4 flex justify-between font-semibold">
+              <div className="border-t pt-3 mt-4 flex justify-between font-semibold text-lg">
                 <span>Total</span>
                 <span>${totalCost.toFixed(2)}</span>
               </div>
@@ -99,17 +99,17 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold">Choose Installation Date</h3>
+            <h3 className="font-semibold text-lg">Choose Installation Date</h3>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal hover:border-[#1A3174] hover:text-[#1A3174]",
+                    "w-full justify-start text-left font-normal h-14",
                     !date && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className="mr-2 h-5 w-5" />
                   {date ? format(date, "PPP") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
@@ -126,30 +126,30 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
             </Popover>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-4">Choose how to pay the deposit</h3>
+          <div className="space-y-4">
+            <h3 className="font-semibold text-lg mb-4">Choose how to pay the deposit</h3>
             <RadioGroup defaultValue="credit" className="space-y-4">
-              <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 border rounded-lg p-5 hover:border-[#1A3174] transition-colors">
+                <div className="flex items-center space-x-3 flex-1">
                   <RadioGroupItem 
                     value="credit" 
                     id="credit"
                     className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
                   />
-                  <Label htmlFor="credit" className="font-medium">
+                  <Label htmlFor="credit" className="font-medium text-base">
                     Pay $100.00 deposit with credit or debit card
                   </Label>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between space-x-2 border rounded-lg p-4">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 border rounded-lg p-5 hover:border-[#1A3174] transition-colors">
+                <div className="flex items-center space-x-3 flex-1">
                   <RadioGroupItem 
                     value="paypal" 
                     id="paypal"
                     className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
                   />
-                  <Label htmlFor="paypal" className="font-medium">
+                  <Label htmlFor="paypal" className="font-medium text-base">
                     Pay $100.00 deposit with PayPal
                   </Label>
                 </div>
@@ -159,18 +159,18 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
           <div className="space-y-4">
             <div className="flex space-x-2">
-              <Input placeholder="Enter coupon code" className="flex-1" />
-              <Button variant="default" className="bg-[#1A3174]">Apply</Button>
+              <Input placeholder="Enter coupon code" className="h-14 flex-1" />
+              <Button variant="default" className="bg-[#1A3174] h-14 px-8">Apply</Button>
             </div>
             <p className="text-gray-500 text-sm">No coupon applied</p>
           </div>
 
           <div className="space-y-4">
-            <Input placeholder="Card number" />
+            <Input placeholder="Card number" className="h-14" />
             <div className="grid grid-cols-3 gap-4">
-              <Input placeholder="MM" />
-              <Input placeholder="YY" />
-              <Input placeholder="CVV" />
+              <Input placeholder="MM" className="h-14" />
+              <Input placeholder="YY" className="h-14" />
+              <Input placeholder="CVV" className="h-14" />
             </div>
           </div>
         </div>
