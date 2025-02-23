@@ -176,17 +176,17 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         </div>
       </ScrollArea>
 
-      <div className="sticky bottom-0 left-0 right-0 bg-white py-4 px-4 border-t">
-        <div className="flex gap-4 w-full">
+      <div className="sticky bottom-0 left-0 right-0 bg-white p-6 border-t">
+        <div className="max-w-xl mx-auto flex gap-4">
           <Button 
             variant="outline" 
             onClick={onBack}
-            className="flex-1 bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
+            className="flex-1 h-14 bg-white border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 font-semibold text-base"
           >
             Back
           </Button>
           <Button 
-            className="flex-1 bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
+            className="flex-1 h-14 bg-[#1A3174] text-white hover:bg-[#1A3174]/90 font-semibold text-base"
           >
             Complete your order
           </Button>
