@@ -22,9 +22,10 @@ export function ImageDisplay({
   } = useCalculatorImage(step, options);
 
   const containerHeight = isMobile ? "h-[300px]" : "h-full";
+  const imageContainerHeight = step <= 2 ? "h-full" : "h-[80%]";
 
   return <div className={`relative ${containerHeight}`}>
-      <div className="h-[80%] relative">
+      <div className={`relative ${imageContainerHeight}`}>
         {isLoading ? <LoadingSpinner /> : currentImageSrc && !imageError ? (
           <div className="w-full h-full">
             <img 
