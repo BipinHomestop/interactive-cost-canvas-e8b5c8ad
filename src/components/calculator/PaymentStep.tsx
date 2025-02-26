@@ -79,7 +79,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100vh-200px)]">
+    <div className="flex flex-col h-full">
       <ScrollArea className="flex-1">
         <div className="space-y-8 px-6 pb-8">
           <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
@@ -176,7 +176,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         </div>
       </ScrollArea>
 
-      <div className="sticky bottom-0 left-0 right-0 bg-white p-6 border-t">
+      <div className="h-full sticky bottom-0 left-0 right-0 bg-white p-6 border-t">
         <div className="flex gap-4">
           <Button 
             variant="outline" 
