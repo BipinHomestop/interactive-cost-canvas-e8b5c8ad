@@ -7,8 +7,8 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
   const isMobile = useIsMobile();
   
   return (
-    <div className="sticky bottom-0 left-0 right-0 bg-white p-4 sm:p-6 border-t mt-auto">
-      <div className="grid grid-cols-2 gap-4 w-full">
+    <div className="fixed bottom-0 left-0 right-0 bg-white p-4 sm:p-6 border-t mt-auto z-10">
+      <div className="grid grid-cols-2 gap-4 w-full max-w-screen-xl mx-auto">
         {step > 1 ? (
           <Button 
             type="button" 

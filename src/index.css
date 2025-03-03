@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
 
 @tailwind base;
@@ -88,6 +89,22 @@
   .card-modern {
     @apply p-4;
   }
+  
+  /* Fix for fixed navigation at bottom of screen */
+  .pb-safe {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+  }
+  
+  /* Improve text readability on small screens */
+  .text-sm-mobile {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .text-xs-mobile {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
 }
 
 /* Tablet and desktop refinements */
@@ -101,4 +118,9 @@
   .container {
     @apply px-8;
   }
+}
+
+/* Fix for iOS safari viewport height issues */
+html, body, #root {
+  height: -webkit-fill-available;
 }
