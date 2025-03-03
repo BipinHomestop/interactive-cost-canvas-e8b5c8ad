@@ -22,8 +22,7 @@ export function ImageDisplay({
   } = useCalculatorImage(step, options);
 
   const containerHeight = isMobile ? "h-[300px]" : "h-full";
-  const imageContainerHeight = step <= 2 ? "h-full" : isMobile ? "h-[85%]" : "h-[80%]";
-  const priceContainerHeight = isMobile ? "h-[15%]" : "h-[20%]";
+  const imageContainerHeight = step <= 2 ? "h-full" : "h-[80%]";
 
   return <div className={`relative ${containerHeight}`}>
       <div className={`relative ${imageContainerHeight}`}>
@@ -49,6 +48,6 @@ export function ImageDisplay({
           <ImageError />
         )}
       </div>
-      {step >= 3 && <div className={`${priceContainerHeight} relative`}><PriceOverlay totalCost={totalCost} /></div>}
+      {step >= 3 && <div className="h-[20%] relative"><PriceOverlay totalCost={totalCost} /></div>}
     </div>;
 }
