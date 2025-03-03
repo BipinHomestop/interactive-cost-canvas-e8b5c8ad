@@ -82,7 +82,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)]">
-      <ScrollArea className="flex-1 overflow-y-auto">
+      <ScrollArea className="flex-1 overflow-y-auto pb-20 sm:pb-24">
         <div className="space-y-6 px-4 sm:px-6 pb-8">
           <div className="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-sm">
             <h3 className="font-semibold text-lg mb-3">Price Breakdown</h3>
@@ -161,18 +161,18 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
           <div className="space-y-3 sm:space-y-4">
             <div className="flex space-x-2">
-              <Input placeholder="Enter coupon code" className="h-12 sm:h-14 flex-1 text-sm" />
-              <Button variant="default" className="bg-[#1A3174] h-12 sm:h-14 px-4 sm:px-8 text-sm sm:text-base">Apply</Button>
+              <Input placeholder="Enter coupon code" className="h-10 sm:h-14 flex-1 text-sm" />
+              <Button variant="default" className="bg-[#1A3174] h-10 sm:h-14 px-4 sm:px-8 text-sm sm:text-base">Apply</Button>
             </div>
             <p className="text-gray-500 text-xs sm:text-sm">No coupon applied</p>
           </div>
 
           <div className="space-y-3 sm:space-y-4">
-            <Input placeholder="Card number" className="h-12 sm:h-14 text-sm" />
+            <Input placeholder="Card number" className="h-10 sm:h-14 text-sm" />
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
-              <Input placeholder="MM" className="h-12 sm:h-14 text-sm" />
-              <Input placeholder="YY" className="h-12 sm:h-14 text-sm" />
-              <Input placeholder="CVV" className="h-12 sm:h-14 text-sm" />
+              <Input placeholder="MM" className="h-10 sm:h-14 text-sm" />
+              <Input placeholder="YY" className="h-10 sm:h-14 text-sm" />
+              <Input placeholder="CVV" className="h-10 sm:h-14 text-sm" />
             </div>
           </div>
         </div>
@@ -183,12 +183,12 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
           <Button 
             variant="outline" 
             onClick={onBack}
-            className="flex-1 h-12 sm:h-14 rounded-lg bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 text-sm sm:text-base"
+            className="flex-1 h-10 sm:h-14 rounded-lg bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 text-sm sm:text-base"
           >
             Back
           </Button>
           <Button 
-            className="flex-1 h-12 sm:h-14 rounded-lg bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm sm:text-base"
+            className="flex-1 h-10 sm:h-14 rounded-lg bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm sm:text-base"
           >
             Complete your order
           </Button>
