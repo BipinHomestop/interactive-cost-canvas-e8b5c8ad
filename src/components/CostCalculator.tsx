@@ -16,7 +16,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-
 export function CostCalculator() {
   const isMobile = useIsMobile();
   const [showFAQ, setShowFAQ] = useState(false);
@@ -36,7 +35,6 @@ export function CostCalculator() {
     handleNextStep,
     handlePrevStep
   } = useCalculator();
-
   const getStepOptions = () => {
     switch (step) {
       case 4:
@@ -67,7 +65,6 @@ export function CostCalculator() {
         return {};
     }
   };
-
   const isNextDisabled = () => {
     switch (step) {
       case 1:
@@ -90,7 +87,6 @@ export function CostCalculator() {
         return false;
     }
   };
-
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -115,32 +111,23 @@ export function CostCalculator() {
         return null;
     }
   };
-
   const toggleFAQ = () => {
     setShowFAQ(!showFAQ);
   };
-
   return <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
         <div className={`${isMobile ? 'w-full' : 'w-[40%]'} h-full`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
         </div>
         
-        <div className={`
-          ${isMobile ? 'w-full mt-3 pb-20' : 'w-[40%] border-x border-gray-200'} 
-          bg-white p-6 
-          ${isMobile ? 'min-h-[400px]' : 'h-full'} 
-          relative
-        `}>
+        <div className="px-[20px] py-[20px]">
           <form onSubmit={handleSubmit(() => {})} className="h-full">
             <div className="flex-grow">
               {renderStep()}
             </div>
-            {step < 9 && (
-              <div className={isMobile ? '' : 'absolute bottom-6 left-6 right-6'}>
+            {step < 9 && <div className={isMobile ? '' : 'absolute bottom-6 left-6 right-6'}>
                 <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
-              </div>
-            )}
+              </div>}
           </form>
         </div>
 
