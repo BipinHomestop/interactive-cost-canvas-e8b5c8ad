@@ -18,7 +18,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
           onClick={onPrev}
           className={`
             w-full border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10
-            ${isMobile ? 'h-12' : ''}
+            ${isMobile ? 'h-10' : ''}
           `}
         >
           Back
@@ -31,7 +31,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
           type="button"
           className={`
             w-full bg-[#1A3174] hover:bg-[#1A3174]/90
-            ${isMobile ? 'h-12' : ''}
+            ${isMobile ? 'h-10' : ''}
           `}
           onClick={onNext}
           disabled={isNextDisabled}

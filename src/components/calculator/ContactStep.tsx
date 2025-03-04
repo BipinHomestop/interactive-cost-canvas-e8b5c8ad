@@ -48,10 +48,10 @@ export function ContactStep({
     </div>
   );
   
-  // For mobile, wrap content in ScrollArea to ensure scrollability
+  // For mobile, wrap content in ScrollArea with proper height to avoid bottom nav overlap
   if (isMobile) {
     return (
-      <ScrollArea className="h-[calc(100vh-180px)]">
+      <ScrollArea className="h-[calc(100vh-220px)]">
         {content}
       </ScrollArea>
     );
