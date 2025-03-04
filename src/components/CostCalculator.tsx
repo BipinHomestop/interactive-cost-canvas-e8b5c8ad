@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -127,7 +128,7 @@ export function CostCalculator() {
         </div>
         
         <div className={`
-          ${isMobile ? 'w-full mt-3 pb-20' : 'w-[40%] border-x border-gray-200'} 
+          ${isMobile ? 'w-full mt-1' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-6 
           ${isMobile ? 'min-h-[400px]' : 'h-full'} 
           relative
