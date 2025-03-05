@@ -17,6 +17,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function CostCalculator() {
   const isMobile = useIsMobile();
@@ -121,6 +122,12 @@ export function CostCalculator() {
     setShowFAQ(!showFAQ);
   };
 
+  const formContent = (
+    <div className="flex-grow">
+      {renderStep()}
+    </div>
+  );
+
   return <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
         <div className={`${isMobile ? 'w-full' : 'w-[40%]'} h-full`}>
@@ -134,11 +141,15 @@ export function CostCalculator() {
           relative
         `}>
           <form onSubmit={handleSubmit(() => {})} className="h-full">
-            <div className="flex-grow">
-              {renderStep()}
-            </div>
+            {isMobile && step !== 9 ? (
+              <ScrollArea className="h-[calc(100vh-220px)]">
+                {formContent}
+              </ScrollArea>
+            ) : (
+              formContent
+            )}
             {step < 9 && (
-              <div className={isMobile ? '' : 'absolute bottom-6 left-6 right-6'}>
+              <div className={isMobile ? 'pt-4' : 'absolute bottom-6 left-6 right-6'}>
                 <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
               </div>
             )}
@@ -160,7 +171,13 @@ export function CostCalculator() {
             overflow-y-auto
             ${isMobile && !showFAQ ? 'hidden' : ''}
           `}>
-          {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
+          {isMobile ? (
+            <ScrollArea className="h-[calc(100vh-200px)]">
+              {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
+            </ScrollArea>
+          ) : (
+            (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />
+          )}
         </div>
       </div>
     </div>;

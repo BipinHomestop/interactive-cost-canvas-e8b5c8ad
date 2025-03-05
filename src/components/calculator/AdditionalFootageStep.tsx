@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AdditionalFootageStepProps {
   needExtraFootage: string;
@@ -19,6 +21,7 @@ export function AdditionalFootageStep({
 }: AdditionalFootageStepProps) {
   const [images, setImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadImages = async () => {
@@ -60,8 +63,8 @@ export function AdditionalFootageStep({
     onExtraFootageChange(value);
   };
 
-  return (
-    <div className="space-y-6 h-[400px] overflow-y-auto">
+  const content = (
+    <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Additional Square Footage</h2>
         <p className="text-gray-600">
@@ -131,4 +134,10 @@ export function AdditionalFootageStep({
       </div>
     </div>
   );
+
+  return isMobile ? (
+    <ScrollArea>
+      {content}
+    </ScrollArea>
+  ) : content;
 }

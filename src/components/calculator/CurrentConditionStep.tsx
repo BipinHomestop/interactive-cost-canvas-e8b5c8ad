@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "./components/LoadingSpinner";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CurrentConditionStepProps {
   condition: string;
@@ -15,6 +17,7 @@ export function CurrentConditionStep({
 }: CurrentConditionStepProps) {
   const [images, setImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadImages = async () => {
@@ -81,7 +84,7 @@ export function CurrentConditionStep({
     }
   };
 
-  return (
+  const content = (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Current Condition</h2>
@@ -116,4 +119,10 @@ export function CurrentConditionStep({
       </div>
     </div>
   );
+
+  return isMobile ? (
+    <ScrollArea>
+      {content}
+    </ScrollArea>
+  ) : content;
 }
