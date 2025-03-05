@@ -73,7 +73,7 @@ export function GarageFinishStep({
   }, []);
 
   const optionsGrid = (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4 pb-6">
       {GARAGE_FINISHES.map(finish => (
         <button
           key={finish.value}
@@ -109,7 +109,7 @@ export function GarageFinishStep({
       </h2>
       
       {isMobile ? (
-        <ScrollArea className="h-[calc(100vh-260px)]">
+        <ScrollArea className="h-[calc(100vh-320px)]">
           {optionsGrid}
         </ScrollArea>
       ) : (
