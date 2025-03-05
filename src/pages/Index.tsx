@@ -28,7 +28,7 @@ const Index = () => {
                 className="h-9 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5" 
                 onClick={() => setShowFAQs(true)}
               >
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="w-4 h-4 mr-1" />
                 <span className="text-xs">FAQs</span>
               </Button>
             )}
@@ -63,11 +63,15 @@ const Index = () => {
             </Button>
           </div>
           <ScrollArea className="flex-1 p-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((step) => (
-              <div key={step} className="mb-8">
-                <FAQSection step={step} />
-              </div>
-            ))}
+            <FAQSection step={1} />
+            <FAQSection step={2} />
+            <FAQSection step={3} />
+            <FAQSection step={4} />
+            <FAQSection step={5} />
+            <FAQSection step={6} />
+            <FAQSection step={7} />
+            <FAQSection step={8} />
+            <FAQSection step={9} />
           </ScrollArea>
         </div>
       )}
