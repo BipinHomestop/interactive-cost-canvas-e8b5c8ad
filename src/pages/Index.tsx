@@ -62,16 +62,18 @@ const Index = () => {
               <X className="w-5 h-5" />
             </Button>
           </div>
-          <ScrollArea className="flex-1 p-4">
-            <FAQSection step={1} />
-            <FAQSection step={2} />
-            <FAQSection step={3} />
-            <FAQSection step={4} />
-            <FAQSection step={5} />
-            <FAQSection step={6} />
-            <FAQSection step={7} />
-            <FAQSection step={8} />
-            <FAQSection step={9} />
+          <ScrollArea className="flex-1 px-4 py-6">
+            <div className="space-y-8">
+              <FAQSection step={1} />
+              <FAQSection step={2} />
+              <FAQSection step={3} />
+              <FAQSection step={4} />
+              <FAQSection step={5} />
+              <FAQSection step={6} />
+              <FAQSection step={7} />
+              <FAQSection step={8} />
+              <FAQSection step={9} />
+            </div>
           </ScrollArea>
         </div>
       )}

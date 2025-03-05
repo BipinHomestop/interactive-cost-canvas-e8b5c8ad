@@ -1,3 +1,4 @@
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface FAQ {
@@ -10,6 +11,31 @@ interface FAQSectionProps {
 }
 
 export function FAQSection({ step }: FAQSectionProps) {
+  const getStepTitle = (step: number): string => {
+    switch (step) {
+      case 1:
+        return "Location";
+      case 2:
+        return "Contact Information";
+      case 3:
+        return "Garage Capacity";
+      case 4:
+        return "Garage Finish";
+      case 5:
+        return "Stem Walls";
+      case 6:
+        return "House Steps";
+      case 7:
+        return "Additional Footage";
+      case 8:
+        return "Current Condition";
+      case 9:
+        return "Payment";
+      default:
+        return "General";
+    }
+  };
+
   const getFAQs = (step: number): FAQ[] => {
     switch (step) {
       case 1:
@@ -189,8 +215,10 @@ export function FAQSection({ step }: FAQSectionProps) {
   };
 
   return (
-    <>
-      <h2 className="text-xl font-bold mb-6 text-[#1A3174] text-left">FAQ's</h2>
+    <div className="mb-8">
+      <h2 className="text-xl font-bold mb-4 text-[#1A3174] text-left">
+        {getStepTitle(step)} FAQ's
+      </h2>
       <Accordion type="single" collapsible className="space-y-4">
         {getFAQs(step).map((faq, index) => (
           <AccordionItem 
@@ -207,6 +235,6 @@ export function FAQSection({ step }: FAQSectionProps) {
           </AccordionItem>
         ))}
       </Accordion>
-    </>
+    </div>
   );
 }
