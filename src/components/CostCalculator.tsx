@@ -140,16 +140,16 @@ export function CostCalculator() {
           ${isMobile ? 'min-h-[400px]' : 'h-full'} 
           relative
         `}>
-          <form onSubmit={handleSubmit(() => {})} className="h-full">
+          <form onSubmit={handleSubmit(() => {})} className="h-full flex flex-col">
             {isMobile && step !== 9 ? (
-              <ScrollArea className="h-[calc(100vh-220px)]">
+              <div className="flex-1">
                 {formContent}
-              </ScrollArea>
+              </div>
             ) : (
               formContent
             )}
             {step < 9 && (
-              <div className={isMobile ? 'pt-4' : 'absolute bottom-6 left-6 right-6'}>
+              <div className={isMobile ? 'pt-4 sticky bottom-0 left-0 right-0 bg-white z-10' : 'absolute bottom-6 left-6 right-6'}>
                 <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
               </div>
             )}

@@ -73,20 +73,21 @@ export function GarageFinishStep({
   }, []);
 
   const optionsGrid = (
-    <div className="grid grid-cols-2 gap-4 pb-6">
+    <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-28' : 'pb-6'}`}>
       {GARAGE_FINISHES.map(finish => (
         <button
           key={finish.value}
           onClick={() => onFinishChange(finish.value)}
           className={`
-            flex items-center gap-3 p-4 border transition-all w-full
+            flex items-center gap-3 p-3 border transition-all w-full
             ${selectedFinish === finish.value 
               ? "bg-[#1A3174] text-white border-[#1A3174]" 
               : "bg-white text-[#0A0B3B] border-gray-200 hover:border-[#1A3174]/30"
             }
+            ${isMobile ? 'rounded-md' : ''}
           `}
         >
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
             <img
               src={finishImages[finish.value] || '/placeholder.svg'}
               alt={finish.label}
@@ -94,7 +95,7 @@ export function GarageFinishStep({
               loading="eager"
             />
           </div>
-          <span className="font-medium text-left">
+          <span className="font-medium text-left text-sm">
             {finish.label}
           </span>
         </button>
@@ -109,7 +110,7 @@ export function GarageFinishStep({
       </h2>
       
       {isMobile ? (
-        <ScrollArea className="h-[calc(100vh-320px)]">
+        <ScrollArea className="flex-1">
           {optionsGrid}
         </ScrollArea>
       ) : (
