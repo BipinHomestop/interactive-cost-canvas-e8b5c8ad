@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -18,7 +17,6 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
-
 export function CostCalculator() {
   const isMobile = useIsMobile();
   const [showFAQ, setShowFAQ] = useState(false);
@@ -38,7 +36,6 @@ export function CostCalculator() {
     handleNextStep,
     handlePrevStep
   } = useCalculator();
-
   const getStepOptions = () => {
     switch (step) {
       case 4:
@@ -69,7 +66,6 @@ export function CostCalculator() {
         return {};
     }
   };
-
   const isNextDisabled = () => {
     switch (step) {
       case 1:
@@ -92,7 +88,6 @@ export function CostCalculator() {
         return false;
     }
   };
-
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -117,42 +112,26 @@ export function CostCalculator() {
         return null;
     }
   };
-
   const toggleFAQ = () => {
     setShowFAQ(!showFAQ);
   };
-
-  const formContent = (
-    <div className="flex-grow">
+  const formContent = <div className="flex-grow">
       {renderStep()}
-    </div>
-  );
-
+    </div>;
   return <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
         <div className={`${isMobile ? 'w-full' : 'w-[40%]'} h-full`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
         </div>
         
-        <div className={`
-          ${isMobile ? 'w-full mt-1' : 'w-[40%] border-x border-gray-200'} 
-          bg-white p-6 
-          ${isMobile ? 'min-h-[400px]' : 'h-full'} 
-          relative
-        `}>
+        <div className="py-[25px] px-[30px]">
           <form onSubmit={handleSubmit(() => {})} className="h-full">
-            {isMobile && step !== 9 ? (
-              <ScrollArea className="h-[calc(100vh-220px)]">
+            {isMobile && step !== 9 ? <ScrollArea className="h-[calc(100vh-220px)]">
                 {formContent}
-              </ScrollArea>
-            ) : (
-              formContent
-            )}
-            {step < 9 && (
-              <div className={isMobile ? 'pt-4' : 'absolute bottom-6 left-6 right-6'}>
+              </ScrollArea> : formContent}
+            {step < 9 && <div className={isMobile ? 'pt-4' : 'absolute bottom-6 left-6 right-6'}>
                 <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
-              </div>
-            )}
+              </div>}
           </form>
         </div>
 
@@ -171,13 +150,9 @@ export function CostCalculator() {
             overflow-y-auto
             ${isMobile && !showFAQ ? 'hidden' : ''}
           `}>
-          {isMobile ? (
-            <ScrollArea className="h-[calc(100vh-200px)]">
+          {isMobile ? <ScrollArea className="h-[calc(100vh-200px)]">
               {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
-            </ScrollArea>
-          ) : (
-            (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />
-          )}
+            </ScrollArea> : (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
         </div>
       </div>
     </div>;
