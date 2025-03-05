@@ -63,11 +63,13 @@ const Index = () => {
             </Button>
           </div>
           <ScrollArea className="flex-1 p-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((step) => (
-              <div key={step} className="mb-8">
-                <FAQSection step={step} />
-              </div>
-            ))}
+            <div className="space-y-8 pb-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((step) => (
+                <div key={step} className="pt-2">
+                  <FAQSection step={step} />
+                </div>
+              ))}
+            </div>
           </ScrollArea>
         </div>
       )}
