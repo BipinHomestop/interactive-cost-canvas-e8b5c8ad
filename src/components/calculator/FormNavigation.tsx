@@ -9,7 +9,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
   return (
     <div className={`
       grid grid-cols-2 gap-4 w-full
-      ${isMobile ? 'py-2 z-10 bg-white shadow-sm' : ''}
+      ${isMobile ? 'py-3 z-10' : ''}
     `}>
       {step > 1 ? (
         <Button 

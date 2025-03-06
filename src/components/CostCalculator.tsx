@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -137,19 +136,19 @@ export function CostCalculator() {
         <div className={`
           ${isMobile ? 'w-full mt-1' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-6 
-          ${isMobile ? 'min-h-[400px] pb-24' : 'h-full'} 
+          ${isMobile ? 'min-h-[400px]' : 'h-full'} 
           relative
         `}>
           <form onSubmit={handleSubmit(() => {})} className="h-full flex flex-col">
             {isMobile && step !== 9 ? (
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1">
                 {formContent}
               </div>
             ) : (
               formContent
             )}
             {step < 9 && (
-              <div className={isMobile ? 'pt-4 pb-2 sticky bottom-0 left-0 right-0 bg-white z-10' : 'absolute bottom-6 left-6 right-6'}>
+              <div className={isMobile ? 'pt-4 sticky bottom-0 left-0 right-0 bg-white z-10' : 'absolute bottom-6 left-6 right-6'}>
                 <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
               </div>
             )}
