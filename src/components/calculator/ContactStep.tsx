@@ -2,7 +2,6 @@
 import { Input } from "@/components/ui/input";
 import { UseFormRegister } from "react-hook-form";
 import { CalculatorInputs } from "./types";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ContactStepProps {
@@ -15,7 +14,7 @@ export function ContactStep({
   const isMobile = useIsMobile();
   
   return (
-    <div className={`space-y-6 ${isMobile ? 'px-2 pb-20' : ''}`}>
+    <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Contact Information</h2>
         <p className="text-gray-600">
@@ -23,9 +22,9 @@ export function ContactStep({
         </p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
             Full Name
           </label>
           <Input 
@@ -38,7 +37,7 @@ export function ContactStep({
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
             Phone Number
           </label>
           <Input 
@@ -51,7 +50,7 @@ export function ContactStep({
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email Address
           </label>
           <Input 

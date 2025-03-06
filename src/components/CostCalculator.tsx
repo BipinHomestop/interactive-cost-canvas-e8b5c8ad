@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -121,8 +122,14 @@ export function CostCalculator() {
     setShowFAQ(!showFAQ);
   };
 
+  // Determine if the current step needs scrolling on mobile
+  const needsScrollOnMobile = () => {
+    // Specifically identify which steps need scrolling
+    return [2, 4, 9].includes(step);
+  };
+
   const formContent = (
-    <div className={`flex-grow ${isMobile ? 'pb-32' : ''}`}>
+    <div className={`${isMobile ? 'pb-16' : ''}`}>
       {renderStep()}
     </div>
   );
@@ -136,16 +143,18 @@ export function CostCalculator() {
         <div className={`
           ${isMobile ? 'w-full' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-4 sm:p-6
-          ${isMobile ? 'min-h-[65vh] pb-40' : 'h-full'} 
+          ${isMobile ? 'flex-1 overflow-hidden' : 'h-full'} 
           relative
         `}>
           <form onSubmit={handleSubmit(() => {})} className="h-full flex flex-col">
-            {isMobile && step !== 9 ? (
-              <ScrollArea className="h-[calc(65vh-100px)] pr-2">
+            {isMobile && needsScrollOnMobile() && step !== 9 ? (
+              <ScrollArea className="flex-1 pr-2 overflow-y-auto">
                 {formContent}
               </ScrollArea>
             ) : (
-              formContent
+              <div className="flex-1 overflow-y-auto">
+                {formContent}
+              </div>
             )}
             {step < 9 && (
               <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
@@ -157,7 +166,6 @@ export function CostCalculator() {
             ${isMobile ? 'w-full' : 'w-[20%]'} 
             bg-white p-6 
             ${isMobile ? 'h-auto' : 'h-full'} 
-            overflow-y-auto
             ${isMobile && !showFAQ ? 'hidden' : ''}
           `}>
           {isMobile ? (

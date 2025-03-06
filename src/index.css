@@ -66,7 +66,7 @@
     
     /* Fix bottom padding for mobile forms */
     .mobile-form-content {
-      @apply pb-32;
+      @apply pb-20;
     }
     
     /* Remove gap between image and form */
@@ -109,7 +109,7 @@
 /* Mobile-first responsive design */
 @media (max-width: 640px) {
   .container {
-    @apply px-4;
+    @apply px-3;
   }
   
   .input-modern {
@@ -121,17 +121,17 @@
   }
   
   .card-modern {
-    @apply p-4;
+    @apply p-3;
   }
   
   /* Fix bottom padding for form content to prevent overlap with navigation */
   .form-content {
-    @apply pb-32;
+    @apply pb-20;
   }
   
   /* Ensure inputs have enough touch target size */
   input, select, textarea, button {
-    @apply min-h-[3rem] text-[16px];
+    @apply min-h-[2.75rem] text-[16px];
   }
 }
 

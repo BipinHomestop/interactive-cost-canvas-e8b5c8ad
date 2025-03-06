@@ -15,10 +15,10 @@ export function LocationStep({
   const isMobile = useIsMobile();
   
   return (
-    <div className={`space-y-6 px-[12px] ${isMobile ? 'pb-16' : ''}`}>
+    <div className={`space-y-4 px-[2px] ${isMobile ? 'pb-4' : ''}`}>
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Where's Your Project Located?</h2>
-        <p className="text-gray-600 mb-8">
+        <p className="text-gray-600 mb-4">
           Select your location from the DFW area to get started with your garage renovation estimate
         </p>
       </div>
@@ -28,7 +28,7 @@ export function LocationStep({
           <MapPin size={20} />
         </div>
         <Select onValueChange={onLocationChange} required>
-          <SelectTrigger className="w-full h-14 pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]">
+          <SelectTrigger className="w-full h-12 pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]">
             <SelectValue placeholder="Select your location" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
