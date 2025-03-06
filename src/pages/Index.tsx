@@ -1,7 +1,7 @@
 
 import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, Phone, X } from "lucide-react";
+import { AlertCircle, HelpCircle, Phone, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { FAQSection } from "@/components/calculator/FAQSection";
@@ -21,6 +21,17 @@ const Index = () => {
             className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
           />
           <div className="flex items-center gap-2">
+            {isMobile && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="h-9 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
+                onClick={() => setShowFAQs(true)}
+              >
+                <HelpCircle className="w-4 h-4 mr-1" />
+                <span className="text-xs">FAQs</span>
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="sm"
