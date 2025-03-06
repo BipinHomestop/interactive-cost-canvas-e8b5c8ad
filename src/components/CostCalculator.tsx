@@ -123,33 +123,33 @@ export function CostCalculator() {
   };
 
   const formContent = (
-    <div className={`flex-grow ${isMobile ? 'pb-20' : ''}`}>
+    <div className={`flex-grow ${isMobile ? 'pb-28' : ''}`}>
       {renderStep()}
     </div>
   );
 
   return <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
-        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} h-full`}>
+        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} ${isMobile ? 'h-[30vh]' : 'h-full'}`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
         </div>
         
         <div className={`
-          ${isMobile ? 'w-full mt-1' : 'w-[40%] border-x border-gray-200'} 
+          ${isMobile ? 'w-full' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-6 
-          ${isMobile ? 'min-h-[400px] pb-24' : 'h-full'} 
+          ${isMobile ? 'min-h-[70vh] pb-36' : 'h-full'} 
           relative
         `}>
           <form onSubmit={handleSubmit(() => {})} className="h-full flex flex-col">
             {isMobile && step !== 9 ? (
-              <div className="flex-1">
+              <ScrollArea className="h-[calc(70vh-80px)]">
                 {formContent}
-              </div>
+              </ScrollArea>
             ) : (
               formContent
             )}
             {step < 9 && (
-              <div className={isMobile ? 'sticky bottom-0 left-0 right-0 bg-white z-10' : 'absolute bottom-6 left-6 right-6'}>
+              <div className={isMobile ? 'h-24' : 'mt-auto pt-6'}>
                 <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
               </div>
             )}
@@ -157,7 +157,7 @@ export function CostCalculator() {
         </div>
 
         <div className={`
-            ${isMobile ? 'w-full mt-0' : 'w-[20%]'} 
+            ${isMobile ? 'w-full' : 'w-[20%]'} 
             bg-white p-6 
             ${isMobile ? 'h-auto' : 'h-full'} 
             overflow-y-auto

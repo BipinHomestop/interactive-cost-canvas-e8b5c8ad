@@ -44,20 +44,25 @@
   /* Improve mobile scrolling experience */
   @media (max-width: 768px) {
     html, body {
-      @apply h-full overflow-x-hidden overscroll-none;
+      @apply h-full overscroll-none;
+      overflow-x: hidden;
+      position: relative;
     }
     
     #root {
       @apply h-full;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
     }
     
     /* Fix bottom padding for mobile forms */
     .mobile-form-content {
-      @apply pb-28;
+      @apply pb-32;
     }
     
     /* Remove gap between image and form */
-    .mobile-container .image-container + .form-container {
+    .mobile-container > div {
       @apply mt-0;
     }
   }
@@ -113,7 +118,7 @@
   
   /* Fix bottom padding for form content to prevent overlap with navigation */
   .form-content {
-    @apply pb-28;
+    @apply pb-32;
   }
   
   /* Ensure inputs have enough touch target size */

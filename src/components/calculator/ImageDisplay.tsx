@@ -6,7 +6,7 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ImageError } from "./components/ImageError";
 import { PriceOverlay } from "./components/PriceOverlay";
 import { useCalculatorImage } from "./hooks/useCalculatorImage";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function ImageDisplay({
   totalCost,
@@ -22,7 +22,7 @@ export function ImageDisplay({
     setImageError
   } = useCalculatorImage(step, options);
 
-  const containerHeight = isMobile ? "h-[250px]" : "h-full";
+  const containerHeight = isMobile ? "h-full" : "h-full";
   const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[70%]" : "h-[80%]");
   const priceContainerHeight = isMobile ? "h-[30%]" : "h-[20%]";
 

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -57,7 +56,6 @@ export function GarageFinishStep({
         if (error) throw error;
 
         const imageMap = images.reduce((acc: Record<string, string>, img) => {
-          // Remove 'option-' prefix to match with finish values
           const finishType = img.image_type.replace('option-', '');
           acc[finishType] = img.image_path;
           return acc;
@@ -73,7 +71,7 @@ export function GarageFinishStep({
   }, []);
 
   const optionsGrid = (
-    <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-28' : 'pb-6'}`}>
+    <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-20' : 'pb-6'}`}>
       {GARAGE_FINISHES.map(finish => (
         <button
           key={finish.value}

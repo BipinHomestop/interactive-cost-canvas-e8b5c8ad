@@ -18,7 +18,7 @@ export function StemWallsStep({
   const isMobile = useIsMobile();
   
   return (
-    <div className={`space-y-6 ${isMobile ? 'pb-16' : ''}`}>
+    <div className={`space-y-6 ${isMobile ? 'pb-8 px-2' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Stem Walls</h2>
         <p className="text-gray-600">
@@ -35,7 +35,7 @@ export function StemWallsStep({
               needStemWalls === "yes"
                 ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-            }`}
+            } ${isMobile ? 'h-14' : ''}`}
             onClick={() => onStemWallsChange("yes")}
           >
             Yes
@@ -47,7 +47,7 @@ export function StemWallsStep({
               needStemWalls === "no"
                 ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-            }`}
+            } ${isMobile ? 'h-14' : ''}`}
             onClick={() => onStemWallsChange("no")}
           >
             No
@@ -63,7 +63,7 @@ export function StemWallsStep({
                 stemWallType === "standard"
                   ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-              }`}
+              } ${isMobile ? 'h-14' : ''}`}
               onClick={() => onStemWallTypeChange("standard")}
             >
               4" Standard
@@ -75,7 +75,7 @@ export function StemWallsStep({
                 stemWallType === "large"
                   ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                   : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
-              }`}
+              } ${isMobile ? 'h-14' : ''}`}
               onClick={() => onStemWallTypeChange("large")}
             >
               Large stem walls

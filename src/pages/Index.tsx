@@ -12,7 +12,7 @@ const Index = () => {
   const [showFAQs, setShowFAQs] = useState(false);
   
   return (
-    <div className="h-screen flex flex-col bg-card-DEFAULT">
+    <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
       <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">
           <img 
