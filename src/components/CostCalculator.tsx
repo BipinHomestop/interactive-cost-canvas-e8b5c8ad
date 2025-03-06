@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -149,9 +148,7 @@ export function CostCalculator() {
               formContent
             )}
             {step < 9 && (
-              <div className={isMobile ? 'h-24' : 'mt-auto pt-6'}>
-                <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
-              </div>
+              <FormNavigation step={step} onNext={handleNextStep} onPrev={handlePrevStep} isLastStep={step === 8} isNextDisabled={isNextDisabled()} />
             )}
           </form>
         </div>
