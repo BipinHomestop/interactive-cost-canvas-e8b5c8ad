@@ -83,8 +83,8 @@ export function CurrentConditionStep({
     }
   };
 
-  const content = (
-    <div className={`space-y-6 ${isMobile ? 'pb-8 px-2' : ''}`}>
+  return (
+    <div className={`space-y-6 ${isMobile ? 'pb-24 px-2' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Current Condition</h2>
         <p className="text-gray-600">
@@ -92,7 +92,7 @@ export function CurrentConditionStep({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 pt-4">
         {loading ? (
           <div className="col-span-2 flex justify-center">
             <LoadingSpinner />
@@ -118,6 +118,4 @@ export function CurrentConditionStep({
       </div>
     </div>
   );
-
-  return content;
 }

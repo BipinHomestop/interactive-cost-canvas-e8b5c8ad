@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -71,7 +72,7 @@ export function GarageFinishStep({
   }, []);
 
   const optionsGrid = (
-    <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-20' : 'pb-6'}`}>
+    <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-24' : 'pb-6'}`}>
       {GARAGE_FINISHES.map(finish => (
         <button
           key={finish.value}
@@ -102,15 +103,15 @@ export function GarageFinishStep({
   );
 
   return (
-    <div className={`flex flex-col h-full ${isMobile ? 'px-2' : ''}`}>
+    <div className={`flex flex-col h-full ${isMobile ? 'px-2 pb-8' : ''}`}>
       <h2 className="text-2xl font-bold text-[#1A3174] mb-6">
         Garage Finish
       </h2>
       
       {isMobile ? (
-        <ScrollArea className="flex-1">
+        <div className="flex-1">
           {optionsGrid}
-        </ScrollArea>
+        </div>
       ) : (
         <div className="overflow-y-auto">
           {optionsGrid}

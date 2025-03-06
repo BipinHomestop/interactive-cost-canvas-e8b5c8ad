@@ -123,26 +123,26 @@ export function CostCalculator() {
   };
 
   const formContent = (
-    <div className={`flex-grow ${isMobile ? 'pb-28' : ''}`}>
+    <div className={`flex-grow ${isMobile ? 'pb-32' : ''}`}>
       {renderStep()}
     </div>
   );
 
   return <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
-        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} ${isMobile ? 'h-[30vh]' : 'h-full'}`}>
+        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} ${isMobile ? 'h-[25vh] min-h-[200px]' : 'h-full'}`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
         </div>
         
         <div className={`
           ${isMobile ? 'w-full' : 'w-[40%] border-x border-gray-200'} 
-          bg-white p-6 
-          ${isMobile ? 'min-h-[70vh] pb-36' : 'h-full'} 
+          bg-white p-4 sm:p-6
+          ${isMobile ? 'min-h-[75vh] pb-40' : 'h-full'} 
           relative
         `}>
           <form onSubmit={handleSubmit(() => {})} className="h-full flex flex-col">
             {isMobile && step !== 9 ? (
-              <ScrollArea className="h-[calc(70vh-80px)]">
+              <ScrollArea className="h-[calc(75vh-100px)] pr-2">
                 {formContent}
               </ScrollArea>
             ) : (

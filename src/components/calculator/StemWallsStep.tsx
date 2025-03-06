@@ -18,7 +18,7 @@ export function StemWallsStep({
   const isMobile = useIsMobile();
   
   return (
-    <div className={`space-y-6 ${isMobile ? 'pb-8 px-2' : ''}`}>
+    <div className={`space-y-6 ${isMobile ? 'pb-24 px-2' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Stem Walls</h2>
         <p className="text-gray-600">
@@ -26,7 +26,7 @@ export function StemWallsStep({
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 pt-4">
         <div className="flex gap-4">
           <Button
             type="button"

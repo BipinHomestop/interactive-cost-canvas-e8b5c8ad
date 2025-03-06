@@ -36,6 +36,7 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
+    overscroll-behavior: none;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-semibold;
@@ -44,9 +45,16 @@
   /* Improve mobile scrolling experience */
   @media (max-width: 768px) {
     html, body {
-      @apply h-full overscroll-none;
+      @apply h-full;
       overflow-x: hidden;
       position: relative;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      overscroll-behavior-y: none;
+    }
+    
+    input, button, select, textarea {
+      font-size: 16px !important; /* Prevents iOS zoom */
     }
     
     #root {
@@ -109,7 +117,7 @@
   }
   
   .btn-primary, .btn-outline {
-    @apply px-4 py-2 text-sm;
+    @apply px-4 py-2;
   }
   
   .card-modern {
@@ -122,8 +130,8 @@
   }
   
   /* Ensure inputs have enough touch target size */
-  input, select, textarea {
-    @apply min-h-12;
+  input, select, textarea, button {
+    @apply min-h-[3rem] text-[16px];
   }
 }
 

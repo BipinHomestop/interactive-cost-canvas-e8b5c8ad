@@ -62,8 +62,8 @@ export function AdditionalFootageStep({
     onExtraFootageChange(value);
   };
 
-  const content = (
-    <div className={`space-y-6 ${isMobile ? 'pb-8 px-2' : ''}`}>
+  return (
+    <div className={`space-y-6 ${isMobile ? 'pb-24 px-2' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Additional Square Footage</h2>
         <p className="text-gray-600">
@@ -71,7 +71,7 @@ export function AdditionalFootageStep({
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6 pt-4">
         <div className="flex gap-4">
           <Button
             type="button"
@@ -100,7 +100,7 @@ export function AdditionalFootageStep({
         </div>
 
         {needExtraFootage === "yes" && (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 mt-4">
             {loading ? (
               <div className="col-span-2 flex justify-center">
                 <LoadingSpinner />
@@ -133,6 +133,4 @@ export function AdditionalFootageStep({
       </div>
     </div>
   );
-
-  return content;
 }
