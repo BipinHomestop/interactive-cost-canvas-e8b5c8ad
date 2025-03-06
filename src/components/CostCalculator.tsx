@@ -125,8 +125,8 @@ export function CostCalculator() {
   // Determine if the current step needs scrolling on mobile
   const needsScrollOnMobile = () => {
     // Specifically identify which steps need scrolling
-    // Removed step 3 from the list that needs scrolling
-    return [2, 4, 9].includes(step);
+    // Removed step 3 and 9 from the list that needs scrolling
+    return [2, 4].includes(step);
   };
 
   const formContent = (
