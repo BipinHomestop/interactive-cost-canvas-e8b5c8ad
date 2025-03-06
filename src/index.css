@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
 
 @tailwind base;
@@ -73,6 +72,11 @@
     .mobile-container > div {
       @apply mt-0;
     }
+    
+    /* Better price display on mobile */
+    .price-text-mobile {
+      @apply text-3xl font-bold;
+    }
   }
 }
 
@@ -132,6 +136,19 @@
   /* Ensure inputs have enough touch target size */
   input, select, textarea, button {
     @apply min-h-[3rem] text-[16px];
+  }
+  
+  /* Price overlay improvements */
+  .price-overlay {
+    @apply py-3 px-4;
+  }
+  
+  .price-amount {
+    @apply text-3xl font-extrabold;
+  }
+  
+  .price-compare {
+    @apply text-lg mt-1;
   }
 }
 
