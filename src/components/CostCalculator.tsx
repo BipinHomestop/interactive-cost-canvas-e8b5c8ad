@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -155,14 +154,6 @@ export function CostCalculator() {
             )}
           </form>
         </div>
-
-        {isMobile && <Button onClick={toggleFAQ} className="w-full mt-3 mb-3 h-12 flex items-center justify-center gap-2" variant="outline">
-            {showFAQ ? <>
-                Hide FAQ <ChevronUp className="h-4 w-4" />
-              </> : <>
-                Show FAQ <ChevronDown className="h-4 w-4" />
-              </>}
-          </Button>}
 
         <div className={`
             ${isMobile ? 'w-full mt-0' : 'w-[20%]'} 
