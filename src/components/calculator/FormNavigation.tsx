@@ -9,7 +9,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
   return (
     <div className={`
       grid grid-cols-2 gap-4 w-full
-      ${isMobile ? 'py-4 sticky bottom-0 bg-white z-20' : ''}
+      ${isMobile ? 'py-4 sticky bottom-0 bg-white z-50 border-t border-gray-100' : ''}
     `}>
       {step > 1 ? (
         <Button 
@@ -18,7 +18,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
           onClick={onPrev}
           className={`
             w-full border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10
-            ${isMobile ? 'h-12 rounded-full' : ''}
+            ${isMobile ? 'h-14 rounded-full' : ''}
           `}
         >
           Back
@@ -31,7 +31,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
           type="button"
           className={`
             w-full bg-[#1A3174] hover:bg-[#1A3174]/90
-            ${isMobile ? 'h-12 rounded-full' : ''}
+            ${isMobile ? 'h-14 rounded-full' : ''}
           `}
           onClick={onNext}
           disabled={isNextDisabled}

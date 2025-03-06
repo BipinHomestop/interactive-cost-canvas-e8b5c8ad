@@ -15,7 +15,7 @@ export function ContactStep({
   const isMobile = useIsMobile();
   
   const content = (
-    <div className={`space-y-6 ${isMobile ? 'px-2 pb-16' : ''}`}>
+    <div className={`space-y-6 ${isMobile ? 'px-2 pb-24' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Contact Information</h2>
         <p className="text-gray-600">
@@ -31,7 +31,7 @@ export function ContactStep({
           <Input 
             id="name" 
             type="text" 
-            className={`w-full focus:ring-0 focus:outline-none focus:border-[#1A3174] ${isMobile ? 'h-10 py-1 px-3' : ''}`} 
+            className={`w-full focus:ring-0 focus:outline-none focus:border-[#1A3174] ${isMobile ? 'h-12 py-1 px-3' : ''}`} 
             {...register("name")} 
             placeholder="Enter your full name" 
           />
@@ -44,7 +44,7 @@ export function ContactStep({
           <Input 
             id="phone" 
             type="tel" 
-            className={`w-full focus:ring-0 focus:outline-none focus:border-[#1A3174] ${isMobile ? 'h-10 py-1 px-3' : ''}`} 
+            className={`w-full focus:ring-0 focus:outline-none focus:border-[#1A3174] ${isMobile ? 'h-12 py-1 px-3' : ''}`} 
             {...register("phone")} 
             placeholder="Enter your phone number" 
           />
@@ -57,7 +57,7 @@ export function ContactStep({
           <Input 
             id="email" 
             type="email" 
-            className={`w-full focus:ring-0 focus:outline-none focus:border-[#1A3174] ${isMobile ? 'h-10 py-1 px-3' : ''}`} 
+            className={`w-full focus:ring-0 focus:outline-none focus:border-[#1A3174] ${isMobile ? 'h-12 py-1 px-3' : ''}`} 
             {...register("email")} 
             placeholder="Enter your email address" 
           />
@@ -69,7 +69,7 @@ export function ContactStep({
   // For mobile, wrap content in ScrollArea with proper height to avoid bottom nav overlap
   if (isMobile) {
     return (
-      <ScrollArea className="h-[calc(100vh-220px)]">
+      <ScrollArea className="h-[calc(100vh-260px)]">
         {content}
       </ScrollArea>
     );

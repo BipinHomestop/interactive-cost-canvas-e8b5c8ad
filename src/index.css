@@ -44,11 +44,21 @@
   /* Improve mobile scrolling experience */
   @media (max-width: 768px) {
     html, body {
-      @apply h-full overflow-x-hidden;
+      @apply h-full overflow-x-hidden overscroll-none;
     }
     
     #root {
       @apply h-full;
+    }
+    
+    /* Fix bottom padding for mobile forms */
+    .mobile-form-content {
+      @apply pb-28;
+    }
+    
+    /* Remove gap between image and form */
+    .mobile-container .image-container + .form-container {
+      @apply mt-0;
     }
   }
 }
@@ -103,7 +113,12 @@
   
   /* Fix bottom padding for form content to prevent overlap with navigation */
   .form-content {
-    @apply pb-20;
+    @apply pb-28;
+  }
+  
+  /* Ensure inputs have enough touch target size */
+  input, select, textarea {
+    @apply min-h-12;
   }
 }
 
