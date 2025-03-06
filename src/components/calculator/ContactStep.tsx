@@ -30,7 +30,7 @@ export function ContactStep({
           <Input 
             id="name" 
             type="text" 
-            className="w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174]" 
+            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${isMobile ? 'h-12' : ''}`} 
             {...register("name")} 
             placeholder="Enter your full name" 
           />
@@ -43,7 +43,7 @@ export function ContactStep({
           <Input 
             id="phone" 
             type="tel" 
-            className="w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174]" 
+            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${isMobile ? 'h-12' : ''}`} 
             {...register("phone")} 
             placeholder="Enter your phone number" 
           />
@@ -56,7 +56,7 @@ export function ContactStep({
           <Input 
             id="email" 
             type="email" 
-            className="w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174]" 
+            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${isMobile ? 'h-12' : ''}`} 
             {...register("email")} 
             placeholder="Enter your email address" 
           />
