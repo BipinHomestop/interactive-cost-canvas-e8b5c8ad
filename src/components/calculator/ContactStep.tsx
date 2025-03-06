@@ -15,7 +15,7 @@ export function ContactStep({
   const isMobile = useIsMobile();
   
   const content = (
-    <div className={`space-y-6 ${isMobile ? 'px-2' : ''}`}>
+    <div className={`space-y-6 ${isMobile ? 'px-2 pb-16' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Contact Information</h2>
         <p className="text-gray-600">

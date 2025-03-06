@@ -1,5 +1,6 @@
 
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HouseStepsStepProps {
   needSteps: string;
@@ -10,8 +11,10 @@ export function HouseStepsStep({
   needSteps,
   onNeedStepsChange,
 }: HouseStepsStepProps) {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${isMobile ? 'pb-16' : ''}`}>
       <div>
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">House Steps</h2>
         <p className="text-gray-600">

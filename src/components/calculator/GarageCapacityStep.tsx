@@ -25,7 +25,7 @@ export function GarageCapacityStep({ capacity, onCapacityChange }: GarageCapacit
   };
 
   return (
-    <div className={`space-y-8 ${isMobile ? 'px-2' : ''}`}>
+    <div className={`space-y-8 ${isMobile ? 'px-2 pb-16' : ''}`}>
       <div className="text-center">
         <h2 className="text-2xl font-bold text-primary mb-2">Garage Capacity</h2>
         <p className="text-gray-600 mb-8">

@@ -13,7 +13,7 @@ const Index = () => {
   
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT">
-      <nav className="bg-white shadow-lg py-3 px-4 z-50">
+      <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">
           <img 
             src="/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png" 
@@ -21,17 +21,6 @@ const Index = () => {
             className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
           />
           <div className="flex items-center gap-2">
-            {isMobile && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="h-9 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5" 
-                onClick={() => setShowFAQs(true)}
-              >
-                <AlertCircle className="w-4 h-4" />
-                <span className="text-xs">FAQs</span>
-              </Button>
-            )}
             <Button 
               variant="outline" 
               size="sm"

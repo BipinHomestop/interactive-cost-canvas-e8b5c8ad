@@ -22,9 +22,9 @@ export function ImageDisplay({
     setImageError
   } = useCalculatorImage(step, options);
 
-  const containerHeight = isMobile ? "h-[300px]" : "h-full";
-  const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[75%]" : "h-[80%]");
-  const priceContainerHeight = isMobile ? "h-[25%]" : "h-[20%]";
+  const containerHeight = isMobile ? "h-[250px]" : "h-full";
+  const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[70%]" : "h-[80%]");
+  const priceContainerHeight = isMobile ? "h-[30%]" : "h-[20%]";
 
   return <div className={`relative ${containerHeight}`}>
       <div className={`relative ${imageContainerHeight}`}>

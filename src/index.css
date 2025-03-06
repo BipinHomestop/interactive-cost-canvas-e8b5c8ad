@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
 
 @tailwind base;
@@ -38,6 +39,17 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-semibold;
+  }
+  
+  /* Improve mobile scrolling experience */
+  @media (max-width: 768px) {
+    html, body {
+      @apply h-full overflow-x-hidden;
+    }
+    
+    #root {
+      @apply h-full;
+    }
   }
 }
 
@@ -87,6 +99,11 @@
   
   .card-modern {
     @apply p-4;
+  }
+  
+  /* Fix bottom padding for form content to prevent overlap with navigation */
+  .form-content {
+    @apply pb-20;
   }
 }
 
