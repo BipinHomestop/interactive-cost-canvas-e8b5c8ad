@@ -1,5 +1,6 @@
+
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -21,6 +22,14 @@ export function AdditionalFootageStep({
   const [images, setImages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     const loadImages = async () => {
@@ -38,11 +47,15 @@ export function AdditionalFootageStep({
           return acc;
         }, {});
 
-        setImages(imageMap);
-        setLoading(false);
+        if (isMounted.current) {
+          setImages(imageMap);
+          setLoading(false);
+        }
       } catch (error) {
         console.error('Error loading images:', error);
-        setLoading(false);
+        if (isMounted.current) {
+          setLoading(false);
+        }
       }
     };
 

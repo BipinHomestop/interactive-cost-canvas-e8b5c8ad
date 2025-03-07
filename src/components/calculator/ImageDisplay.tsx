@@ -7,6 +7,7 @@ import { ImageError } from "./components/ImageError";
 import { PriceOverlay } from "./components/PriceOverlay";
 import { useCalculatorImage } from "./hooks/useCalculatorImage";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState, useEffect } from "react";
 
 export function ImageDisplay({
   totalCost,
@@ -21,19 +22,30 @@ export function ImageDisplay({
     currentImageSrc,
     setImageError
   } = useCalculatorImage(step, options);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const containerHeight = isMobile ? "h-full" : "h-full";
   const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[80%]" : "h-[80%]");
   const priceContainerHeight = isMobile ? "h-[20%]" : "h-[20%]";
 
+  // Reset the loaded state when image src changes
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [currentImageSrc]);
+
   return <div className={`relative ${containerHeight}`}>
       <div className={`relative ${imageContainerHeight}`}>
-        {isLoading ? <LoadingSpinner /> : currentImageSrc && !imageError ? (
-          <div className="w-full h-full">
+        {isLoading || (currentImageSrc && !imageLoaded) ? <LoadingSpinner /> : null}
+        
+        {currentImageSrc && !imageError ? (
+          <div className={`w-full h-full transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <img 
               key={currentImageSrc}
               src={currentImageSrc} 
-              alt={`Step ${step} visualization`} 
+              alt={`Step ${step} visualization`}
+              loading="lazy"
+              decoding="async"
+              onLoad={() => setImageLoaded(true)}
               onError={() => {
                 console.error('Image failed to load:', currentImageSrc);
                 setImageError(true);
@@ -46,9 +58,9 @@ export function ImageDisplay({
               className="w-full h-full object-cover" 
             />
           </div>
-        ) : (
+        ) : imageError ? (
           <ImageError />
-        )}
+        ) : null}
       </div>
       {step >= 3 && <div className={`${priceContainerHeight} relative`}><PriceOverlay totalCost={totalCost} /></div>}
     </div>;
