@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,17 +44,7 @@ export function CurrentConditionStep({
       }
     };
 
-    // We need to check if the component is mounted before setting state
-    let isMounted = true;
-    loadImages().then(() => {
-      if (isMounted) {
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
+    loadImages();
   }, []);
 
   const handleConditionChange = async (value: string) => {

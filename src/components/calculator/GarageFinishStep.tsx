@@ -43,7 +43,6 @@ export function GarageFinishStep({
   onFinishChange
 }: GarageFinishStepProps) {
   const [finishImages, setFinishImages] = useState<Record<string, string>>({});
-  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -64,13 +63,6 @@ export function GarageFinishStep({
         }, {});
 
         setFinishImages(imageMap);
-        
-        // Initialize all images as not loaded
-        const initialLoadState = Object.keys(imageMap).reduce((acc: Record<string, boolean>, key) => {
-          acc[key] = false;
-          return acc;
-        }, {});
-        setLoadedImages(initialLoadState);
       } catch (error) {
         console.error('Error loading finish images:', error);
       }
@@ -78,13 +70,6 @@ export function GarageFinishStep({
 
     loadOptionImages();
   }, []);
-
-  const handleImageLoad = (finishType: string) => {
-    setLoadedImages(prev => ({
-      ...prev,
-      [finishType]: true
-    }));
-  };
 
   const optionsGrid = (
     <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-24' : 'pb-6'}`}>
@@ -101,26 +86,13 @@ export function GarageFinishStep({
             ${isMobile ? 'rounded-md' : ''}
           `}
         >
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0 relative">
-            {!loadedImages[finish.value] && finishImages[finish.value] && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-6 h-6 border-2 border-gray-300 border-t-[#1A3174] rounded-full animate-spin"></div>
-              </div>
-            )}
-            {finishImages[finish.value] ? (
-              <img
-                src={finishImages[finish.value]}
-                alt={finish.label}
-                className={`w-full h-full object-cover transition-opacity duration-300 ${loadedImages[finish.value] ? 'opacity-100' : 'opacity-0'}`}
-                loading="lazy"
-                decoding="async"
-                onLoad={() => handleImageLoad(finish.value)}
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-xs text-gray-500">Loading</span>
-              </div>
-            )}
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
+            <img
+              src={finishImages[finish.value] || '/placeholder.svg'}
+              alt={finish.label}
+              className="w-full h-full object-cover"
+              loading="eager"
+            />
           </div>
           <span className="font-medium text-left text-sm">
             {finish.label}
