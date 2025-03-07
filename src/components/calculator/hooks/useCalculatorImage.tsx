@@ -9,8 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 // Create an image cache to reduce redundant loading
 const imageCache = new Map<string, string>();
 
-// Default fallback image for step 9
-const STEP_9_FALLBACK_IMAGE = "/lovable-uploads/75969665-c7eb-443e-908d-5d6c1fdc27d8.png";
+// Default fallback image for step 9 - using the image you uploaded
+const STEP_9_FALLBACK_IMAGE = "/lovable-uploads/8a00d804-6ddb-4b7c-9787-906e3f1f7c8b.png";
 
 export function useCalculatorImage(step: number, options?: Partial<CalculatorInputs>) {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +36,8 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
       }
     } else if (step === 4 && options?.garageFinish) {
       key += `-finish-${options.garageFinish}`;
+    } else if (step === 9) {
+      key += `-payment`;
     }
     
     return key;
@@ -151,19 +153,9 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
               imageData = { image_path: finishCollection.garage_finish_image };
             }
           } else if (step === 9) {
-            // Special handling for step 9
-            try {
-              imageData = await db.getStepImage(9, 'default');
-              
-              // If no specific image found for step 9, use a fallback
-              if (!imageData?.image_path) {
-                console.log('No specific image for step 9, using fallback');
-                imageData = { image_path: STEP_9_FALLBACK_IMAGE };
-              }
-            } catch (error) {
-              console.error('Error fetching step 9 image, using fallback:', error);
-              imageData = { image_path: STEP_9_FALLBACK_IMAGE };
-            }
+            // Always use the fallback image for step 9 to ensure it loads
+            console.log('Using fallback image for step 9');
+            imageData = { image_path: STEP_9_FALLBACK_IMAGE };
           } else {
             // For all other steps, get the default image
             imageData = await db.getStepImage(step, 'default');
@@ -176,7 +168,15 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
             imageCache.set(cacheKey, imagePath);
           } else {
             console.log('No image path found for step:', step);
-            setImageError(true);
+            
+            // If no image is found for step 9, use the fallback
+            if (step === 9) {
+              console.log('Using fallback image for step 9');
+              imagePath = STEP_9_FALLBACK_IMAGE;
+              imageCache.set(cacheKey, imagePath);
+            } else {
+              setImageError(true);
+            }
           }
         }
         
@@ -191,9 +191,9 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         if (!isMounted.current) return;
         console.error('Error in loadImage:', error);
         
-        // For step 9, use fallback image on error
+        // For step 9, always use fallback image on error
         if (step === 9) {
-          console.log('Using fallback image for step 9');
+          console.log('Using fallback image for step 9 after error');
           setCurrentImageSrc(STEP_9_FALLBACK_IMAGE);
         } else {
           setImageError(true);

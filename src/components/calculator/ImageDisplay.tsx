@@ -83,7 +83,7 @@ export function ImageDisplay({
               key={`${currentImageSrc}-${retryCount}`}
               src={currentImageSrc + (retryCount > 0 ? `?retry=${retryCount}` : '')} 
               alt={`Step ${step} visualization`}
-              loading="lazy"
+              loading="eager"
               decoding="async"
               onLoad={() => setImageLoaded(true)}
               onError={handleImageError} 
