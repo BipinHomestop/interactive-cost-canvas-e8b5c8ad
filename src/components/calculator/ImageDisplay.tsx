@@ -23,6 +23,8 @@ export function ImageDisplay({
     setImageError
   } = useCalculatorImage(step, options);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3;
 
   const containerHeight = isMobile ? "h-full" : "h-full";
   const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[80%]" : "h-[80%]");
@@ -31,7 +33,45 @@ export function ImageDisplay({
   // Reset the loaded state when image src changes
   useEffect(() => {
     setImageLoaded(false);
+    setRetryCount(0);
   }, [currentImageSrc]);
+
+  // Auto retry loading if image fails
+  const handleImageError = () => {
+    console.error('Image failed to load:', currentImageSrc);
+    
+    if (retryCount < maxRetries) {
+      // Retry loading the image
+      setRetryCount(prevCount => prevCount + 1);
+      
+      // Add a small delay before retry to avoid rapid failures
+      setTimeout(() => {
+        const img = new Image();
+        img.src = currentImageSrc + '?retry=' + new Date().getTime();
+        img.onload = () => {
+          setImageLoaded(true);
+          setImageError(false);
+        };
+        img.onerror = () => {
+          if (retryCount + 1 >= maxRetries) {
+            setImageError(true);
+            toast({
+              title: "Image load failed",
+              description: "The image could not be displayed after multiple attempts.",
+              variant: "destructive"
+            });
+          }
+        };
+      }, 1000);
+    } else {
+      setImageError(true);
+      toast({
+        title: "Image load failed",
+        description: "The image could not be displayed.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return <div className={`relative ${containerHeight}`}>
       <div className={`relative ${imageContainerHeight}`}>
@@ -40,21 +80,13 @@ export function ImageDisplay({
         {currentImageSrc && !imageError ? (
           <div className={`w-full h-full transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
             <img 
-              key={currentImageSrc}
-              src={currentImageSrc} 
+              key={`${currentImageSrc}-${retryCount}`}
+              src={currentImageSrc + (retryCount > 0 ? `?retry=${retryCount}` : '')} 
               alt={`Step ${step} visualization`}
               loading="lazy"
               decoding="async"
               onLoad={() => setImageLoaded(true)}
-              onError={() => {
-                console.error('Image failed to load:', currentImageSrc);
-                setImageError(true);
-                toast({
-                  title: "Image load failed",
-                  description: "The image could not be displayed.",
-                  variant: "destructive"
-                });
-              }} 
+              onError={handleImageError} 
               className="w-full h-full object-cover" 
             />
           </div>
