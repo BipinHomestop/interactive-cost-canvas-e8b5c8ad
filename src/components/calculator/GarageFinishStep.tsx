@@ -43,6 +43,9 @@ const GARAGE_FINISHES = [{
   label: "Wombat"
 }];
 
+// Define a set of valid finish values for quick lookup
+const VALID_FINISHES = new Set(GARAGE_FINISHES.map(finish => finish.value));
+
 interface GarageFinishStepProps {
   selectedFinish: string;
   onFinishChange: (value: string) => void;
@@ -76,7 +79,13 @@ export function GarageFinishStep({
           return;
         }
 
-        const imageMap = images.reduce((acc: Record<string, string>, img) => {
+        // Filter out any image data for finishes that are not in our current list
+        const currentImages = images.filter(img => {
+          const finishType = img.image_type.replace('option-', '');
+          return VALID_FINISHES.has(finishType);
+        });
+
+        const imageMap = currentImages.reduce((acc: Record<string, string>, img) => {
           // Extract the finish type from the image_type (remove 'option-' prefix)
           const finishType = img.image_type.replace('option-', '');
           acc[finishType] = img.image_path;
@@ -94,6 +103,14 @@ export function GarageFinishStep({
 
     loadOptionImages();
   }, []);
+
+  // Check if the selected finish is still valid, if not reset it
+  useEffect(() => {
+    if (selectedFinish && !VALID_FINISHES.has(selectedFinish)) {
+      // Reset to first valid option if the current selection is invalid
+      onFinishChange(GARAGE_FINISHES[0].value);
+    }
+  }, [selectedFinish, onFinishChange]);
 
   const optionsGrid = (
     <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-24' : 'pb-6'}`}>
