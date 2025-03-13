@@ -59,7 +59,11 @@ export function GarageFinishStep({
   useEffect(() => {
     const loadOptionImages = async () => {
       setIsLoading(true);
+      setFinishImages({}); // Reset images to force refresh
+      
       try {
+        console.log('Fetching finish option images from step 4...');
+        
         const { data: images, error } = await supabase
           .from('calculator_step_images')
           .select('image_type, image_path')
@@ -76,23 +80,41 @@ export function GarageFinishStep({
           return;
         }
 
+        console.log('Received images data:', images);
+
+        if (!images || images.length === 0) {
+          console.warn('No images found for step 4 with option- prefix');
+          toast({
+            title: "No finish options found",
+            description: "Could not find any finish option images in the database.",
+            variant: "destructive"
+          });
+          return;
+        }
+
         const imageMap = images.reduce((acc: Record<string, string>, img) => {
           const finishType = img.image_type.replace('option-', '');
           acc[finishType] = img.image_path;
+          console.log(`Mapped ${img.image_type} -> ${finishType}: ${img.image_path}`);
           return acc;
         }, {});
 
-        console.log('Loaded finish images:', imageMap);
+        console.log('Finish images mapping:', imageMap);
         setFinishImages(imageMap);
       } catch (error) {
         console.error('Error in loadOptionImages:', error);
+        toast({
+          title: "Error processing images",
+          description: "There was a problem processing the finish option images.",
+          variant: "destructive"
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
     loadOptionImages();
-  }, []);
+  }, []); // Empty dependency array to run once on mount
 
   const optionsGrid = (
     <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-24' : 'pb-6'}`}>
