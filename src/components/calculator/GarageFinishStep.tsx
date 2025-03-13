@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "@/components/ui/use-toast";
 
 const GARAGE_FINISHES = [{
   value: "carbon",
@@ -52,10 +53,12 @@ export function GarageFinishStep({
   onFinishChange
 }: GarageFinishStepProps) {
   const [finishImages, setFinishImages] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadOptionImages = async () => {
+      setIsLoading(true);
       try {
         const { data: images, error } = await supabase
           .from('calculator_step_images')
@@ -63,7 +66,15 @@ export function GarageFinishStep({
           .eq('step_number', 4)
           .like('image_type', 'option-%');
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error loading finish images:', error);
+          toast({
+            title: "Error loading images",
+            description: "There was a problem loading finish option images.",
+            variant: "destructive"
+          });
+          return;
+        }
 
         const imageMap = images.reduce((acc: Record<string, string>, img) => {
           const finishType = img.image_type.replace('option-', '');
@@ -71,9 +82,12 @@ export function GarageFinishStep({
           return acc;
         }, {});
 
+        console.log('Loaded finish images:', imageMap);
         setFinishImages(imageMap);
       } catch (error) {
-        console.error('Error loading finish images:', error);
+        console.error('Error in loadOptionImages:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -95,13 +109,23 @@ export function GarageFinishStep({
             ${isMobile ? 'rounded-md' : ''}
           `}
         >
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
-            <img
-              src={finishImages[finish.value] || '/placeholder.svg'}
-              alt={finish.label}
-              className="w-full h-full object-cover"
-              loading="eager"
-            />
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0 relative">
+            {isLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-gray-200 border-t-[#1A3174] rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              <img
+                src={finishImages[finish.value] || '/placeholder.svg'}
+                alt={finish.label}
+                className="w-full h-full object-cover"
+                loading="eager"
+                onError={(e) => {
+                  console.error(`Failed to load image for ${finish.value}`);
+                  (e.target as HTMLImageElement).src = '/placeholder.svg';
+                }}
+              />
+            )}
           </div>
           <span className="font-medium text-left text-sm">
             {finish.label}
