@@ -10,7 +10,7 @@ export const useFormState = () => {
       phone: "",
       email: "",
       garageCapacity: 1,
-      garageFinish: "snowfall",
+      garageFinish: "snowfall", // Snowfall is still in the list, so we can keep it as default
       needStemWalls: "no",
       stemWallType: undefined,
       needSteps: "no",

@@ -5,7 +5,7 @@ export interface CalculatorInputs {
   phone: string;
   email: string;
   garageCapacity: number;
-  garageFinish: "snowfall" | "granite" | "slate" | "modern" | "minimal" | "glass" | "classic" | "premium" | "deluxe";
+  garageFinish: "snowfall" | "carbon" | "cabin-fever" | "creekbed" | "domino" | "nightfall" | "orbit" | "outback" | "pecan" | "shoreline" | "tidal-wave" | "wombat";
   needStemWalls: "yes" | "no";
   stemWallType?: "standard" | "large";
   needSteps: "yes" | "no";

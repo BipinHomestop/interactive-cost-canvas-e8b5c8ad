@@ -6,31 +6,40 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 const GARAGE_FINISHES = [{
   value: "snowfall",
-  label: "Snowfall (Most Popular)"
+  label: "Snowfall"
 }, {
-  value: "granite",
-  label: "Granite"
+  value: "carbon",
+  label: "Carbon"
 }, {
-  value: "slate",
-  label: "Slate"
+  value: "cabin-fever",
+  label: "Cabin Fever"
 }, {
-  value: "modern",
-  label: "Modern"
+  value: "creekbed",
+  label: "Creekbed"
 }, {
-  value: "minimal",
-  label: "Minimal"
+  value: "domino",
+  label: "Domino"
 }, {
-  value: "glass",
-  label: "Glass"
+  value: "nightfall",
+  label: "Nightfall"
 }, {
-  value: "classic",
-  label: "Classic"
+  value: "orbit",
+  label: "Orbit"
 }, {
-  value: "premium",
-  label: "Premium"
+  value: "outback",
+  label: "Outback"
 }, {
-  value: "deluxe",
-  label: "Deluxe"
+  value: "pecan",
+  label: "Pecan"
+}, {
+  value: "shoreline",
+  label: "Shoreline"
+}, {
+  value: "tidal-wave",
+  label: "Tidal Wave"
+}, {
+  value: "wombat",
+  label: "Wombat"
 }];
 
 interface GarageFinishStepProps {
