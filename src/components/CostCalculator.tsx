@@ -102,7 +102,7 @@ export function CostCalculator() {
       case 3:
         return <GarageCapacityStep capacity={formValues.garageCapacity} onCapacityChange={([value]) => setValue("garageCapacity", value)} />;
       case 4:
-        return <GarageFinishStep selectedFinish={selectedFinish} onFinishChange={value => setValue("garageFinish", value as "snowfall" | "granite" | "slate")} />;
+        return <GarageFinishStep selectedFinish={selectedFinish} onFinishChange={value => setValue("garageFinish", value as "snowfall" | "carbon" | "cabin-fever" | "creekbed" | "domino" | "nightfall" | "orbit" | "outback" | "pecan" | "shoreline" | "tidal-wave" | "wombat")} />;
       case 5:
         return <StemWallsStep needStemWalls={needStemWalls} stemWallType={formValues.stemWallType} onStemWallsChange={value => setValue("needStemWalls", value as "yes" | "no")} onStemWallTypeChange={value => setValue("stemWallType", value as "standard" | "large")} />;
       case 6:
