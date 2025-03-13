@@ -94,10 +94,11 @@ export function GarageFinishStep({
 
         const imageMap = images.reduce((acc: Record<string, string>, img) => {
           const finishType = img.image_type.replace('option-', '');
-          // Handle paths that might start with "public/" prefix
-          const imagePath = img.image_path.startsWith('public/') 
-            ? `/${img.image_path}` 
-            : img.image_path;
+          // Fix image path by removing 'public/' prefix if present
+          let imagePath = img.image_path;
+          if (imagePath.startsWith('public/')) {
+            imagePath = imagePath.replace('public/', '/');
+          }
           acc[finishType] = imagePath;
           console.log(`Mapped ${img.image_type} -> ${finishType}: ${imagePath}`);
           return acc;
