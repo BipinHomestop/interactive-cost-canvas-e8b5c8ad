@@ -77,6 +77,7 @@ export function GarageFinishStep({
         }
 
         const imageMap = images.reduce((acc: Record<string, string>, img) => {
+          // Extract the finish type from the image_type (remove 'option-' prefix)
           const finishType = img.image_type.replace('option-', '');
           acc[finishType] = img.image_path;
           return acc;
@@ -121,7 +122,7 @@ export function GarageFinishStep({
                 className="w-full h-full object-cover"
                 loading="eager"
                 onError={(e) => {
-                  console.error(`Failed to load image for ${finish.value}`);
+                  console.error(`Failed to load image for ${finish.value}`, finishImages[finish.value]);
                   (e.target as HTMLImageElement).src = '/placeholder.svg';
                 }}
               />
