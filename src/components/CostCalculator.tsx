@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -102,7 +101,7 @@ export function CostCalculator() {
       case 3:
         return <GarageCapacityStep capacity={formValues.garageCapacity} onCapacityChange={([value]) => setValue("garageCapacity", value)} />;
       case 4:
-        return <GarageFinishStep selectedFinish={selectedFinish} onFinishChange={value => setValue("garageFinish", value as "snowfall" | "carbon" | "cabin-fever" | "creekbed" | "domino" | "nightfall" | "orbit" | "outback" | "pecan" | "shoreline" | "tidal-wave" | "wombat")} />;
+        return <GarageFinishStep selectedFinish={selectedFinish} onFinishChange={value => setValue("garageFinish", value)} />;
       case 5:
         return <StemWallsStep needStemWalls={needStemWalls} stemWallType={formValues.stemWallType} onStemWallsChange={value => setValue("needStemWalls", value as "yes" | "no")} onStemWallTypeChange={value => setValue("stemWallType", value as "standard" | "large")} />;
       case 6:
@@ -122,10 +121,7 @@ export function CostCalculator() {
     setShowFAQ(!showFAQ);
   };
 
-  // Determine if the current step needs scrolling on mobile
   const needsScrollOnMobile = () => {
-    // Specifically identify which steps need scrolling
-    // Removed step 3 and 9 from the list that needs scrolling
     return [2, 4].includes(step);
   };
 

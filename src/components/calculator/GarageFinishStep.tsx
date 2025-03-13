@@ -57,8 +57,10 @@ export function GarageFinishStep({
 }: GarageFinishStepProps) {
   const [finishImages, setFinishImages] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [finishOptions, setFinishOptions] = useState(GARAGE_FINISHES);
   const isMobile = useIsMobile();
 
+  // Load the finish images from the database
   useEffect(() => {
     const loadOptionImages = async () => {
       setIsLoading(true);
@@ -112,9 +114,31 @@ export function GarageFinishStep({
     }
   }, [selectedFinish, onFinishChange]);
 
+  // Sync finishOptions with the available images
+  useEffect(() => {
+    // Only update options when we have images loaded
+    if (Object.keys(finishImages).length > 0) {
+      // Filter GARAGE_FINISHES to only include options with images
+      // If we need to ALWAYS show all options (even without images), remove this logic
+      const availableOptions = GARAGE_FINISHES.filter(finish => 
+        // Either it has an image or we want to show it anyway
+        finishImages[finish.value] || VALID_FINISHES.has(finish.value)
+      );
+      
+      if (availableOptions.length > 0) {
+        setFinishOptions(availableOptions);
+        
+        // If current selection isn't in the available options, reset to first available
+        if (selectedFinish && !availableOptions.some(opt => opt.value === selectedFinish)) {
+          onFinishChange(availableOptions[0].value);
+        }
+      }
+    }
+  }, [finishImages, selectedFinish, onFinishChange]);
+
   const optionsGrid = (
     <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-24' : 'pb-6'}`}>
-      {GARAGE_FINISHES.map(finish => (
+      {finishOptions.map(finish => (
         <button
           key={finish.value}
           onClick={() => onFinishChange(finish.value)}
