@@ -5,9 +5,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const GARAGE_FINISHES = [{
-  value: "snowfall",
-  label: "Snowfall"
-}, {
   value: "carbon",
   label: "Carbon"
 }, {
@@ -34,6 +31,9 @@ const GARAGE_FINISHES = [{
 }, {
   value: "shoreline",
   label: "Shoreline"
+}, {
+  value: "snowfall",
+  label: "Snowfall"
 }, {
   value: "tidal-wave",
   label: "Tidal Wave"
