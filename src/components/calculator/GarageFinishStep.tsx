@@ -94,8 +94,12 @@ export function GarageFinishStep({
 
         const imageMap = images.reduce((acc: Record<string, string>, img) => {
           const finishType = img.image_type.replace('option-', '');
-          acc[finishType] = img.image_path;
-          console.log(`Mapped ${img.image_type} -> ${finishType}: ${img.image_path}`);
+          // Handle paths that might start with "public/" prefix
+          const imagePath = img.image_path.startsWith('public/') 
+            ? `/${img.image_path}` 
+            : img.image_path;
+          acc[finishType] = imagePath;
+          console.log(`Mapped ${img.image_type} -> ${finishType}: ${imagePath}`);
           return acc;
         }, {});
 
@@ -143,7 +147,7 @@ export function GarageFinishStep({
                 className="w-full h-full object-cover"
                 loading="eager"
                 onError={(e) => {
-                  console.error(`Failed to load image for ${finish.value}`);
+                  console.error(`Failed to load image for ${finish.value}:`, finishImages[finish.value]);
                   (e.target as HTMLImageElement).src = '/placeholder.svg';
                 }}
               />
