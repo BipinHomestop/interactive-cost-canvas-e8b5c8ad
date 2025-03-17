@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect } from "react";
 
 interface GarageCapacityStepProps {
   capacity: number;
@@ -12,14 +13,21 @@ interface GarageCapacityStepProps {
 export function GarageCapacityStep({ capacity, onCapacityChange }: GarageCapacityStepProps) {
   const isMobile = useIsMobile();
   
+  // Log capacity changes
+  useEffect(() => {
+    console.log("GarageCapacityStep rendering with capacity:", capacity);
+  }, [capacity]);
+  
   const handleIncrement = () => {
     if (capacity < 5) {
+      console.log("Incrementing capacity to:", capacity + 1);
       onCapacityChange([capacity + 1]);
     }
   };
 
   const handleDecrement = () => {
     if (capacity > 1) {
+      console.log("Decrementing capacity to:", capacity - 1);
       onCapacityChange([capacity - 1]);
     }
   };
