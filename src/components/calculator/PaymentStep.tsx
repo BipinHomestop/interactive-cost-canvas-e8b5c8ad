@@ -1,14 +1,12 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 
@@ -182,37 +180,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
               />
             </PopoverContent>
           </Popover>
-        </div>
-
-        <div className="space-y-3 sm:space-y-4">
-          <h3 className="font-semibold text-lg mb-3">Choose how to pay the deposit</h3>
-          <RadioGroup defaultValue="credit" className="space-y-3 sm:space-y-4">
-            <div className="flex items-center space-x-2 border rounded-lg p-3 sm:p-5 hover:border-[#1A3174] transition-colors">
-              <div className="flex items-center space-x-3 flex-1">
-                <RadioGroupItem 
-                  value="credit" 
-                  id="credit"
-                  className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
-                />
-                <Label htmlFor="credit" className="font-medium text-sm sm:text-base">
-                  Pay $100.00 deposit with credit or debit card
-                </Label>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-2 border rounded-lg p-3 sm:p-5 hover:border-[#1A3174] transition-colors">
-              <div className="flex items-center space-x-3 flex-1">
-                <RadioGroupItem 
-                  value="paypal" 
-                  id="paypal"
-                  className="border-[#1A3174] text-[#1A3174] [&[data-state=checked]]:bg-[#1A3174] [&[data-state=checked]]:text-white"
-                />
-                <Label htmlFor="paypal" className="font-medium text-sm sm:text-base">
-                  Pay $100.00 deposit with PayPal
-                </Label>
-              </div>
-            </div>
-          </RadioGroup>
         </div>
 
         <div className="space-y-3 sm:space-y-4">
