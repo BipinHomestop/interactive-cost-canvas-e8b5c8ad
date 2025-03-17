@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,6 +10,30 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
+
+const FINISH_PRICE_MULTIPLIERS: Record<string, number> = {
+  "carbon": 1.1,
+  "cabin-fever": 1.15,
+  "creekbed": 1.2,
+  "domino": 1.25,
+  "nightfall": 1.3,
+  "orbit": 1.35,
+  "outback": 1.4,
+  "pecan": 1.45,
+  "shoreline": 1.5,
+  "snowfall": 1.2,
+  "tidal-wave": 1.55,
+  "wombat": 1.6
+};
+
+const DEFAULT_MULTIPLIER = 1.0;
+
+const formatFinishLabel = (finish: string): string => {
+  return finish
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 interface PaymentStepProps {
   onBack: () => void;
@@ -26,23 +49,28 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     const breakdown = [];
     
     // Base price based on garage capacity
+    const basePrice = formData.garageCapacity * 1000;
     breakdown.push({
-      label: `${formData.garageCapacity} Car Garage`,
-      price: formData.garageCapacity * 1000
+      label: `${formData.garageCapacity} Car Garage (Base Price)`,
+      price: basePrice
     });
 
     // Finish multiplier
-    if (formData.garageFinish === "snowfall") {
+    if (formData.garageFinish) {
+      const multiplier = FINISH_PRICE_MULTIPLIERS[formData.garageFinish] || DEFAULT_MULTIPLIER;
+      const finishLabel = formatFinishLabel(formData.garageFinish);
+      const additionalCost = basePrice * (multiplier - 1);
+      
       breakdown.push({
-        label: "Snowfall Finish (20% premium)",
-        price: (formData.garageCapacity * 1000) * 0.2
+        label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
+        price: additionalCost
       });
     }
 
     // Stem walls
     if (formData.needStemWalls === "yes") {
       breakdown.push({
-        label: `${formData.stemWallType} Stem Walls`,
+        label: `${formData.stemWallType === "standard" ? "Standard" : "Large"} Stem Walls`,
         price: formData.stemWallType === "standard" ? 500 : 1000
       });
     }
