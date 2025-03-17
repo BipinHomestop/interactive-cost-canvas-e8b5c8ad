@@ -1,6 +1,7 @@
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
+import { useEffect } from "react";
 
 interface PriceOverlayProps {
   totalCost: number;
@@ -11,6 +12,11 @@ export function PriceOverlay({
 }: PriceOverlayProps) {
   const isMobile = useIsMobile();
   const { getPrice } = usePricingConfig();
+  
+  // Log when price changes
+  useEffect(() => {
+    console.log('PriceOverlay rendering with totalCost:', totalCost);
+  }, [totalCost]);
   
   // Calculate market price (40% higher than our price by default)
   // Use the market_multiplier config if available
