@@ -6,10 +6,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { FAQSection } from "@/components/calculator/FAQSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSearchParams } from "react-router-dom";
 
 const Index = () => {
   const isMobile = useIsMobile();
   const [showFAQs, setShowFAQs] = useState(false);
+  const [searchParams] = useSearchParams();
+  const initialStep = searchParams.get('step') ? parseInt(searchParams.get('step') || '1') : 1;
   
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
@@ -45,7 +48,7 @@ const Index = () => {
         </div>
       </nav>
       <div className="flex-1 overflow-hidden">
-        <CostCalculator />
+        <CostCalculator initialStep={initialStep} />
       </div>
       
       {/* Mobile FAQ Overlay */}

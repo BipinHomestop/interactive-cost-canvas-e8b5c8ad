@@ -4,9 +4,10 @@ import { CalculatorInputs } from "@/components/calculator/types";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useStepNavigation = (
-  saveSubmission: (formValues: CalculatorInputs, isNewSubmission: boolean) => Promise<boolean>
+  saveSubmission: (formValues: CalculatorInputs, isNewSubmission: boolean) => Promise<boolean>,
+  initialStep: number = 1
 ) => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(initialStep);
   const { toast } = useToast();
 
   const handleNextStep = async (formValues: CalculatorInputs) => {
@@ -37,5 +38,5 @@ export const useStepNavigation = (
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
-  return { step, handleNextStep, handlePrevStep };
+  return { step, handleNextStep, handlePrevStep, setStep };
 };

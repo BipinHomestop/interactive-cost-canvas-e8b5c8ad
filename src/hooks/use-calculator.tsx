@@ -6,7 +6,7 @@ import { useStepNavigation } from "./calculator/use-step-navigation";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { useEffect } from "react";
 
-export const useCalculator = () => {
+export const useCalculator = (initialStep: number = 1) => {
   const {
     register,
     handleSubmit,
@@ -21,7 +21,7 @@ export const useCalculator = () => {
   } = useFormState();
 
   const { submissionId, saveSubmission } = useSubmission();
-  const { step, handleNextStep, handlePrevStep } = useStepNavigation(saveSubmission);
+  const { step, handleNextStep, handlePrevStep, setStep } = useStepNavigation(saveSubmission, initialStep);
   const { totalCost } = useCostCalculation(formValues, step);
 
   // Debug the current form values, step, and totalCost
@@ -46,5 +46,6 @@ export const useCalculator = () => {
     currentCondition,
     handleNextStep: () => handleNextStep(formValues as CalculatorInputs),
     handlePrevStep: () => handlePrevStep(formValues as CalculatorInputs),
+    setStep
   };
 };

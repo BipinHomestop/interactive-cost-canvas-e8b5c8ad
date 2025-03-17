@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -22,9 +21,10 @@ import { Toaster } from "./ui/toaster";
 
 interface CostCalculatorProps {
   embeddedMode?: boolean;
+  initialStep?: number;
 }
 
-export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
+export function CostCalculator({ embeddedMode = false, initialStep = 1 }: CostCalculatorProps) {
   const isMobile = useIsMobile();
   const [showFAQ, setShowFAQ] = useState(false);
   const {
@@ -41,8 +41,9 @@ export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
     needExtraFootage,
     currentCondition,
     handleNextStep,
-    handlePrevStep
-  } = useCalculator();
+    handlePrevStep,
+    setStep
+  } = useCalculator(initialStep);
 
   const getStepOptions = () => {
     switch (step) {
