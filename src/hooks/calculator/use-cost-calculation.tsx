@@ -1,65 +1,59 @@
 
 import { useState, useEffect } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
-
-// Define finish price multipliers
-const FINISH_PRICE_MULTIPLIERS: Record<string, number> = {
-  "carbon": 1.1,
-  "cabin-fever": 1.15,
-  "creekbed": 1.2,
-  "domino": 1.25,
-  "nightfall": 1.3,
-  "orbit": 1.35,
-  "outback": 1.4,
-  "pecan": 1.45,
-  "shoreline": 1.5,
-  "snowfall": 1.2, // Keeping the existing 1.2 multiplier for snowfall
-  "tidal-wave": 1.55,
-  "wombat": 1.6
-};
-
-// Default multiplier if a finish isn't found in the mapping
-const DEFAULT_MULTIPLIER = 1.0;
+import { usePricingConfig } from "./use-pricing-config";
 
 export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: number) => {
   const [totalCost, setTotalCost] = useState<number>(0);
+  const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
+
+  // Default fallback values in case database fetch fails
+  const DEFAULT_BASE_PRICE = 1000;
+  const DEFAULT_STEM_WALL_STANDARD_PRICE = 500;
+  const DEFAULT_STEM_WALL_LARGE_PRICE = 1000;
+  const DEFAULT_STEPS_PRICE = 300;
+  const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
   useEffect(() => {
     if (step >= 3) {
       calculateCost();
     }
-  }, [formValues, step]);
+  }, [formValues, step, isLoading]);
 
   const calculateCost = () => {
-    let total = formValues.garageCapacity ? formValues.garageCapacity * 1000 : 0;
+    // Get base price per car garage
+    const basePrice = getPrice('base_price_per_car', DEFAULT_BASE_PRICE);
+    let total = formValues.garageCapacity ? formValues.garageCapacity * basePrice : 0;
     
-    // Apply finish-specific multiplier if available, otherwise use default
-    const finishMultiplier = formValues.garageFinish 
-      ? FINISH_PRICE_MULTIPLIERS[formValues.garageFinish] || DEFAULT_MULTIPLIER
-      : DEFAULT_MULTIPLIER;
+    // Apply finish-specific multiplier if available
+    if (formValues.garageFinish) {
+      const finishMultiplier = getFinishMultiplier(formValues.garageFinish);
+      total *= finishMultiplier;
+    }
     
-    total *= finishMultiplier;
-    
+    // Add stem walls cost if needed
     if (formValues.needStemWalls === "yes") {
-      total += formValues.stemWallType === "standard" ? 500 : 1000;
+      if (formValues.stemWallType === "standard") {
+        total += getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE);
+      } else {
+        total += getPrice('stem_wall_large_price', DEFAULT_STEM_WALL_LARGE_PRICE);
+      }
     }
     
+    // Add steps cost if needed
     if (formValues.needSteps === "yes") {
-      total += 300;
+      total += getPrice('steps_price', DEFAULT_STEPS_PRICE);
     }
     
+    // Add extra footage cost if needed
     if (formValues.needExtraFootage === "yes" && formValues.extraFootage) {
-      const footageCosts = {
-        "up-to-50": 200,
-        "51-100": 400,
-        "101-150": 600,
-        "151-200": 800,
-      };
-      total += footageCosts[formValues.extraFootage] || 0;
+      const footageKey = `extra_footage_${formValues.extraFootage.replace(/-/g, '_')}`;
+      total += getPrice(footageKey, 0);
     }
 
+    // Add existing condition cost if applicable
     if (formValues.currentCondition === "existing") {
-      total += 200;
+      total += getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
     }
     
     setTotalCost(total);

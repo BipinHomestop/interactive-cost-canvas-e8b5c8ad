@@ -7,26 +7,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-const FINISH_PRICE_MULTIPLIERS: Record<string, number> = {
-  "carbon": 1.1,
-  "cabin-fever": 1.15,
-  "creekbed": 1.2,
-  "domino": 1.25,
-  "nightfall": 1.3,
-  "orbit": 1.35,
-  "outback": 1.4,
-  "pecan": 1.45,
-  "shoreline": 1.5,
-  "snowfall": 1.2,
-  "tidal-wave": 1.55,
-  "wombat": 1.6
-};
-
-const DEFAULT_MULTIPLIER = 1.0;
+import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 
 const formatFinishLabel = (finish: string): string => {
   return finish
@@ -44,22 +28,31 @@ interface PaymentStepProps {
 export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const [date, setDate] = useState<Date>();
   const isMobile = useIsMobile();
+  const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
+  
+  // Default fallback values in case database fetch fails
+  const DEFAULT_BASE_PRICE = 1000;
+  const DEFAULT_STEM_WALL_STANDARD_PRICE = 500;
+  const DEFAULT_STEM_WALL_LARGE_PRICE = 1000;
+  const DEFAULT_STEPS_PRICE = 300;
+  const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
   const renderPriceBreakdown = () => {
     const breakdown = [];
     
     // Base price based on garage capacity
-    const basePrice = formData.garageCapacity * 1000;
+    const basePrice = getPrice('base_price_per_car', DEFAULT_BASE_PRICE);
+    const garageBasePrice = formData.garageCapacity * basePrice;
     breakdown.push({
       label: `${formData.garageCapacity} Car Garage (Base Price)`,
-      price: basePrice
+      price: garageBasePrice
     });
 
     // Finish multiplier
     if (formData.garageFinish) {
-      const multiplier = FINISH_PRICE_MULTIPLIERS[formData.garageFinish] || DEFAULT_MULTIPLIER;
+      const multiplier = getFinishMultiplier(formData.garageFinish);
       const finishLabel = formatFinishLabel(formData.garageFinish);
-      const additionalCost = basePrice * (multiplier - 1);
+      const additionalCost = garageBasePrice * (multiplier - 1);
       
       breakdown.push({
         label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
@@ -69,39 +62,42 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
     // Stem walls
     if (formData.needStemWalls === "yes") {
+      const stemWallPrice = formData.stemWallType === "standard" 
+        ? getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE)
+        : getPrice('stem_wall_large_price', DEFAULT_STEM_WALL_LARGE_PRICE);
+      
       breakdown.push({
         label: `${formData.stemWallType === "standard" ? "Standard" : "Large"} Stem Walls`,
-        price: formData.stemWallType === "standard" ? 500 : 1000
+        price: stemWallPrice
       });
     }
 
     // Steps
     if (formData.needSteps === "yes") {
+      const stepsPrice = getPrice('steps_price', DEFAULT_STEPS_PRICE);
       breakdown.push({
         label: "House Steps",
-        price: 300
+        price: stepsPrice
       });
     }
 
     // Extra footage
     if (formData.needExtraFootage === "yes" && formData.extraFootage) {
-      const footageCosts = {
-        "up-to-50": 200,
-        "51-100": 400,
-        "101-150": 600,
-        "151-200": 800,
-      };
+      const footageKey = `extra_footage_${formData.extraFootage.replace(/-/g, '_')}`;
+      const extraFootagePrice = getPrice(footageKey, 0);
+      
       breakdown.push({
         label: `Additional Footage (${formData.extraFootage})`,
-        price: footageCosts[formData.extraFootage]
+        price: extraFootagePrice
       });
     }
 
     // Current condition
     if (formData.currentCondition === "existing") {
+      const existingPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
       breakdown.push({
         label: "Existing Coating Removal",
-        price: 200
+        price: existingPrice
       });
     }
 

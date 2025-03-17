@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      calculator_pricing_config: {
+        Row: {
+          config_key: string
+          config_value: number
+          created_at: string
+          description: string | null
+          display_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          config_key: string
+          config_value: number
+          created_at?: string
+          description?: string | null
+          display_name: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          config_key?: string
+          config_value?: number
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       calculator_step_images: {
         Row: {
           created_at: string | null
