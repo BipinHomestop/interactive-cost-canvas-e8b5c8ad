@@ -137,9 +137,9 @@ export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
     </div>
   );
 
-  // Determine column widths based on mode and device
-  const imageColumnClass = isMobile ? 'w-full h-[35vh] min-h-[250px]' : embeddedMode ? 'w-[45%]' : 'w-[40%]';
-  const formColumnClass = isMobile ? 'w-full flex-1 overflow-hidden' : embeddedMode ? 'w-[55%]' : 'w-[40%] border-x border-gray-200';
+  // Determine column widths based on device only, not on mode
+  const imageColumnClass = isMobile ? 'w-full h-[35vh] min-h-[250px]' : 'w-[40%]';
+  const formColumnClass = isMobile ? 'w-full flex-1 overflow-hidden' : 'w-[40%] border-x border-gray-200';
   const faqColumnClass = isMobile ? 'w-full h-auto' : 'w-[20%]';
 
   return (
@@ -170,14 +170,14 @@ export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
           </form>
         </div>
 
-        {/* Show FAQ section for non-mobile regardless of embedded mode */}
+        {/* Show FAQ section for non-mobile */}
         {!isMobile && (
           <div className={`${faqColumnClass} bg-white p-6 h-full`}>
             {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
           </div>
         )}
         
-        {/* For mobile, show FAQ as collapsible section regardless of embedded mode */}
+        {/* For mobile, show FAQ as collapsible section */}
         {isMobile && (
           <div className={`w-full bg-white ${!showFAQ ? 'p-2' : 'p-6'}`}>
             <Button 
