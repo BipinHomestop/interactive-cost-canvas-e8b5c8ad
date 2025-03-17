@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -145,7 +144,7 @@ export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
         </div>
         
         <div className={`
-          ${isMobile ? 'w-full' : embeddedMode ? 'w-[60%]' : 'w-[40%] border-x border-gray-200'} 
+          ${isMobile ? 'w-full' : embeddedMode ? 'w-[40%]' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-4 sm:p-6
           ${isMobile ? 'flex-1 overflow-hidden' : 'h-full'} 
           relative
@@ -166,22 +165,20 @@ export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
           </form>
         </div>
 
-        {!embeddedMode && (
-          <div className={`
-              ${isMobile ? 'w-full' : 'w-[20%]'} 
-              bg-white p-6 
-              ${isMobile ? 'h-auto' : 'h-full'} 
-              ${isMobile && !showFAQ ? 'hidden' : ''}
-            `}>
-            {isMobile ? (
-              <ScrollArea className="h-[calc(100vh-200px)]">
-                {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
-              </ScrollArea>
-            ) : (
-              (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />
-            )}
-          </div>
-        )}
+        <div className={`
+            ${isMobile ? 'w-full' : 'w-[20%]'} 
+            bg-white p-6 
+            ${isMobile ? 'h-auto' : 'h-full'} 
+            ${isMobile && !showFAQ ? 'hidden' : ''}
+          `}>
+          {isMobile ? (
+            <ScrollArea className="h-[calc(100vh-200px)]">
+              {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
+            </ScrollArea>
+          ) : (
+            (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />
+          )}
+        </div>
       </div>
       <Toaster />
     </div>
