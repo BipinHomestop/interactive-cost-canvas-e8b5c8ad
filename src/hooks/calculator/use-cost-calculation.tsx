@@ -5,7 +5,7 @@ import { usePricingConfig } from "./use-pricing-config";
 
 export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: number) => {
   const [totalCost, setTotalCost] = useState<number>(0);
-  const { getPrice, getFinishMultiplier, isLoading, pricingConfig } = usePricingConfig();
+  const { getPrice, getFinishMultiplier, isLoading, pricingConfig, hasConfig } = usePricingConfig();
 
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -20,12 +20,16 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
 
   // Calculate the cost immediately when the component mounts
   useEffect(() => {
+    console.log("Initial cost calculation");
     calculateCost();
   }, []);
 
-  // Recalculate cost whenever any form value changes, when pricing data loads, or step changes
+  // Recalculate cost whenever any relevant data changes
   useEffect(() => {
-    console.log("Form values or pricing config changed - recalculating cost");
+    console.log("Data changed - recalculating cost");
+    console.log("Form values:", formValues);
+    console.log("isLoading:", isLoading);
+    console.log("hasConfig:", hasConfig());
     calculateCost();
   }, [
     formValues.garageCapacity, 
@@ -109,7 +113,7 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     total = Math.round(total);
     console.log("Final calculated cost:", total);
     setTotalCost(total);
-  }, [formValues, getFinishMultiplier, getPrice]);
+  }, [formValues, getFinishMultiplier, getPrice, hasConfig]);
 
   return { totalCost };
 };

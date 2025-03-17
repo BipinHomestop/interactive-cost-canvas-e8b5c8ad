@@ -16,21 +16,33 @@ export const usePricingConfig = () => {
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
+  // Fetch pricing config on mount
   useEffect(() => {
     const fetchPricingConfig = async () => {
       try {
         console.log("Fetching pricing configuration from Supabase...");
+        setIsLoading(true);
+        
         const { data, error } = await supabase
           .from('calculator_pricing_config')
           .select('config_key, config_value');
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw new Error(`Failed to fetch pricing config: ${error.message}`);
+        }
+
+        if (!data || !Array.isArray(data) || data.length === 0) {
+          console.warn('No pricing configuration data found');
+        }
 
         // Convert array of configs to a key-value object for easier access
         const configMap: Record<string, number> = {};
-        data.forEach((item: PricingConfig) => {
-          configMap[item.config_key] = Number(item.config_value);
-        });
+        if (data && Array.isArray(data)) {
+          data.forEach((item: PricingConfig) => {
+            configMap[item.config_key] = Number(item.config_value);
+          });
+        }
 
         console.log("Received pricing configuration:", configMap);
         setPricingConfig(configMap);
@@ -53,8 +65,11 @@ export const usePricingConfig = () => {
   // Helper function to get a config value with a fallback
   const getPrice = useCallback((key: string, fallback: number): number => {
     if (pricingConfig[key] !== undefined) {
-      return pricingConfig[key];
+      const value = pricingConfig[key];
+      console.log(`Getting price for ${key}: ${value} (from config)`);
+      return value;
     }
+    console.log(`Getting price for ${key}: ${fallback} (fallback)`);
     return fallback;
   }, [pricingConfig]);
 
@@ -66,11 +81,17 @@ export const usePricingConfig = () => {
     return multiplier;
   }, [getPrice]);
 
+  // Helper to check if we have data loaded
+  const hasConfig = useCallback((): boolean => {
+    return Object.keys(pricingConfig).length > 0;
+  }, [pricingConfig]);
+
   return {
     pricingConfig,
     isLoading,
     error,
     getPrice,
-    getFinishMultiplier
+    getFinishMultiplier,
+    hasConfig
   };
 };
