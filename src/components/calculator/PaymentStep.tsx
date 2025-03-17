@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -24,9 +23,10 @@ interface PaymentStepProps {
   onBack: () => void;
   formData: any;
   totalCost: number;
+  embeddedMode?: boolean;
 }
 
-export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
+export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false }: PaymentStepProps) {
   const [date, setDate] = useState<Date>();
   const [couponCode, setCouponCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -38,12 +38,10 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const { toast } = useToast();
   const { getPrice, getFinishMultiplier } = usePricingConfig();
   
-  // Valid coupon codes for testing
   const VALID_COUPONS = {
-    "TEST99": 99.5, // 99.5% discount for testing
+    "TEST99": 99.5,
   };
-  
-  // Default fallback values in case database fetch fails
+
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
   const DEFAULT_BASE_PRICE_2_CAR = 2200;
   const DEFAULT_BASE_PRICE_3_CAR = 3500;
@@ -56,13 +54,12 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate);
-    setIsCalendarOpen(false); // Close the calendar popover after selection
+    setIsCalendarOpen(false);
   };
 
   const renderPriceBreakdown = () => {
     const breakdown = [];
     
-    // Base price based on garage capacity
     if (formData.garageCapacity) {
       const baseKey = `base_price_${formData.garageCapacity}_car`;
       let defaultBasePrice;
@@ -84,12 +81,10 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       });
     }
 
-    // Finish multiplier
     if (formData.garageFinish) {
       const multiplier = getFinishMultiplier(formData.garageFinish);
       const finishLabel = formatFinishLabel(formData.garageFinish);
       
-      // Get base price
       const baseKey = `base_price_${formData.garageCapacity}_car`;
       let defaultBasePrice;
       
@@ -111,7 +106,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       });
     }
 
-    // Stem walls
     if (formData.needStemWalls === "yes") {
       const stemWallPrice = formData.stemWallType === "standard" 
         ? getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE)
@@ -123,7 +117,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       });
     }
 
-    // Steps
     if (formData.needSteps === "yes") {
       const stepsPrice = getPrice('steps_price', DEFAULT_STEPS_PRICE);
       breakdown.push({
@@ -132,7 +125,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       });
     }
 
-    // Extra footage
     if (formData.needExtraFootage === "yes" && formData.extraFootage) {
       const footageKey = `extra_footage_${formData.extraFootage.replace(/-/g, '_')}`;
       const extraFootagePrice = getPrice(footageKey, 0);
@@ -143,7 +135,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       });
     }
 
-    // Current condition
     if (formData.currentCondition === "existing") {
       const existingPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
       breakdown.push({
@@ -172,7 +163,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       const discount = VALID_COUPONS[upperCaseCode];
       setDiscountPercentage(discount);
       
-      // Calculate new total with discount
       const discountAmount = totalCost * (discount / 100);
       const newTotal = totalCost - discountAmount;
       setDiscountedTotal(newTotal);
@@ -206,21 +196,19 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     setErrorMessage("");
 
     try {
-      // Prepare line items for Stripe based on price breakdown
       const lineItems = renderPriceBreakdown().map(item => ({
         price_data: {
           currency: 'usd',
           product_data: {
             name: item.label,
           },
-          unit_amount: Math.round(item.price * 100), // Convert to cents
+          unit_amount: Math.round(item.price * 100),
         },
         quantity: 1,
       }));
 
       console.log("Line items for checkout:", lineItems);
 
-      // Metadata to include with the Stripe checkout session
       const metadata = {
         customer_name: formData.name,
         customer_email: formData.email,
@@ -234,14 +222,13 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
       console.log("Metadata for checkout:", metadata);
 
-      // Create the checkout session
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: {
           lineItems: lineItems,
           totalAmount: discountPercentage > 0 ? discountedTotal : totalCost,
           metadata: metadata,
           successUrl: window.location.origin + '/success',
-          cancelUrl: window.location.origin + '/?step=9', // Return to payment step
+          cancelUrl: window.location.origin + (embeddedMode ? '/embed' : '') + '/?step=9',
         },
       });
 
@@ -253,8 +240,14 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       console.log("Checkout session response:", data);
 
       if (data && data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
+        if (embeddedMode && window.self !== window.top) {
+          window.parent.postMessage({ 
+            type: 'stripe:redirect', 
+            url: data.url 
+          }, '*');
+        } else {
+          window.location.href = data.url;
+        }
       } else {
         console.error('No checkout URL returned:', data);
         setErrorMessage('No checkout URL returned from payment provider. Please try again later.');

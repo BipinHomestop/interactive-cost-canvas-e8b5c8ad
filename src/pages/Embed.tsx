@@ -54,8 +54,21 @@ const Embed = () => {
       // Also listen for window resize events
       window.addEventListener('resize', handleResize);
       
+      // Listen for Stripe redirect messages
+      const handleMessage = (event) => {
+        if (event.data && event.data.type === 'stripe:redirect') {
+          const url = event.data.url;
+          if (url) {
+            window.location.href = url;
+          }
+        }
+      };
+      
+      window.addEventListener('message', handleMessage);
+      
       return () => {
         window.removeEventListener('resize', handleResize);
+        window.removeEventListener('message', handleMessage);
         resizeObserver.disconnect();
       };
     }
@@ -95,7 +108,7 @@ const Embed = () => {
         </div>
       </nav>
       <div className="flex-1 overflow-hidden">
-        <CostCalculator initialStep={initialStep} />
+        <CostCalculator initialStep={initialStep} embeddedMode={true} />
       </div>
       
       {/* Mobile FAQ Overlay */}
