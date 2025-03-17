@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -30,9 +31,16 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const [couponCode, setCouponCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
+  const [discountPercentage, setDiscountPercentage] = useState<number>(0);
+  const [discountedTotal, setDiscountedTotal] = useState<number>(totalCost);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const { getPrice, getFinishMultiplier } = usePricingConfig();
+  
+  // Valid coupon codes for testing
+  const VALID_COUPONS = {
+    "TEST99": 99.5, // 99.5% discount for testing
+  };
   
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -156,11 +164,30 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       return;
     }
     
-    // In a real app, you would validate the coupon code against a database
-    toast({
-      title: "Coupon Applied",
-      description: "Your discount code has been applied",
-    });
+    const upperCaseCode = couponCode.trim().toUpperCase();
+    
+    if (VALID_COUPONS[upperCaseCode]) {
+      const discount = VALID_COUPONS[upperCaseCode];
+      setDiscountPercentage(discount);
+      
+      // Calculate new total with discount
+      const discountAmount = totalCost * (discount / 100);
+      const newTotal = totalCost - discountAmount;
+      setDiscountedTotal(newTotal);
+      
+      toast({
+        title: "Coupon Applied",
+        description: `${discount}% discount has been applied`,
+      });
+    } else {
+      toast({
+        title: "Invalid Coupon",
+        description: "This coupon code is not valid",
+        variant: "destructive",
+      });
+      setDiscountPercentage(0);
+      setDiscountedTotal(totalCost);
+    }
   };
 
   const handleCheckout = async () => {
@@ -188,6 +215,21 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         quantity: 1,
       }));
 
+      // Add discount item if applicable
+      if (discountPercentage > 0) {
+        const discountAmount = totalCost * (discountPercentage / 100);
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `Coupon Discount (${discountPercentage}%)`,
+            },
+            unit_amount: Math.round(-discountAmount * 100), // Negative to represent discount
+          },
+          quantity: 1,
+        });
+      }
+
       // Metadata to include with the Stripe checkout session
       const metadata = {
         customer_name: formData.name,
@@ -197,13 +239,14 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         garage_capacity: formData.garageCapacity,
         garage_finish: formData.garageFinish,
         coupon_code: couponCode || 'none',
+        discount_percentage: discountPercentage.toString(),
       };
 
       // Create the checkout session
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: {
           lineItems: lineItems,
-          totalAmount: totalCost,
+          totalAmount: discountPercentage > 0 ? discountedTotal : totalCost,
           metadata: metadata,
           successUrl: window.location.origin + '/success',
           cancelUrl: window.location.origin + '/?step=9', // Return to payment step
@@ -244,9 +287,17 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
                 <span className="font-medium">${item.price.toFixed(2)}</span>
               </div>
             ))}
+            
+            {discountPercentage > 0 && (
+              <div className="flex justify-between text-sm text-red-600">
+                <span>Discount ({discountPercentage}%)</span>
+                <span>-${(totalCost * discountPercentage / 100).toFixed(2)}</span>
+              </div>
+            )}
+            
             <div className="border-t pt-3 mt-3 flex justify-between font-semibold text-lg">
               <span>Total</span>
-              <span>${totalCost.toFixed(2)}</span>
+              <span>${discountPercentage > 0 ? discountedTotal.toFixed(2) : totalCost.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -297,7 +348,9 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
             </Button>
           </div>
           <p className="text-gray-500 text-xs sm:text-sm">
-            {couponCode ? "Coupon applied" : "No coupon applied"}
+            {discountPercentage > 0 
+              ? `Coupon applied: ${discountPercentage}% discount` 
+              : "No coupon applied"}
           </p>
         </div>
       </div>
