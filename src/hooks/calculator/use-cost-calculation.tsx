@@ -18,18 +18,10 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
-  // Calculate the cost immediately when the component mounts
+  // Calculate the cost whenever relevant data changes
   useEffect(() => {
-    console.log("Initial cost calculation");
-    calculateCost();
-  }, []);
-
-  // Recalculate cost whenever any relevant data changes
-  useEffect(() => {
-    console.log("Data changed - recalculating cost");
+    console.log("Data changed - recalculating cost for step:", step);
     console.log("Form values:", formValues);
-    console.log("isLoading:", isLoading);
-    console.log("hasConfig:", hasConfig());
     calculateCost();
   }, [
     formValues.garageCapacity, 
@@ -42,15 +34,17 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     formValues.currentCondition,
     step,
     isLoading,
-    pricingConfig // Add dependency on the actual pricing config object
+    pricingConfig
   ]);
 
   const calculateCost = useCallback(() => {
     console.log("Calculating cost with values:", formValues);
+    console.log("Current step:", step);
     let total = 0;
     
-    // Get appropriate base price for the selected garage capacity
-    if (formValues.garageCapacity) {
+    // Only include prices for steps that have been completed
+    // Get appropriate base price for the selected garage capacity (after step 3)
+    if (formValues.garageCapacity && step >= 3) {
       const baseKey = `base_price_${formValues.garageCapacity}_car`;
       let defaultBasePrice;
       
@@ -67,15 +61,15 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       console.log(`Base price for ${formValues.garageCapacity} car garage:`, total);
     }
     
-    // Apply finish-specific multiplier if available
-    if (formValues.garageFinish) {
+    // Apply finish-specific multiplier if available (after step 4)
+    if (formValues.garageFinish && step >= 4) {
       const finishMultiplier = getFinishMultiplier(formValues.garageFinish);
       total *= finishMultiplier;
       console.log(`After applying ${formValues.garageFinish} finish multiplier:`, total);
     }
     
-    // Add stem walls cost if needed
-    if (formValues.needStemWalls === "yes") {
+    // Add stem walls cost if needed (after step 5)
+    if (step >= 5 && formValues.needStemWalls === "yes") {
       if (formValues.stemWallType === "standard") {
         const stemWallPrice = getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE);
         total += stemWallPrice;
@@ -87,23 +81,23 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       }
     }
     
-    // Add steps cost if needed
-    if (formValues.needSteps === "yes") {
+    // Add steps cost if needed (after step 6)
+    if (step >= 6 && formValues.needSteps === "yes") {
       const stepsPrice = getPrice('steps_price', DEFAULT_STEPS_PRICE);
       total += stepsPrice;
       console.log(`After adding steps price (${stepsPrice}):`, total);
     }
     
-    // Add extra footage cost if needed
-    if (formValues.needExtraFootage === "yes" && formValues.extraFootage) {
+    // Add extra footage cost if needed (after step 7)
+    if (step >= 7 && formValues.needExtraFootage === "yes" && formValues.extraFootage) {
       const footageKey = `extra_footage_${formValues.extraFootage.replace(/-/g, '_')}`;
       const extraFootagePrice = getPrice(footageKey, 0);
       total += extraFootagePrice;
       console.log(`After adding extra footage price (${extraFootagePrice}):`, total);
     }
 
-    // Add existing condition cost if applicable
-    if (formValues.currentCondition === "existing") {
+    // Add existing condition cost if applicable (after step 8)
+    if (step >= 8 && formValues.currentCondition === "existing") {
       const existingConditionPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
       total += existingConditionPrice;
       console.log(`After adding existing condition price (${existingConditionPrice}):`, total);
@@ -111,9 +105,9 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     
     // Round to nearest whole number
     total = Math.round(total);
-    console.log("Final calculated cost:", total);
+    console.log("Final calculated cost for step", step, ":", total);
     setTotalCost(total);
-  }, [formValues, getFinishMultiplier, getPrice, hasConfig]);
+  }, [formValues, step, getFinishMultiplier, getPrice]);
 
   return { totalCost };
 };

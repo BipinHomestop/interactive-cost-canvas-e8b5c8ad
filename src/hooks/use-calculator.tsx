@@ -24,11 +24,12 @@ export const useCalculator = () => {
   const { step, handleNextStep, handlePrevStep } = useStepNavigation(saveSubmission);
   const { totalCost } = useCostCalculation(formValues, step);
 
-  // Debug the current form values and totalCost
+  // Debug the current form values, step, and totalCost
   useEffect(() => {
+    console.log('Current step:', step);
     console.log('Current form values:', formValues);
     console.log('Current totalCost:', totalCost);
-  }, [formValues, totalCost]);
+  }, [formValues, totalCost, step]);
 
   return {
     step,
