@@ -1,11 +1,11 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { usePricingConfig } from "./use-pricing-config";
 
 export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: number) => {
   const [totalCost, setTotalCost] = useState<number>(0);
-  const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
+  const { getPrice, getFinishMultiplier, isLoading, pricingConfig } = usePricingConfig();
 
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -23,11 +23,10 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     calculateCost();
   }, []);
 
-  // Recalculate cost whenever any form value changes or when reaching step 3
+  // Recalculate cost whenever any form value changes, when pricing data loads, or step changes
   useEffect(() => {
-    if (step >= 3 || formValues.garageCapacity) {
-      calculateCost();
-    }
+    console.log("Form values or pricing config changed - recalculating cost");
+    calculateCost();
   }, [
     formValues.garageCapacity, 
     formValues.garageFinish, 
@@ -37,11 +36,12 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     formValues.needExtraFootage,
     formValues.extraFootage,
     formValues.currentCondition,
-    step, 
-    isLoading
+    step,
+    isLoading,
+    pricingConfig // Add dependency on the actual pricing config object
   ]);
 
-  const calculateCost = () => {
+  const calculateCost = useCallback(() => {
     console.log("Calculating cost with values:", formValues);
     let total = 0;
     
@@ -109,7 +109,7 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     total = Math.round(total);
     console.log("Final calculated cost:", total);
     setTotalCost(total);
-  };
+  }, [formValues, getFinishMultiplier, getPrice]);
 
   return { totalCost };
 };
