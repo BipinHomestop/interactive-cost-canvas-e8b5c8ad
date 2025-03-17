@@ -10,6 +10,8 @@ import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const formatFinishLabel = (finish: string): string => {
   return finish
@@ -26,8 +28,11 @@ interface PaymentStepProps {
 
 export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const [date, setDate] = useState<Date>();
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const isMobile = useIsMobile();
-  const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
+  const { toast } = useToast();
+  const { getPrice, getFinishMultiplier } = usePricingConfig();
   
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -136,6 +141,92 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     return breakdown;
   };
 
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) {
+      toast({
+        title: "No coupon code entered",
+        description: "Please enter a coupon code to apply",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // In a real app, you would validate the coupon code against a database
+    toast({
+      title: "Coupon Applied",
+      description: "Your discount code has been applied",
+    });
+  };
+
+  const handleCheckout = async () => {
+    if (!date) {
+      toast({
+        title: "Select installation date",
+        description: "Please select your preferred installation date",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Prepare line items for Stripe based on price breakdown
+      const lineItems = renderPriceBreakdown().map(item => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.label,
+          },
+          unit_amount: Math.round(item.price * 100), // Convert to cents
+        },
+        quantity: 1,
+      }));
+
+      // Metadata to include with the Stripe checkout session
+      const metadata = {
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: formData.phone,
+        installation_date: date ? format(date, "yyyy-MM-dd") : '',
+        garage_capacity: formData.garageCapacity,
+        garage_finish: formData.garageFinish,
+        coupon_code: couponCode || 'none',
+      };
+
+      // Create the checkout session
+      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+        body: {
+          lineItems: lineItems,
+          totalAmount: totalCost,
+          metadata: metadata,
+          successUrl: window.location.origin + '/success',
+          cancelUrl: window.location.origin + '/?step=9', // Return to payment step
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data && data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      toast({
+        title: "Payment Error",
+        description: "There was a problem processing your payment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={`flex flex-col ${isMobile ? 'pb-16' : 'h-[calc(100vh-80px)]'}`}>
       <div className={`${isMobile ? 'space-y-5' : 'space-y-6'} px-4 sm:px-6 pb-8`}>
@@ -186,10 +277,23 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         <div className="space-y-3 sm:space-y-4">
           <h3 className="font-semibold text-lg">Discount Code</h3>
           <div className="flex space-x-2">
-            <Input placeholder="Enter coupon code" className="h-12 sm:h-14 flex-1 text-sm" />
-            <Button variant="default" className="bg-[#1A3174] h-12 sm:h-14 px-4 sm:px-8 text-sm sm:text-base">Apply</Button>
+            <Input 
+              placeholder="Enter coupon code" 
+              className="h-12 sm:h-14 flex-1 text-sm" 
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value)}
+            />
+            <Button 
+              variant="default" 
+              className="bg-[#1A3174] h-12 sm:h-14 px-4 sm:px-8 text-sm sm:text-base"
+              onClick={handleApplyCoupon}
+            >
+              Apply
+            </Button>
           </div>
-          <p className="text-gray-500 text-xs sm:text-sm">No coupon applied</p>
+          <p className="text-gray-500 text-xs sm:text-sm">
+            {couponCode ? "Coupon applied" : "No coupon applied"}
+          </p>
         </div>
       </div>
 
@@ -200,13 +304,16 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
               variant="outline" 
               onClick={onBack}
               className="flex-1 h-12 rounded-full bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 text-sm"
+              disabled={isLoading}
             >
               Back
             </Button>
             <Button 
               className="flex-1 h-12 rounded-full bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm"
+              onClick={handleCheckout}
+              disabled={isLoading}
             >
-              Complete
+              {isLoading ? "Processing..." : "Complete"}
             </Button>
           </div>
         </div>
@@ -217,13 +324,16 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
               variant="outline" 
               onClick={onBack}
               className="flex-1 h-12 sm:h-14 rounded-lg bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 text-sm sm:text-base"
+              disabled={isLoading}
             >
               Back
             </Button>
             <Button 
               className="flex-1 h-12 sm:h-14 rounded-lg bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm sm:text-base"
+              onClick={handleCheckout}
+              disabled={isLoading}
             >
-              Complete your order
+              {isLoading ? "Processing..." : "Complete your order"}
             </Button>
           </div>
         </div>
