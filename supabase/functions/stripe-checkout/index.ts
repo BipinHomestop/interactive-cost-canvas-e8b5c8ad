@@ -32,14 +32,26 @@ serve(async (req) => {
     console.log('Total amount:', totalAmount)
     console.log('Metadata:', metadata)
 
+    // Prepare line items for Stripe - handle discounts separately
+    const stripeLineItems = lineItems.filter(item => item.price_data.unit_amount > 0).map(item => ({
+      price_data: item.price_data,
+      quantity: item.quantity
+    }));
+
     // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: lineItems,
+      line_items: stripeLineItems,
       mode: 'payment',
       success_url: successUrl || 'https://your-site.com/success',
       cancel_url: cancelUrl || 'https://your-site.com/cancel',
       metadata: metadata || {},
+      // Apply discount if present
+      discounts: metadata.discount_percentage && parseFloat(metadata.discount_percentage) > 0 
+        ? [{
+            coupon: await createOrRetrieveCoupon(parseFloat(metadata.discount_percentage)),
+          }] 
+        : undefined,
     })
 
     console.log('Checkout session created:', session.id)
@@ -66,3 +78,27 @@ serve(async (req) => {
     )
   }
 })
+
+// Helper function to create or retrieve a coupon with the specific discount percentage
+async function createOrRetrieveCoupon(discountPercentage) {
+  const couponId = `discount-${discountPercentage}`.replace('.', '-');
+  
+  try {
+    // Try to retrieve existing coupon
+    const existingCoupon = await stripe.coupons.retrieve(couponId);
+    return existingCoupon.id;
+  } catch (error) {
+    // If coupon doesn't exist, create a new one
+    try {
+      const newCoupon = await stripe.coupons.create({
+        id: couponId,
+        percent_off: discountPercentage,
+        duration: 'once',
+      });
+      return newCoupon.id;
+    } catch (createError) {
+      console.error('Error creating coupon:', createError);
+      throw createError;
+    }
+  }
+}

@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -17,6 +18,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
+import { Toaster } from "./ui/toaster";
 
 export function CostCalculator() {
   const isMobile = useIsMobile();
@@ -131,7 +133,8 @@ export function CostCalculator() {
     </div>
   );
 
-  return <div className="h-full">
+  return (
+    <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
         <div className={`${isMobile ? 'w-full' : 'w-[40%]'} ${isMobile ? 'h-[35vh] min-h-[250px]' : 'h-full'}`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
@@ -174,5 +177,7 @@ export function CostCalculator() {
           )}
         </div>
       </div>
-    </div>;
+      <Toaster />
+    </div>
+  );
 }

@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -215,21 +214,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         quantity: 1,
       }));
 
-      // Add discount item if applicable
-      if (discountPercentage > 0) {
-        const discountAmount = totalCost * (discountPercentage / 100);
-        lineItems.push({
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `Coupon Discount (${discountPercentage}%)`,
-            },
-            unit_amount: Math.round(-discountAmount * 100), // Negative to represent discount
-          },
-          quantity: 1,
-        });
-      }
-
       // Metadata to include with the Stripe checkout session
       const metadata = {
         customer_name: formData.name,
@@ -254,6 +238,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       });
 
       if (error) {
+        console.error('Supabase function error:', error);
         throw new Error(error.message);
       }
 
@@ -261,6 +246,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
+        console.error('No checkout URL returned:', data);
         throw new Error('No checkout URL returned');
       }
     } catch (error) {
