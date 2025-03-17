@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -8,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
+import { Label } from "@/components/ui/label";
 
 const formatFinishLabel = (finish: string): string => {
   return finish
@@ -182,6 +184,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         </div>
 
         <div className="space-y-3 sm:space-y-4">
+          <h3 className="font-semibold text-lg">Discount Code</h3>
           <div className="flex space-x-2">
             <Input placeholder="Enter coupon code" className="h-12 sm:h-14 flex-1 text-sm" />
             <Button variant="default" className="bg-[#1A3174] h-12 sm:h-14 px-4 sm:px-8 text-sm sm:text-base">Apply</Button>
@@ -228,4 +231,3 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     </div>
   );
 }
-
