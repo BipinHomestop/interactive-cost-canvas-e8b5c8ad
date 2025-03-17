@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -189,15 +188,6 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
           </div>
           <p className="text-gray-500 text-xs sm:text-sm">No coupon applied</p>
         </div>
-
-        <div className="space-y-3 sm:space-y-4 mb-4">
-          <Input placeholder="Card number" className="h-12 sm:h-14 text-sm" />
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
-            <Input placeholder="MM" className="h-12 sm:h-14 text-sm" />
-            <Input placeholder="YY" className="h-12 sm:h-14 text-sm" />
-            <Input placeholder="CVV" className="h-12 sm:h-14 text-sm" />
-          </div>
-        </div>
       </div>
 
       {isMobile ? (
@@ -238,3 +228,4 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     </div>
   );
 }
+
