@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ImageError } from "./components/ImageError";
 import { PriceOverlay } from "./components/PriceOverlay";
+import { useCalculatorImage } from "./hooks/useCalculatorImage";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ImageDisplay({
