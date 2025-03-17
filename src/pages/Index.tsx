@@ -1,7 +1,7 @@
 
 import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, HelpCircle, Phone, X } from "lucide-react";
+import { HelpCircle, Phone, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
 import { FAQSection } from "@/components/calculator/FAQSection";

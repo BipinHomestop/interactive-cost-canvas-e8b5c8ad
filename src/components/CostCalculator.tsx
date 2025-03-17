@@ -137,7 +137,7 @@ export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
     </div>
   );
 
-  // Determine column widths based on device only, not on mode
+  // Determine column widths based on device only
   const imageColumnClass = isMobile ? 'w-full h-[35vh] min-h-[250px]' : 'w-[40%]';
   const formColumnClass = isMobile ? 'w-full flex-1 overflow-hidden' : 'w-[40%] border-x border-gray-200';
   const faqColumnClass = isMobile ? 'w-full h-auto' : 'w-[20%]';
