@@ -18,11 +18,23 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
+  // Recalculate cost whenever any form value changes or when reaching step 3
   useEffect(() => {
-    if (step >= 3) {
+    if (step >= 3 || formValues.garageCapacity) {
       calculateCost();
     }
-  }, [formValues, step, isLoading]);
+  }, [
+    formValues.garageCapacity, 
+    formValues.garageFinish, 
+    formValues.needStemWalls, 
+    formValues.stemWallType,
+    formValues.needSteps,
+    formValues.needExtraFootage,
+    formValues.extraFootage,
+    formValues.currentCondition,
+    step, 
+    isLoading
+  ]);
 
   const calculateCost = () => {
     let total = 0;
@@ -54,7 +66,7 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     if (formValues.needStemWalls === "yes") {
       if (formValues.stemWallType === "standard") {
         total += getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE);
-      } else {
+      } else if (formValues.stemWallType === "large") {
         total += getPrice('stem_wall_large_price', DEFAULT_STEM_WALL_LARGE_PRICE);
       }
     }
@@ -75,6 +87,8 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       total += getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
     }
     
+    // Round to nearest whole number
+    total = Math.round(total);
     setTotalCost(total);
   };
 
