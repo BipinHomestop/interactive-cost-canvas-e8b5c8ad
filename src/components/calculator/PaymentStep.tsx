@@ -31,7 +31,11 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
   
   // Default fallback values in case database fetch fails
-  const DEFAULT_BASE_PRICE = 1000;
+  const DEFAULT_BASE_PRICE_1_CAR = 1000;
+  const DEFAULT_BASE_PRICE_2_CAR = 2200;
+  const DEFAULT_BASE_PRICE_3_CAR = 3500;
+  const DEFAULT_BASE_PRICE_4_CAR = 5000;
+  const DEFAULT_BASE_PRICE_5_CAR = 6500;
   const DEFAULT_STEM_WALL_STANDARD_PRICE = 500;
   const DEFAULT_STEM_WALL_LARGE_PRICE = 1000;
   const DEFAULT_STEPS_PRICE = 300;
@@ -41,17 +45,46 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     const breakdown = [];
     
     // Base price based on garage capacity
-    const basePrice = getPrice('base_price_per_car', DEFAULT_BASE_PRICE);
-    const garageBasePrice = formData.garageCapacity * basePrice;
-    breakdown.push({
-      label: `${formData.garageCapacity} Car Garage (Base Price)`,
-      price: garageBasePrice
-    });
+    if (formData.garageCapacity) {
+      const baseKey = `base_price_${formData.garageCapacity}_car`;
+      let defaultBasePrice;
+      
+      switch (formData.garageCapacity) {
+        case 1: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR; break;
+        case 2: defaultBasePrice = DEFAULT_BASE_PRICE_2_CAR; break;
+        case 3: defaultBasePrice = DEFAULT_BASE_PRICE_3_CAR; break;
+        case 4: defaultBasePrice = DEFAULT_BASE_PRICE_4_CAR; break;
+        case 5: defaultBasePrice = DEFAULT_BASE_PRICE_5_CAR; break;
+        default: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR;
+      }
+      
+      const garageBasePrice = getPrice(baseKey, defaultBasePrice);
+      
+      breakdown.push({
+        label: `${formData.garageCapacity}-Car Garage (Base Price)`,
+        price: garageBasePrice
+      });
+    }
 
     // Finish multiplier
     if (formData.garageFinish) {
       const multiplier = getFinishMultiplier(formData.garageFinish);
       const finishLabel = formatFinishLabel(formData.garageFinish);
+      
+      // Get base price
+      const baseKey = `base_price_${formData.garageCapacity}_car`;
+      let defaultBasePrice;
+      
+      switch (formData.garageCapacity) {
+        case 1: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR; break;
+        case 2: defaultBasePrice = DEFAULT_BASE_PRICE_2_CAR; break;
+        case 3: defaultBasePrice = DEFAULT_BASE_PRICE_3_CAR; break;
+        case 4: defaultBasePrice = DEFAULT_BASE_PRICE_4_CAR; break;
+        case 5: defaultBasePrice = DEFAULT_BASE_PRICE_5_CAR; break;
+        default: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR;
+      }
+      
+      const garageBasePrice = getPrice(baseKey, defaultBasePrice);
       const additionalCost = garageBasePrice * (multiplier - 1);
       
       breakdown.push({
@@ -87,7 +120,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       const extraFootagePrice = getPrice(footageKey, 0);
       
       breakdown.push({
-        label: `Additional Footage (${formData.extraFootage})`,
+        label: `Additional Footage (${formData.extraFootage.replace(/-/g, ' to ')})`,
         price: extraFootagePrice
       });
     }

@@ -8,7 +8,11 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
 
   // Default fallback values in case database fetch fails
-  const DEFAULT_BASE_PRICE = 1000;
+  const DEFAULT_BASE_PRICE_1_CAR = 1000;
+  const DEFAULT_BASE_PRICE_2_CAR = 2200;
+  const DEFAULT_BASE_PRICE_3_CAR = 3500;
+  const DEFAULT_BASE_PRICE_4_CAR = 5000;
+  const DEFAULT_BASE_PRICE_5_CAR = 6500;
   const DEFAULT_STEM_WALL_STANDARD_PRICE = 500;
   const DEFAULT_STEM_WALL_LARGE_PRICE = 1000;
   const DEFAULT_STEPS_PRICE = 300;
@@ -21,9 +25,24 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   }, [formValues, step, isLoading]);
 
   const calculateCost = () => {
-    // Get base price per car garage
-    const basePrice = getPrice('base_price_per_car', DEFAULT_BASE_PRICE);
-    let total = formValues.garageCapacity ? formValues.garageCapacity * basePrice : 0;
+    let total = 0;
+    
+    // Get appropriate base price for the selected garage capacity
+    if (formValues.garageCapacity) {
+      const baseKey = `base_price_${formValues.garageCapacity}_car`;
+      let defaultBasePrice;
+      
+      switch (formValues.garageCapacity) {
+        case 1: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR; break;
+        case 2: defaultBasePrice = DEFAULT_BASE_PRICE_2_CAR; break;
+        case 3: defaultBasePrice = DEFAULT_BASE_PRICE_3_CAR; break;
+        case 4: defaultBasePrice = DEFAULT_BASE_PRICE_4_CAR; break;
+        case 5: defaultBasePrice = DEFAULT_BASE_PRICE_5_CAR; break;
+        default: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR;
+      }
+      
+      total = getPrice(baseKey, defaultBasePrice);
+    }
     
     // Apply finish-specific multiplier if available
     if (formValues.garageFinish) {
