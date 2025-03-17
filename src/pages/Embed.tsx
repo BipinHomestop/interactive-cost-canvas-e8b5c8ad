@@ -56,9 +56,12 @@ const Embed = () => {
       
       // Listen for Stripe redirect messages
       const handleMessage = (event) => {
+        console.log("Received message in iframe:", event.data);
         if (event.data && event.data.type === 'stripe:redirect') {
           const url = event.data.url;
+          console.log("Received Stripe redirect URL:", url);
           if (url) {
+            console.log("Redirecting to Stripe URL from iframe");
             window.location.href = url;
           }
         }

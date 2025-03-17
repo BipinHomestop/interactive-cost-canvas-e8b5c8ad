@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -222,13 +223,20 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
 
       console.log("Metadata for checkout:", metadata);
 
+      // Set the success and cancel URLs based on whether we're in embedded mode
+      const successUrl = window.location.origin + '/success';
+      const cancelUrl = window.location.origin + (embeddedMode ? '/embed' : '') + '/?step=9';
+
+      console.log("Success URL:", successUrl);
+      console.log("Cancel URL:", cancelUrl);
+
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: {
           lineItems: lineItems,
           totalAmount: discountPercentage > 0 ? discountedTotal : totalCost,
           metadata: metadata,
-          successUrl: window.location.origin + '/success',
-          cancelUrl: window.location.origin + (embeddedMode ? '/embed' : '') + '/?step=9',
+          successUrl: successUrl,
+          cancelUrl: cancelUrl,
         },
       });
 
@@ -241,11 +249,13 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
 
       if (data && data.url) {
         if (embeddedMode && window.self !== window.top) {
+          console.log("Sending Stripe URL to parent window:", data.url);
           window.parent.postMessage({ 
             type: 'stripe:redirect', 
             url: data.url 
           }, '*');
         } else {
+          console.log("Redirecting directly to Stripe URL:", data.url);
           window.location.href = data.url;
         }
       } else {
@@ -399,3 +409,4 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
     </div>
   );
 }
+
