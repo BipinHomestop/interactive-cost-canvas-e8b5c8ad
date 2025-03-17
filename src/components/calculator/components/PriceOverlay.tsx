@@ -24,9 +24,9 @@ export function PriceOverlay({
   const savingsPercentage = Math.round((savings / marketPrice) * 100);
   
   return (
-    <div className={`absolute inset-0 bg-[#0A0B3B] text-white flex flex-col items-center justify-center ${isMobile ? 'p-2' : 'p-4'}`}>
+    <div className={`absolute inset-0 bg-[#0A0B3B] text-white flex flex-col items-center justify-center ${isMobile ? 'p-2 min-h-[120px]' : 'p-4'}`}>
       {isMobile ? (
-        // Mobile layout with smaller font sizes
+        // Mobile layout with smaller font sizes and increased container height
         <div className="w-full h-full flex flex-col justify-center items-center">
           <div className="text-xl font-extrabold text-[#30EE00]">
             Your Price: ${totalCost.toLocaleString()}
