@@ -38,6 +38,15 @@ serve(async (req) => {
       quantity: item.quantity
     }));
 
+    // Create customer data object if customer details are provided
+    const customerDetails = {
+      name: metadata.customer_name,
+      email: metadata.customer_email,
+      phone: metadata.customer_phone,
+    };
+
+    console.log('Customer details:', customerDetails);
+
     // Create a Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -52,6 +61,18 @@ serve(async (req) => {
             coupon: await createOrRetrieveCoupon(parseFloat(metadata.discount_percentage)),
           }] 
         : undefined,
+      // Include customer details
+      customer_email: customerDetails.email,
+      customer_creation: 'always',
+      customer: {
+        name: customerDetails.name,
+        email: customerDetails.email,
+        phone: customerDetails.phone
+      },
+      billing_address_collection: 'auto',
+      shipping_address_collection: {
+        allowed_countries: ['US'],
+      },
     })
 
     console.log('Checkout session created:', session.id)
