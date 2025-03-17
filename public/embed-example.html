@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator Embed Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .embed-container {
+            position: relative;
+            padding-bottom: 120%; /* Adjust ratio as needed */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .embed-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        @media (min-width: 768px) {
+            .embed-container {
+                padding-bottom: 80%; /* Smaller aspect ratio for desktop */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>How to Embed the Cost Calculator</h1>
+    
+    <h2>Live Example</h2>
+    <div class="embed-container">
+        <iframe src="/embed" allow="payment" allowfullscreen></iframe>
+    </div>
+    
+    <h2>How to Add This Calculator to Your Website</h2>
+    <p>Copy and paste the following HTML code into your website where you want the calculator to appear:</p>
+    
+    <pre><code>&lt;div style="position: relative; padding-bottom: 120%; height: 0; overflow: hidden; max-width: 100%; border: 1px solid #ddd; border-radius: 8px;"&gt;
+  &lt;iframe 
+    src="https://your-app-domain.com/embed" 
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+    allow="payment"
+    allowfullscreen&gt;
+  &lt;/iframe&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>Notes:</h3>
+    <ul>
+        <li>Replace <strong>https://your-app-domain.com/embed</strong> with the actual URL where this calculator is hosted.</li>
+        <li>The <code>padding-bottom: 120%</code> sets the aspect ratio of the iframe. You can adjust this value to make the calculator taller or shorter.</li>
+        <li>The <code>allow="payment"</code> attribute is necessary for the Stripe payment functionality to work.</li>
+        <li>For responsive design, you might want to use media queries to adjust the aspect ratio on different screen sizes.</li>
+    </ul>
+    
+    <h3>Advanced Integration</h3>
+    <p>For developers who need more control, you can also use JavaScript to communicate with the iframe:</p>
+    <pre><code>// Listen for messages from the calculator
+window.addEventListener('message', function(event) {
+  // Verify the origin for security
+  if (event.origin !== 'https://your-app-domain.com') return;
+  
+  // Handle different message types
+  if (event.data.type === 'calculatorComplete') {
+    console.log('Calculator data:', event.data.calculationData);
+    // Do something with the data
+  }
+});
+</code></pre>
+</body>
+</html>
