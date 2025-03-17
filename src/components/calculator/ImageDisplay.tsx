@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ImageError } from "./components/ImageError";
 import { PriceOverlay } from "./components/PriceOverlay";
+import { useCalculatorImage } from "./hooks/useCalculatorImage";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ImageDisplay({
@@ -21,10 +22,9 @@ export function ImageDisplay({
     setImageError
   } = useCalculatorImage(step, options);
 
-  // Adjust height distributions for better mobile display
   const containerHeight = isMobile ? "h-full" : "h-full";
-  const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[70%]" : "h-[80%]");
-  const priceContainerHeight = isMobile ? "h-[30%]" : "h-[20%]";
+  const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[80%]" : "h-[80%]");
+  const priceContainerHeight = isMobile ? "h-[20%]" : "h-[20%]";
 
   return <div className={`relative ${containerHeight}`}>
       <div className={`relative ${imageContainerHeight}`}>
