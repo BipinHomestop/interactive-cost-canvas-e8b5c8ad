@@ -1,16 +1,17 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formatFinishLabel = (finish: string): string => {
   return finish
@@ -32,6 +33,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
   const [discountedTotal, setDiscountedTotal] = useState<number>(totalCost);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const { getPrice, getFinishMultiplier } = usePricingConfig();
@@ -154,6 +156,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   };
 
   const handleApplyCoupon = () => {
+    setErrorMessage("");
     if (!couponCode.trim()) {
       toast({
         title: "No coupon code entered",
@@ -200,6 +203,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     }
 
     setIsLoading(true);
+    setErrorMessage("");
 
     try {
       // Prepare line items for Stripe based on price breakdown
@@ -214,6 +218,8 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         quantity: 1,
       }));
 
+      console.log("Line items for checkout:", lineItems);
+
       // Metadata to include with the Stripe checkout session
       const metadata = {
         customer_name: formData.name,
@@ -225,6 +231,8 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         coupon_code: couponCode || 'none',
         discount_percentage: discountPercentage.toString(),
       };
+
+      console.log("Metadata for checkout:", metadata);
 
       // Create the checkout session
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
@@ -242,15 +250,19 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         throw new Error(error.message);
       }
 
+      console.log("Checkout session response:", data);
+
       if (data && data.url) {
         // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
         console.error('No checkout URL returned:', data);
+        setErrorMessage('No checkout URL returned from payment provider. Please try again later.');
         throw new Error('No checkout URL returned');
       }
     } catch (error) {
       console.error('Error creating checkout session:', error);
+      setErrorMessage(`Payment error: ${error.message || 'Unknown error occurred'}`);
       toast({
         title: "Payment Error",
         description: "There was a problem processing your payment. Please try again.",
@@ -264,6 +276,14 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   return (
     <div className={`flex flex-col ${isMobile ? 'pb-16' : 'h-[calc(100vh-80px)]'}`}>
       <div className={`${isMobile ? 'space-y-5' : 'space-y-6'} px-4 sm:px-6 pb-8`}>
+        {errorMessage && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        
         <div className="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-sm">
           <h3 className="font-semibold text-lg mb-3">Price Breakdown</h3>
           <div className="space-y-2 sm:space-y-3">
@@ -329,6 +349,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
               variant="default" 
               className="bg-[#1A3174] h-12 sm:h-14 px-4 sm:px-8 text-sm sm:text-base"
               onClick={handleApplyCoupon}
+              disabled={isLoading}
             >
               Apply
             </Button>
