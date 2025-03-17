@@ -20,7 +20,11 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Toaster } from "./ui/toaster";
 
-export function CostCalculator() {
+interface CostCalculatorProps {
+  embeddedMode?: boolean;
+}
+
+export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
   const isMobile = useIsMobile();
   const [showFAQ, setShowFAQ] = useState(false);
   const {
@@ -141,7 +145,7 @@ export function CostCalculator() {
         </div>
         
         <div className={`
-          ${isMobile ? 'w-full' : 'w-[40%] border-x border-gray-200'} 
+          ${isMobile ? 'w-full' : embeddedMode ? 'w-[60%]' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-4 sm:p-6
           ${isMobile ? 'flex-1 overflow-hidden' : 'h-full'} 
           relative
@@ -162,20 +166,22 @@ export function CostCalculator() {
           </form>
         </div>
 
-        <div className={`
-            ${isMobile ? 'w-full' : 'w-[20%]'} 
-            bg-white p-6 
-            ${isMobile ? 'h-auto' : 'h-full'} 
-            ${isMobile && !showFAQ ? 'hidden' : ''}
-          `}>
-          {isMobile ? (
-            <ScrollArea className="h-[calc(100vh-200px)]">
-              {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
-            </ScrollArea>
-          ) : (
-            (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />
-          )}
-        </div>
+        {!embeddedMode && (
+          <div className={`
+              ${isMobile ? 'w-full' : 'w-[20%]'} 
+              bg-white p-6 
+              ${isMobile ? 'h-auto' : 'h-full'} 
+              ${isMobile && !showFAQ ? 'hidden' : ''}
+            `}>
+            {isMobile ? (
+              <ScrollArea className="h-[calc(100vh-200px)]">
+                {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
+              </ScrollArea>
+            ) : (
+              (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />
+            )}
+          </div>
+        )}
       </div>
       <Toaster />
     </div>
