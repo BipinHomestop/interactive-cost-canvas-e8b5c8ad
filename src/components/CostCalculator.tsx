@@ -170,14 +170,15 @@ export function CostCalculator({ embeddedMode = false }: CostCalculatorProps) {
           </form>
         </div>
 
-        {!isMobile && !embeddedMode && (
+        {/* Show FAQ section for non-mobile regardless of embedded mode */}
+        {!isMobile && (
           <div className={`${faqColumnClass} bg-white p-6 h-full`}>
             {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
           </div>
         )}
         
-        {/* For mobile, show FAQ as collapsible section */}
-        {isMobile && !embeddedMode && (
+        {/* For mobile, show FAQ as collapsible section regardless of embedded mode */}
+        {isMobile && (
           <div className={`w-full bg-white ${!showFAQ ? 'p-2' : 'p-6'}`}>
             <Button 
               variant="ghost" 
