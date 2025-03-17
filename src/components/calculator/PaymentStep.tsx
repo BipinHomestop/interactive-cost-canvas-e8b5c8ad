@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -30,6 +29,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const [date, setDate] = useState<Date>();
   const [couponCode, setCouponCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const { getPrice, getFinishMultiplier } = usePricingConfig();
@@ -44,6 +44,11 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const DEFAULT_STEM_WALL_LARGE_PRICE = 1000;
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
+
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+    setIsCalendarOpen(false); // Close the calendar popover after selection
+  };
 
   const renderPriceBreakdown = () => {
     const breakdown = [];
@@ -248,7 +253,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
 
         <div className="space-y-3 sm:space-y-4">
           <h3 className="font-semibold text-lg">Choose Installation Date</h3>
-          <Popover>
+          <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -265,7 +270,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
               <Calendar
                 mode="single"
                 selected={date}
-                onSelect={setDate}
+                onSelect={handleDateSelect}
                 initialFocus
                 disabled={(date) => date < new Date()}
                 className="[&_.rdp-day:hover:not([disabled])]:bg-[#1A3174]/90 [&_.rdp-day:hover:not([disabled])]:text-white"
