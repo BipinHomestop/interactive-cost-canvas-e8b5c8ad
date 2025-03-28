@@ -1,0 +1,6 @@
+
+User-agent: *
+Allow: /
+Disallow: /embed
+
+Sitemap: https://americanconcretecoatings.com/sitemap.xml
