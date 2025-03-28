@@ -18,11 +18,16 @@ const Index = () => {
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
       <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">
-          <img 
-            src="/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png" 
-            alt="American Concrete Coatings"
-            className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
-          />
+          <div className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png" 
+              alt="American Concrete Coatings"
+              className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
+            />
+            <h1 className={`${isMobile ? 'text-base' : 'text-xl'} font-bold text-[#1A3174] hidden sm:block`}>
+              Garage Floor Coating Cost Calculator
+            </h1>
+          </div>
           <div className="flex items-center gap-2">
             {isMobile && (
               <Button 
