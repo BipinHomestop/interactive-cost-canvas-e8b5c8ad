@@ -47,7 +47,7 @@ serve(async (req) => {
 
     console.log('Customer details:', customerDetails);
 
-    // Create a Stripe checkout session
+    // Create a Stripe checkout session - don't use both customer and customer_email
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: stripeLineItems,
@@ -61,14 +61,9 @@ serve(async (req) => {
             coupon: await createOrRetrieveCoupon(parseFloat(metadata.discount_percentage)),
           }] 
         : undefined,
-      // Include customer details
+      // Include customer email for customer creation but don't set customer property
       customer_email: customerDetails.email,
       customer_creation: 'always',
-      customer: {
-        name: customerDetails.name,
-        email: customerDetails.email,
-        phone: customerDetails.phone
-      },
       billing_address_collection: 'auto',
       shipping_address_collection: {
         allowed_countries: ['US'],
