@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 Disallow: /embed
 
-Sitemap: https://americanconcretecoatings.com/sitemap.xml
+Sitemap: https://quote.garagefloorcoatingsdfw.com/sitemap.xml
