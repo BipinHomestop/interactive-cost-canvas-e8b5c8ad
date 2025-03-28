@@ -3,16 +3,26 @@ import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, HelpCircle, Phone, X } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FAQSection } from "@/components/calculator/FAQSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Helmet } from "react-helmet";
 
 const Index = () => {
   const isMobile = useIsMobile();
   const [showFAQs, setShowFAQs] = useState(false);
   
+  useEffect(() => {
+    // Track page view for analytics
+    console.log('Home page viewed');
+  }, []);
+  
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
+      <Helmet>
+        <link rel="canonical" href="https://quote.garagefloorcoatingsdfw.com/" />
+        <meta name="description" content="Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get pricing on epoxy, polyurea, and polyaspartic coatings." />
+      </Helmet>
       <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">
           <img 
