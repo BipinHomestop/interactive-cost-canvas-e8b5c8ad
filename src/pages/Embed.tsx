@@ -78,7 +78,7 @@ const Embed = () => {
               alt="American Concrete Coatings"
               className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
             />
-            <h1 className={`${isMobile ? 'text-sm' : 'text-xl'} font-bold text-[#1A3174] text-center ${isMobile ? 'block' : ''}`}>
+            <h1 className={`${isMobile ? 'hidden' : 'text-xl'} font-bold text-[#1A3174] text-center`}>
               Garage Floor Coating Cost Calculator
             </h1>
           </div>
