@@ -22,7 +22,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <React.StrictMode>
-        <BrowserRouter>
+        <BrowserRouter basename="/">
           <TooltipProvider>
             <Routes>
               <Route path="/" element={<Index />} />
