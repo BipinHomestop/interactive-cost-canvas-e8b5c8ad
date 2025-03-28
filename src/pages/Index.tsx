@@ -1,3 +1,4 @@
+
 import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
 import { HelpCircle, Phone, X } from "lucide-react";
@@ -23,7 +24,7 @@ const Index = () => {
               alt="American Concrete Coatings"
               className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
             />
-            <h1 className={`${isMobile ? 'text-base' : 'text-xl'} font-bold text-[#1A3174] text-center hidden sm:block`}>
+            <h1 className={`${isMobile ? 'text-sm' : 'text-xl'} font-bold text-[#1A3174] text-center ${isMobile ? 'block' : ''}`}>
               Garage Floor Coating Cost Calculator
             </h1>
           </div>

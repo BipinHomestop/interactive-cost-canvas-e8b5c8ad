@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -133,12 +134,12 @@ export function CostCalculator({ embeddedMode = false, initialStep = 1 }: CostCa
   };
 
   const formContent = (
-    <div className={`${isMobile ? 'pb-16' : ''}`}>
+    <div className={`${isMobile ? 'pb-16 px-1' : ''}`}>
       {renderStep()}
     </div>
   );
 
-  const imageColumnClass = isMobile ? 'w-full h-[35vh] min-h-[250px]' : 'w-[40%]';
+  const imageColumnClass = isMobile ? 'w-full h-[40vh] min-h-[250px]' : 'w-[40%]';
   const formColumnClass = isMobile ? 'w-full flex-1 overflow-hidden' : 'w-[40%] border-x border-gray-200';
   const faqColumnClass = isMobile ? 'w-full h-auto' : 'w-[20%]';
 

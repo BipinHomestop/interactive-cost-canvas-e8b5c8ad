@@ -73,6 +73,12 @@
     .mobile-container > div {
       @apply mt-0;
     }
+
+    /* Image container should be taller on mobile */
+    .image-container-mobile {
+      min-height: 40vh !important;
+      max-height: 40vh !important;
+    }
   }
 }
 
@@ -132,6 +138,11 @@
   /* Ensure inputs have enough touch target size */
   input, select, textarea, button {
     @apply min-h-[2.75rem] text-[16px];
+  }
+
+  /* Constrain max width on small screens */
+  .max-mobile-w {
+    @apply max-w-[90%] mx-auto;
   }
 }
 

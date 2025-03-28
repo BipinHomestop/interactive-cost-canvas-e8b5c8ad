@@ -27,7 +27,7 @@ export function ImageDisplay({
   const priceContainerHeight = isMobile ? "h-[20%]" : "h-[20%]";
 
   return <div className={`relative ${containerHeight}`}>
-      <div className={`relative ${imageContainerHeight}`}>
+      <div className={`relative ${imageContainerHeight} image-container-mobile`}>
         {isLoading ? <LoadingSpinner /> : currentImageSrc && !imageError ? (
           <div className="w-full h-full">
             <img 
