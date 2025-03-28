@@ -15,20 +15,25 @@ const Embed = () => {
   const initialStep = searchParams.get('step') ? parseInt(searchParams.get('step') || '1') : 1;
   const [height, setHeight] = useState(0);
   
+  // Send message to parent window when calculator loads
   useEffect(() => {
+    // Only run in iframe context
     if (window.self !== window.top) {
       window.parent.postMessage({ type: 'calculator:loaded' }, '*');
       
+      // Calculate initial height
       const calculateHeight = () => {
         return document.body.scrollHeight;
       };
       
+      // Initial height calculation and notification
       setHeight(calculateHeight());
       window.parent.postMessage({ 
         type: 'calculator:resize',
         height: calculateHeight()
       }, '*');
       
+      // Listen for resize events and notify parent
       const handleResize = () => {
         const newHeight = calculateHeight();
         setHeight(newHeight);
@@ -38,14 +43,18 @@ const Embed = () => {
         }, '*');
       };
       
+      // Set up resize observer for content changes
       const resizeObserver = new ResizeObserver(() => {
         handleResize();
       });
       
+      // Observe the body element for size changes
       resizeObserver.observe(document.body);
       
+      // Also listen for window resize events
       window.addEventListener('resize', handleResize);
       
+      // Listen for Stripe redirect messages
       const handleMessage = (event) => {
         console.log("Received message in iframe:", event.data);
         if (event.data && event.data.type === 'stripe:redirect') {
@@ -72,16 +81,11 @@ const Embed = () => {
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
       <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png" 
-              alt="American Concrete Coatings"
-              className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
-            />
-            <h1 className={`${isMobile ? 'hidden' : 'text-xl'} font-bold text-[#1A3174] text-center`}>
-              Garage Floor Coating Cost Calculator
-            </h1>
-          </div>
+          <img 
+            src="/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png" 
+            alt="American Concrete Coatings"
+            className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
+          />
           <div className="flex items-center gap-2">
             {isMobile && (
               <Button 
@@ -110,6 +114,7 @@ const Embed = () => {
         <CostCalculator initialStep={initialStep} embeddedMode={true} />
       </div>
       
+      {/* Mobile FAQ Overlay */}
       {showFAQs && isMobile && (
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
           <div className="bg-[#1A3174] text-white p-4 flex justify-between items-center">
