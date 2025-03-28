@@ -20,8 +20,9 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <React.StrictMode>
+    // Fixed the nesting order - React.StrictMode should wrap the QueryClientProvider
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter basename="/">
           <TooltipProvider>
             <Routes>
@@ -32,8 +33,8 @@ function App() {
             <Sonner />
           </TooltipProvider>
         </BrowserRouter>
-      </React.StrictMode>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 }
 
