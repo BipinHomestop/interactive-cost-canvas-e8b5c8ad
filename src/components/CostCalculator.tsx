@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -19,12 +20,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Toaster } from "./ui/toaster";
 
-interface CostCalculatorProps {
-  embeddedMode?: boolean;
-  initialStep?: number;
-}
-
-export function CostCalculator({ embeddedMode = false, initialStep = 1 }: CostCalculatorProps) {
+export function CostCalculator() {
   const isMobile = useIsMobile();
   const [showFAQ, setShowFAQ] = useState(false);
   const {
@@ -41,9 +37,8 @@ export function CostCalculator({ embeddedMode = false, initialStep = 1 }: CostCa
     needExtraFootage,
     currentCondition,
     handleNextStep,
-    handlePrevStep,
-    setStep
-  } = useCalculator(initialStep);
+    handlePrevStep
+  } = useCalculator();
 
   const getStepOptions = () => {
     switch (step) {
@@ -118,7 +113,7 @@ export function CostCalculator({ embeddedMode = false, initialStep = 1 }: CostCa
       case 8:
         return <CurrentConditionStep condition={currentCondition} onConditionChange={value => setValue("currentCondition", value as "original" | "existing")} />;
       case 9:
-        return <PaymentStep onBack={handlePrevStep} formData={formValues} totalCost={totalCost} embeddedMode={embeddedMode} />;
+        return <PaymentStep onBack={handlePrevStep} formData={formValues} totalCost={totalCost} />;
       default:
         return null;
     }
@@ -138,20 +133,17 @@ export function CostCalculator({ embeddedMode = false, initialStep = 1 }: CostCa
     </div>
   );
 
-  const imageColumnClass = isMobile ? 'w-full h-[35vh] min-h-[250px]' : 'w-[40%]';
-  const formColumnClass = isMobile ? 'w-full flex-1 overflow-hidden' : 'w-[40%] border-x border-gray-200';
-  const faqColumnClass = isMobile ? 'w-full h-auto' : 'w-[20%]';
-
   return (
     <div className="h-full">
       <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
-        <div className={`${imageColumnClass} h-full`}>
+        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} ${isMobile ? 'h-[35vh] min-h-[250px]' : 'h-full'}`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
         </div>
         
         <div className={`
-          ${formColumnClass}
+          ${isMobile ? 'w-full' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-4 sm:p-6
+          ${isMobile ? 'flex-1 overflow-hidden' : 'h-full'} 
           relative
         `}>
           <form onSubmit={handleSubmit(() => {})} className="h-full flex flex-col">
@@ -170,30 +162,20 @@ export function CostCalculator({ embeddedMode = false, initialStep = 1 }: CostCa
           </form>
         </div>
 
-        {!isMobile && (
-          <div className={`${faqColumnClass} bg-white p-6 h-full`}>
-            {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
-          </div>
-        )}
-        
-        {isMobile && (
-          <div className={`w-full bg-white ${!showFAQ ? 'p-2' : 'p-6'}`}>
-            <Button 
-              variant="ghost" 
-              onClick={toggleFAQ} 
-              className="w-full flex items-center justify-between mb-2"
-            >
-              <span>Frequently Asked Questions</span>
-              {showFAQ ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-            </Button>
-            
-            {showFAQ && (
-              <ScrollArea className="h-[calc(100vh-200px)]">
-                {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
-              </ScrollArea>
-            )}
-          </div>
-        )}
+        <div className={`
+            ${isMobile ? 'w-full' : 'w-[20%]'} 
+            bg-white p-6 
+            ${isMobile ? 'h-auto' : 'h-full'} 
+            ${isMobile && !showFAQ ? 'hidden' : ''}
+          `}>
+          {isMobile ? (
+            <ScrollArea className="h-[calc(100vh-200px)]">
+              {(step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />}
+            </ScrollArea>
+          ) : (
+            (step >= 3 || step <= 2 || step === 9) && <FAQSection step={step} />
+          )}
+        </div>
       </div>
       <Toaster />
     </div>

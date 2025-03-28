@@ -1,17 +1,16 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, AlertCircle } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formatFinishLabel = (finish: string): string => {
   return finish
@@ -24,25 +23,25 @@ interface PaymentStepProps {
   onBack: () => void;
   formData: any;
   totalCost: number;
-  embeddedMode?: boolean;
 }
 
-export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false }: PaymentStepProps) {
+export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const [date, setDate] = useState<Date>();
   const [couponCode, setCouponCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false);
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
   const [discountedTotal, setDiscountedTotal] = useState<number>(totalCost);
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const { getPrice, getFinishMultiplier } = usePricingConfig();
   
+  // Valid coupon codes for testing
   const VALID_COUPONS = {
-    "TEST99": 99.5,
+    "TEST99": 99.5, // 99.5% discount for testing
   };
-
+  
+  // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
   const DEFAULT_BASE_PRICE_2_CAR = 2200;
   const DEFAULT_BASE_PRICE_3_CAR = 3500;
@@ -55,12 +54,13 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate);
-    setIsCalendarOpen(false);
+    setIsCalendarOpen(false); // Close the calendar popover after selection
   };
 
   const renderPriceBreakdown = () => {
     const breakdown = [];
     
+    // Base price based on garage capacity
     if (formData.garageCapacity) {
       const baseKey = `base_price_${formData.garageCapacity}_car`;
       let defaultBasePrice;
@@ -82,10 +82,12 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
       });
     }
 
+    // Finish multiplier
     if (formData.garageFinish) {
       const multiplier = getFinishMultiplier(formData.garageFinish);
       const finishLabel = formatFinishLabel(formData.garageFinish);
       
+      // Get base price
       const baseKey = `base_price_${formData.garageCapacity}_car`;
       let defaultBasePrice;
       
@@ -107,6 +109,7 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
       });
     }
 
+    // Stem walls
     if (formData.needStemWalls === "yes") {
       const stemWallPrice = formData.stemWallType === "standard" 
         ? getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE)
@@ -118,6 +121,7 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
       });
     }
 
+    // Steps
     if (formData.needSteps === "yes") {
       const stepsPrice = getPrice('steps_price', DEFAULT_STEPS_PRICE);
       breakdown.push({
@@ -126,6 +130,7 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
       });
     }
 
+    // Extra footage
     if (formData.needExtraFootage === "yes" && formData.extraFootage) {
       const footageKey = `extra_footage_${formData.extraFootage.replace(/-/g, '_')}`;
       const extraFootagePrice = getPrice(footageKey, 0);
@@ -136,6 +141,7 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
       });
     }
 
+    // Current condition
     if (formData.currentCondition === "existing") {
       const existingPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
       breakdown.push({
@@ -148,7 +154,6 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
   };
 
   const handleApplyCoupon = () => {
-    setErrorMessage("");
     if (!couponCode.trim()) {
       toast({
         title: "No coupon code entered",
@@ -164,6 +169,7 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
       const discount = VALID_COUPONS[upperCaseCode];
       setDiscountPercentage(discount);
       
+      // Calculate new total with discount
       const discountAmount = totalCost * (discount / 100);
       const newTotal = totalCost - discountAmount;
       setDiscountedTotal(newTotal);
@@ -194,22 +200,21 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
     }
 
     setIsLoading(true);
-    setErrorMessage("");
 
     try {
+      // Prepare line items for Stripe based on price breakdown
       const lineItems = renderPriceBreakdown().map(item => ({
         price_data: {
           currency: 'usd',
           product_data: {
             name: item.label,
           },
-          unit_amount: Math.round(item.price * 100),
+          unit_amount: Math.round(item.price * 100), // Convert to cents
         },
         quantity: 1,
       }));
 
-      console.log("Line items for checkout:", lineItems);
-
+      // Metadata to include with the Stripe checkout session
       const metadata = {
         customer_name: formData.name,
         customer_email: formData.email,
@@ -221,22 +226,14 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
         discount_percentage: discountPercentage.toString(),
       };
 
-      console.log("Metadata for checkout:", metadata);
-
-      // Set the success and cancel URLs based on whether we're in embedded mode
-      const successUrl = window.location.origin + '/success';
-      const cancelUrl = window.location.origin + (embeddedMode ? '/embed' : '') + '/?step=9';
-
-      console.log("Success URL:", successUrl);
-      console.log("Cancel URL:", cancelUrl);
-
+      // Create the checkout session
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: {
           lineItems: lineItems,
           totalAmount: discountPercentage > 0 ? discountedTotal : totalCost,
           metadata: metadata,
-          successUrl: successUrl,
-          cancelUrl: cancelUrl,
+          successUrl: window.location.origin + '/success',
+          cancelUrl: window.location.origin + '/?step=9', // Return to payment step
         },
       });
 
@@ -245,27 +242,15 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
         throw new Error(error.message);
       }
 
-      console.log("Checkout session response:", data);
-
       if (data && data.url) {
-        if (embeddedMode && window.self !== window.top) {
-          console.log("Sending Stripe URL to parent window:", data.url);
-          window.parent.postMessage({ 
-            type: 'stripe:redirect', 
-            url: data.url 
-          }, '*');
-        } else {
-          console.log("Redirecting directly to Stripe URL:", data.url);
-          window.location.href = data.url;
-        }
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
         console.error('No checkout URL returned:', data);
-        setErrorMessage('No checkout URL returned from payment provider. Please try again later.');
         throw new Error('No checkout URL returned');
       }
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      setErrorMessage(`Payment error: ${error.message || 'Unknown error occurred'}`);
       toast({
         title: "Payment Error",
         description: "There was a problem processing your payment. Please try again.",
@@ -279,14 +264,6 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
   return (
     <div className={`flex flex-col ${isMobile ? 'pb-16' : 'h-[calc(100vh-80px)]'}`}>
       <div className={`${isMobile ? 'space-y-5' : 'space-y-6'} px-4 sm:px-6 pb-8`}>
-        {errorMessage && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
-        )}
-        
         <div className="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-sm">
           <h3 className="font-semibold text-lg mb-3">Price Breakdown</h3>
           <div className="space-y-2 sm:space-y-3">
@@ -352,7 +329,6 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
               variant="default" 
               className="bg-[#1A3174] h-12 sm:h-14 px-4 sm:px-8 text-sm sm:text-base"
               onClick={handleApplyCoupon}
-              disabled={isLoading}
             >
               Apply
             </Button>
@@ -409,4 +385,3 @@ export function PaymentStep({ onBack, formData, totalCost, embeddedMode = false 
     </div>
   );
 }
-

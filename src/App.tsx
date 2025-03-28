@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Success from "./pages/Success";
-import Embed from "./pages/Embed";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -28,7 +27,6 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/success" element={<Success />} />
-              <Route path="/embed" element={<Embed />} />
             </Routes>
             <Toaster />
             <Sonner />
