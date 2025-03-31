@@ -7,6 +7,7 @@ import { ImageError } from "./components/ImageError";
 import { PriceOverlay } from "./components/PriceOverlay";
 import { useCalculatorImage } from "./hooks/useCalculatorImage";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect } from "react";
 
 export function ImageDisplay({
   totalCost,
@@ -15,6 +16,12 @@ export function ImageDisplay({
 }: ImageDisplayProps) {
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  
+  useEffect(() => {
+    // Log options to help with debugging
+    console.log('ImageDisplay received options:', options);
+  }, [options]);
+  
   const {
     isLoading,
     imageError,

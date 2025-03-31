@@ -78,25 +78,68 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
             console.log('Found image for extra footage:', data);
           }
         } else if ((step === 5 || step === 6) && options?.garageFinish) {
+          console.log('Step 5/6 - Loading finish-specific image for:', options.garageFinish);
+          
           const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
           
           if (finishCollection) {
+            console.log('Found finish collection:', finishCollection);
             if (step === 5) {
               imageData = await imageUtils.handleStemWallImage(finishCollection, options);
             } else if (step === 6) {
               imageData = imageUtils.handleStepsImage(finishCollection, options.needSteps || 'no');
             }
+          } else {
+            console.warn('No finish collection found for:', options.garageFinish);
           }
         } else if (step === 4 && options?.garageFinish) {
+          console.log('Step 4 - Loading main image for finish:', options.garageFinish);
+          
           const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
           if (finishCollection) {
+            console.log('Found finish collection main image:', finishCollection.garage_finish_image);
             imageData = { image_path: finishCollection.garage_finish_image };
+            
+            // Store this as the last selected finish image for persistence
+            await db.updateStepImagesLastSelected(4);
+            await db.insertStepImage(4, `finish-${options.garageFinish}`, finishCollection.garage_finish_image, true);
+          } else {
+            console.warn('No finish collection found for:', options.garageFinish);
           }
         } else if (step === 9) {
-          imageData = await db.getLastSelectedImage(5);
+          // For payment page, get the last selected finish image
+          imageData = await db.getLastSelectedImage(4);
+          if (!imageData) {
+            console.log('No last selected image found, falling back to step 5');
+            imageData = await db.getLastSelectedImage(5);
+          }
         } else {
-          // For all other steps, get the default image
-          imageData = await db.getStepImage(step, 'default');
+          // For all other steps, get the default image or last selected finish
+          if (options?.garageFinish) {
+            console.log('Using garage finish for default image:', options.garageFinish);
+            const { data, error } = await supabase
+              .from('calculator_step_images')
+              .select('image_path')
+              .eq('step_number', 4)
+              .eq('image_type', `finish-${options.garageFinish}`)
+              .maybeSingle();
+              
+            if (!error && data) {
+              imageData = data;
+              console.log('Found cached finish image:', data);
+            } else {
+              console.log('No cached finish image found, trying to get from collection');
+              const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
+              if (finishCollection) {
+                imageData = { image_path: finishCollection.garage_finish_image };
+              }
+            }
+          }
+          
+          if (!imageData) {
+            console.log('Falling back to default image for step:', step);
+            imageData = await db.getStepImage(step, 'default');
+          }
         }
 
         if (!isMounted) return;
