@@ -24,7 +24,7 @@ export default function Success() {
   return (
     <>
       <Helmet>
-        <title>Thank You | Form Submitted Successfully | American Concrete Coatings</title>
+        <title>Thank You | Your Quote is Ready | American Concrete Coatings</title>
         <meta name="description" content="Thank you for submitting your information. An American Concrete Coatings representative will contact you shortly about your garage floor coating project." />
         <link rel="canonical" href="https://quote.garagefloorcoatingsdfw.com/success" />
       </Helmet>
@@ -54,7 +54,7 @@ export default function Success() {
               className="border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
             >
               <Phone className="w-4 h-4 mr-1" />
-              Call (817) 588-2055
+              Call +1 (817) 588-2055
             </Button>
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, HelpCircle, Phone, X } from "lucide-react";
@@ -19,29 +20,29 @@ const Index = () => {
   function getStepTitle(step: number): string {
     const stepTitles = {
       1: "Estimate Your Garage Concrete Coating Cost | American Concrete Coatings",
-      2: "Contact Information | Garage Floor Coating Calculator",
-      3: "Select Garage Size | Garage Floor Coating Calculator",
-      4: "Choose Finish Style | Garage Floor Coating Calculator",
-      5: "Stem Wall Options | Garage Floor Coating Calculator",
-      6: "House Steps Options | Garage Floor Coating Calculator",
-      7: "Additional Square Footage | Garage Floor Coating Calculator",
-      8: "Current Floor Condition | Garage Floor Coating Calculator",
-      9: "Review & Payment | Garage Floor Coating Calculator"
+      2: "Contact Information | American Concrete Coatings",
+      3: "Select Garage Size | American Concrete Coatings",
+      4: "Choose Finish Style | American Concrete Coatings",
+      5: "Stem Wall Options | American Concrete Coatings",
+      6: "House Steps Options | American Concrete Coatings",
+      7: "Additional Square Footage | American Concrete Coatings",
+      8: "Current Floor Condition | American Concrete Coatings",
+      9: "Review & Payment | American Concrete Coatings"
     };
-    return stepTitles[step as keyof typeof stepTitles] || "Garage Floor Coating Cost Calculator";
+    return stepTitles[step as keyof typeof stepTitles] || "Garage Floor Coating Cost Calculator | American Concrete Coatings";
   }
   
   function getStepDescription(step: number): string {
     const stepDescriptions = {
       1: "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get an instant quote on durable, long-lasting floor coatings at American Concrete Coatings.",
-      2: "Provide your contact details to receive your customized garage floor coating estimate.",
-      3: "Select the size of your garage to get an accurate cost calculation for your floor coating project.",
-      4: "Choose from our premium garage floor coating finishes including Snowfall, Carbon, and Granite.",
-      5: "Determine if your garage needs stem walls and select the appropriate type for your project.",
-      6: "Add custom steps between your home and garage if needed for your floor coating project.",
-      7: "Calculate additional square footage needs for your garage floor coating installation.",
-      8: "Tell us about your current floor condition to get the most accurate price estimate.",
-      9: "Review your selections and complete your garage floor coating order."
+      2: "Provide your contact details to receive your customized garage floor coating estimate from American Concrete Coatings.",
+      3: "Select the size of your garage to get an accurate cost calculation for your floor coating project from American Concrete Coatings.",
+      4: "Choose from our premium garage floor coating finishes including Snowfall, Carbon, and Granite at American Concrete Coatings.",
+      5: "Determine if your garage needs stem walls and select the appropriate type for your project with American Concrete Coatings.",
+      6: "Add custom steps between your home and garage if needed for your floor coating project with American Concrete Coatings.",
+      7: "Calculate additional square footage needs for your garage floor coating installation with American Concrete Coatings.",
+      8: "Tell us about your current floor condition to get the most accurate price estimate from American Concrete Coatings.",
+      9: "Review your selections and complete your garage floor coating order with American Concrete Coatings."
     };
     return stepDescriptions[step as keyof typeof stepDescriptions] || 
       "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get an instant quote on durable, long-lasting floor coatings at American Concrete Coatings.";
@@ -96,7 +97,7 @@ const Index = () => {
               onClick={() => window.location.href = "tel:+18175882055"}
             >
               <Phone className="w-4 h-4 mr-1" />
-              <span className={`${isMobile ? 'text-xs' : ''}`}>Call (817) 588-2055</span>
+              <span className={`${isMobile ? 'text-xs' : ''}`}>Call +1 (817) 588-2055</span>
             </Button>
           </div>
         </div>
