@@ -18,27 +18,7 @@ export const useStepNavigation = (
     return cleanedPhone.length === 10;
   };
 
-  // Validate ZIP code format
-  const isValidZipCode = (zipcode: string): boolean => {
-    return /^\d{5}$/.test(zipcode);
-  };
-
   const handleNextStep = async (formValues: Partial<CalculatorInputs>) => {
-    // For step 1 (location), validate ZIP code
-    if (step === 1) {
-      if (!formValues.location || !isValidZipCode(formValues.location)) {
-        toast({
-          title: "Error",
-          description: "Please enter a valid 5-digit ZIP code",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      // The location step component will validate if the ZIP code is in service area
-      // We just need to make sure it has the correct format here
-    }
-    
     // For step 2 (contact info), validate required fields and phone format
     if (step === 2) {
       if (!formValues.name || !formValues.phone || !formValues.email) {

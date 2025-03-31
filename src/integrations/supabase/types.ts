@@ -212,12 +212,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_valid_us_zipcode: {
-        Args: {
-          zipcode: string
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

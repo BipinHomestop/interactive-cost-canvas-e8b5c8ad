@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -60,13 +61,13 @@ export function LocationStep({
       
       if (queryError) {
         console.error('Error checking zipcode:', queryError);
-        setError("Unable to verify ZIP code. Please try again.");
+        setError("There was an error checking your ZIP code. Please try again.");
         setIsValidating(false);
         return false;
       }
       
       if (!data) {
-        setError("We currently do not serve the area with this ZIP code");
+        setError("We do not serve that area");
         setIsValid(false);
         setIsValidating(false);
         return false;
@@ -78,7 +79,7 @@ export function LocationStep({
       return true;
     } catch (err) {
       console.error('Unexpected error during zipcode validation:', err);
-      setError("An unexpected error occurred. Please try again.");
+      setError("There was an error checking your ZIP code. Please try again.");
       setIsValidating(false);
       return false;
     }
@@ -94,7 +95,7 @@ export function LocationStep({
         } else {
           toast({
             title: "Invalid ZIP Code",
-            description: error || "Please check your ZIP code and try again.",
+            description: error || "Please fix the error with your ZIP code before continuing.",
             variant: "destructive"
           });
         }
@@ -107,7 +108,7 @@ export function LocationStep({
       <div className="text-center">
         <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Where's Your Project Located?</h2>
         <p className="text-gray-600 mb-4">
-          Enter your <strong>ZIP code</strong> to get started with your garage renovation estimate
+          Enter your ZIP code to get started with your garage renovation estimate
         </p>
       </div>
 

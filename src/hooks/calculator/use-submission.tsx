@@ -8,11 +8,6 @@ export const useSubmission = () => {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Helper function to validate ZIP code format
-  const isValidZipCode = (zipcode: string): boolean => {
-    return /^\d{5}$/.test(zipcode);
-  };
-
   const saveSubmission = async (
     formValues: Partial<CalculatorInputs>, 
     isNewSubmission: boolean = true,
@@ -21,19 +16,6 @@ export const useSubmission = () => {
     discountPercentage?: number
   ) => {
     try {
-      // Check if location is empty or invalid when creating a new submission
-      if (isNewSubmission && (!formValues.location || !isValidZipCode(formValues.location))) {
-        // If we're on a step that requires location, show error
-        if (formValues.location === '') {
-          toast({
-            title: "Missing ZIP Code",
-            description: "Please enter a valid 5-digit ZIP code",
-            variant: "destructive",
-          });
-          return false;
-        }
-      }
-
       if (isNewSubmission) {
         // For new submissions, save whatever data we have so far
         const { data, error } = await supabase
@@ -58,26 +40,7 @@ export const useSubmission = () => {
           }])
           .select();
 
-        if (error) {
-          console.error('Error saving data:', error);
-          
-          // Show more specific error messages based on error type
-          if (error.message.includes('valid_zipcode_format')) {
-            toast({
-              title: "Invalid ZIP Code",
-              description: "Please enter a valid 5-digit ZIP code",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Error",
-              description: "Failed to save your information. Please try again.",
-              variant: "destructive",
-            });
-          }
-          
-          return false;
-        }
+        if (error) throw error;
 
         if (data && data[0]) {
           setSubmissionId(data[0].id);
@@ -101,12 +64,7 @@ export const useSubmission = () => {
         if (formValues.needExtraFootage !== undefined) updateData.need_extra_footage = formValues.needExtraFootage;
         if (formValues.extraFootage !== undefined) updateData.extra_footage = formValues.extraFootage;
         if (formValues.currentCondition !== undefined) updateData.current_condition = formValues.currentCondition;
-        
-        // Only update location if it's a valid ZIP code
-        if (formValues.location !== undefined && isValidZipCode(formValues.location)) {
-          updateData.location = formValues.location;
-        }
-        
+        if (formValues.location !== undefined) updateData.location = formValues.location;
         if (formValues.name !== undefined) updateData.name = formValues.name;
         if (formValues.phone !== undefined) updateData.phone = formValues.phone;
         if (formValues.email !== undefined) updateData.email = formValues.email;
@@ -126,15 +84,7 @@ export const useSubmission = () => {
           .update(updateData)
           .eq('id', submissionId);
 
-        if (error) {
-          console.error('Error updating data:', error);
-          toast({
-            title: "Error",
-            description: "Failed to update your information",
-            variant: "destructive",
-          });
-          return false;
-        }
+        if (error) throw error;
       }
       return true;
     } catch (error) {
