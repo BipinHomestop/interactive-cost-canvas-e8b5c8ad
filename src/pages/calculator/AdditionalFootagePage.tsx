@@ -4,6 +4,7 @@ import { AdditionalFootageStep } from "@/components/calculator/AdditionalFootage
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function AdditionalFootagePage() {
   const {
@@ -16,10 +17,27 @@ export default function AdditionalFootagePage() {
     handlePrevStep
   } = useCalculator();
   
+  const { toast } = useToast();
+  
   const handleNext = () => {
-    if (!formValues.needExtraFootage || (formValues.needExtraFootage === "yes" && !formValues.extraFootage)) {
+    if (!formValues.needExtraFootage) {
+      toast({
+        title: "Error",
+        description: "Please select whether you need additional footage",
+        variant: "destructive",
+      });
       return;
     }
+    
+    if (formValues.needExtraFootage === "yes" && !formValues.extraFootage) {
+      toast({
+        title: "Error",
+        description: "Please select the additional footage amount",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     handleNextStep();
   };
   

@@ -4,6 +4,7 @@ import { GarageCapacityStep } from "@/components/calculator/GarageCapacityStep";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function GarageCapacityPage() {
   const {
@@ -15,8 +16,15 @@ export default function GarageCapacityPage() {
     handlePrevStep
   } = useCalculator();
   
+  const { toast } = useToast();
+  
   const handleNext = () => {
     if (!formValues.garageCapacity) {
+      toast({
+        title: "Error",
+        description: "Please select your garage capacity",
+        variant: "destructive",
+      });
       return;
     }
     handleNextStep();

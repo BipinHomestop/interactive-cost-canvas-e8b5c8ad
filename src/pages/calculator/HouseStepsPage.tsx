@@ -4,6 +4,7 @@ import { HouseStepsStep } from "@/components/calculator/HouseStepsStep";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function HouseStepsPage() {
   const {
@@ -16,8 +17,15 @@ export default function HouseStepsPage() {
     handlePrevStep
   } = useCalculator();
   
+  const { toast } = useToast();
+  
   const handleNext = () => {
     if (!formValues.needSteps) {
+      toast({
+        title: "Error",
+        description: "Please select whether you need steps coated",
+        variant: "destructive",
+      });
       return;
     }
     handleNextStep();

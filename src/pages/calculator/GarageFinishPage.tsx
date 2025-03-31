@@ -4,6 +4,7 @@ import { GarageFinishStep } from "@/components/calculator/GarageFinishStep";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function GarageFinishPage() {
   const {
@@ -16,8 +17,15 @@ export default function GarageFinishPage() {
     handlePrevStep
   } = useCalculator();
   
+  const { toast } = useToast();
+  
   const handleNext = () => {
     if (!formValues.garageFinish) {
+      toast({
+        title: "Error",
+        description: "Please select a garage finish type",
+        variant: "destructive",
+      });
       return;
     }
     handleNextStep();

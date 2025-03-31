@@ -4,6 +4,7 @@ import { CurrentConditionStep } from "@/components/calculator/CurrentConditionSt
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function CurrentConditionPage() {
   const {
@@ -16,8 +17,15 @@ export default function CurrentConditionPage() {
     handlePrevStep
   } = useCalculator();
   
+  const { toast } = useToast();
+  
   const handleNext = () => {
     if (!formValues.currentCondition) {
+      toast({
+        title: "Error",
+        description: "Please select the current condition of your garage floor",
+        variant: "destructive",
+      });
       return;
     }
     handleNextStep();

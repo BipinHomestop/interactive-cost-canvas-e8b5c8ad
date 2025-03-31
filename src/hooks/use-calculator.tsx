@@ -5,6 +5,7 @@ import { useSubmission } from "./calculator/use-submission";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 export const useCalculator = () => {
   const {
@@ -24,6 +25,7 @@ export const useCalculator = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
   
   const { submissionId, saveSubmission } = useSubmission();
   
@@ -48,18 +50,18 @@ export const useCalculator = () => {
   const step = getCurrentStep();
   
   // Handle navigation between steps
-  const handleNextStep = async (formData: Partial<CalculatorInputs>) => {
+  const handleNextStep = async () => {
     const nextStepUrl = getStepUrl(step + 1);
-    const success = await saveSubmission(formData, step === 1, totalCost);
+    const success = await saveSubmission(formValues, step === 1, totalCost);
     if (success) {
       navigate(nextStepUrl);
     }
   };
   
-  const handlePrevStep = async (formData: Partial<CalculatorInputs>) => {
+  const handlePrevStep = async () => {
     if (step > 1) {
       const prevStepUrl = getStepUrl(step - 1);
-      await saveSubmission(formData, false, totalCost);
+      await saveSubmission(formValues, false, totalCost);
       navigate(prevStepUrl);
     }
   };
@@ -130,8 +132,8 @@ export const useCalculator = () => {
     currentCondition,
     setError,
     control,
-    handleNextStep: () => handleNextStep(formValues),
-    handlePrevStep: () => handlePrevStep(formValues),
+    handleNextStep,
+    handlePrevStep,
     getStepUrl
   };
 };
