@@ -74,7 +74,9 @@ export function CostCalculator() {
   const isNextDisabled = () => {
     switch (step) {
       case 1:
-        return !formValues.location;
+        // For the LocationStep, the component now handles validation internally 
+        // and only calls onLocationChange when valid, so we don't need to disable next
+        return false;
       case 2:
         return !formValues.name || !formValues.phone || !formValues.email;
       case 3:
