@@ -21,7 +21,9 @@ export const useCalculator = () => {
   } = useFormState();
 
   const { submissionId, saveSubmission } = useSubmission();
-  const { step, handleNextStep, handlePrevStep } = useStepNavigation(saveSubmission);
+  const { step, handleNextStep, handlePrevStep } = useStepNavigation(
+    (formData: CalculatorInputs) => saveSubmission(formData, true, totalCost)
+  );
   const { totalCost } = useCostCalculation(formValues, step);
 
   // Debug the current form values, step, and totalCost

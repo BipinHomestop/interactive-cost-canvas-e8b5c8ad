@@ -8,7 +8,13 @@ export const useSubmission = () => {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const saveSubmission = async (formValues: CalculatorInputs, isNewSubmission: boolean = true) => {
+  const saveSubmission = async (
+    formValues: CalculatorInputs, 
+    isNewSubmission: boolean = true,
+    totalPrice?: number,
+    discountCode?: string,
+    discountPercentage?: number
+  ) => {
     try {
       if (isNewSubmission) {
         const { data, error } = await supabase
@@ -25,7 +31,11 @@ export const useSubmission = () => {
             need_steps: formValues.needSteps,
             need_extra_footage: formValues.needExtraFootage,
             extra_footage: formValues.extraFootage,
-            current_condition: formValues.currentCondition
+            current_condition: formValues.currentCondition,
+            total_price: totalPrice,
+            discount_code: discountCode,
+            discount_percentage: discountPercentage,
+            payment_status: 'pending'
           }])
           .select();
 
@@ -51,7 +61,10 @@ export const useSubmission = () => {
             need_steps: formValues.needSteps,
             need_extra_footage: formValues.needExtraFootage,
             extra_footage: formValues.extraFootage,
-            current_condition: formValues.currentCondition
+            current_condition: formValues.currentCondition,
+            total_price: totalPrice,
+            discount_code: discountCode,
+            discount_percentage: discountPercentage
           })
           .eq('id', submissionId);
 
@@ -69,5 +82,30 @@ export const useSubmission = () => {
     }
   };
 
-  return { submissionId, saveSubmission };
+  const updatePaymentInfo = async (
+    preferredInstallationDate?: Date,
+    checkoutSessionId?: string,
+    paymentStatus?: string
+  ) => {
+    if (!submissionId) return false;
+    
+    try {
+      const { error } = await supabase
+        .from('cost_calculator_submissions')
+        .update({
+          preferred_installation_date: preferredInstallationDate,
+          checkout_session_id: checkoutSessionId,
+          payment_status: paymentStatus || 'processing'
+        })
+        .eq('id', submissionId);
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Error updating payment information:', error);
+      return false;
+    }
+  };
+
+  return { submissionId, saveSubmission, updatePaymentInfo };
 };

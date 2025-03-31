@@ -11,6 +11,7 @@ import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useSubmission } from "@/hooks/calculator/use-submission";
 
 const formatFinishLabel = (finish: string): string => {
   return finish
@@ -35,6 +36,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const { getPrice, getFinishMultiplier } = usePricingConfig();
+  const { submissionId, updatePaymentInfo } = useSubmission();
   
   // Valid coupon codes for testing
   const VALID_COUPONS = {
@@ -202,6 +204,12 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     setIsLoading(true);
 
     try {
+      // Save the installation date and payment status first
+      const updated = await updatePaymentInfo(date);
+      if (!updated) {
+        throw new Error("Failed to update submission with installation date");
+      }
+
       // Prepare line items for Stripe based on price breakdown
       const lineItems = renderPriceBreakdown().map(item => ({
         price_data: {
@@ -224,6 +232,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         garage_finish: formData.garageFinish,
         coupon_code: couponCode || 'none',
         discount_percentage: discountPercentage.toString(),
+        submission_id: submissionId
       };
 
       // Create the checkout session
@@ -243,6 +252,11 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       }
 
       if (data && data.url) {
+        // Update submission with checkout session ID
+        if (data.sessionId) {
+          await updatePaymentInfo(date, data.sessionId, 'checkout_started');
+        }
+        
         // Redirect to Stripe Checkout
         window.location.href = data.url;
       } else {
@@ -303,7 +317,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
                 {date ? format(date, "PPP") : "Pick a date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className={cn("w-auto p-0", isMobile && "w-[calc(100vw-32px)]")}>
+            <PopoverContent className={cn("w-auto p-0 pointer-events-auto", isMobile && "w-[calc(100vw-32px)]")}>
               <Calendar
                 mode="single"
                 selected={date}

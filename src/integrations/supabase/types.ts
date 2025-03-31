@@ -71,8 +71,11 @@ export type Database = {
       }
       cost_calculator_submissions: {
         Row: {
+          checkout_session_id: string | null
           created_at: string
           current_condition: string | null
+          discount_code: string | null
+          discount_percentage: number | null
           email: string
           extra_footage: string | null
           garage_capacity: number
@@ -83,12 +86,19 @@ export type Database = {
           need_extra_footage: string | null
           need_stem_walls: string
           need_steps: string | null
+          payment_intent_id: string | null
+          payment_status: string | null
           phone: string
+          preferred_installation_date: string | null
           stem_wall_type: string | null
+          total_price: number | null
         }
         Insert: {
+          checkout_session_id?: string | null
           created_at?: string
           current_condition?: string | null
+          discount_code?: string | null
+          discount_percentage?: number | null
           email: string
           extra_footage?: string | null
           garage_capacity: number
@@ -99,12 +109,19 @@ export type Database = {
           need_extra_footage?: string | null
           need_stem_walls: string
           need_steps?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
           phone: string
+          preferred_installation_date?: string | null
           stem_wall_type?: string | null
+          total_price?: number | null
         }
         Update: {
+          checkout_session_id?: string | null
           created_at?: string
           current_condition?: string | null
+          discount_code?: string | null
+          discount_percentage?: number | null
           email?: string
           extra_footage?: string | null
           garage_capacity?: number
@@ -115,8 +132,12 @@ export type Database = {
           need_extra_footage?: string | null
           need_stem_walls?: string
           need_steps?: string | null
+          payment_intent_id?: string | null
+          payment_status?: string | null
           phone?: string
+          preferred_installation_date?: string | null
           stem_wall_type?: string | null
+          total_price?: number | null
         }
         Relationships: []
       }
