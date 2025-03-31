@@ -36,7 +36,33 @@ export const useCalculator = () => {
     console.log('Current step:', step);
     console.log('Current form values:', formValues);
     console.log('Current totalCost:', totalCost);
+    
+    // Track step progression for analytics
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        'event': 'calculator_step',
+        'step_number': step,
+        'step_name': getStepName(step),
+        'current_total': totalCost
+      });
+    }
   }, [formValues, totalCost, step]);
+  
+  // Helper function to get step name for analytics
+  const getStepName = (stepNumber: number): string => {
+    const stepNames = {
+      1: 'location',
+      2: 'contact',
+      3: 'garage_capacity',
+      4: 'garage_finish',
+      5: 'stem_walls',
+      6: 'house_steps',
+      7: 'additional_footage',
+      8: 'current_condition',
+      9: 'payment'
+    };
+    return stepNames[stepNumber as keyof typeof stepNames] || 'unknown';
+  };
 
   return {
     step,
