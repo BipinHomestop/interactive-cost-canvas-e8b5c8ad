@@ -5,6 +5,7 @@ import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useToast } from "@/components/ui/use-toast";
+import * as imageUtils from "@/components/calculator/hooks/utils/imageUtils";
 
 export default function GarageFinishPage() {
   const {
@@ -14,12 +15,13 @@ export default function GarageFinishPage() {
     formValues,
     selectedFinish,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
   
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!formValues.garageFinish) {
       toast({
         title: "Error",
@@ -28,6 +30,15 @@ export default function GarageFinishPage() {
       });
       return;
     }
+    
+    // Store the garage finish image before proceeding
+    try {
+      await imageUtils.storeGarageFinishImage(formValues.garageFinish);
+      console.log('Stored garage finish image for', formValues.garageFinish);
+    } catch (error) {
+      console.error('Error storing garage finish image:', error);
+    }
+    
     handleNextStep();
   };
   
@@ -46,6 +57,9 @@ export default function GarageFinishPage() {
     }
   }, []);
 
+  // Get options with the current step's required values
+  const options = getStepOptions();
+
   return (
     <>
       <Helmet>
@@ -58,7 +72,7 @@ export default function GarageFinishPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.garageFinish}
-        options={{ garageFinish: formValues.garageFinish }}
+        options={options}
       >
         <GarageFinishStep 
           selectedFinish={selectedFinish} 

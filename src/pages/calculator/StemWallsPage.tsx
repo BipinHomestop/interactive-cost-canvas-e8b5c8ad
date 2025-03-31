@@ -5,6 +5,8 @@ import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useToast } from "@/components/ui/use-toast";
+import * as db from "@/components/calculator/hooks/utils/databaseQueries";
+import * as imageUtils from "@/components/calculator/hooks/utils/imageUtils";
 
 export default function StemWallsPage() {
   const {
@@ -14,12 +16,13 @@ export default function StemWallsPage() {
     formValues,
     needStemWalls,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
   
-  const handleNext = () => {
+  const handleNext = async () => {
     // Validation check
     if (!formValues.needStemWalls) {
       toast({
@@ -40,8 +43,34 @@ export default function StemWallsPage() {
       return;
     }
     
+    // Store the stem wall image before proceeding
+    try {
+      if (formValues.garageFinish) {
+        const finishCollection = await db.getFinishCollectionImage(formValues.garageFinish);
+        if (finishCollection) {
+          await imageUtils.handleStemWallImage(finishCollection, formValues);
+          console.log('Stored stem wall image for', formValues.garageFinish, formValues.needStemWalls, formValues.stemWallType);
+        }
+      }
+    } catch (error) {
+      console.error('Error storing stem wall image:', error);
+    }
+    
     // If all validations pass, proceed to next step
     handleNextStep();
+  };
+  
+  // Handlers for stem wall selections
+  const handleStemWallsChange = (value: string) => {
+    setValue("needStemWalls", value as "yes" | "no");
+    // Reset stem wall type if user selects no
+    if (value === "no") {
+      setValue("stemWallType", undefined);
+    }
+  };
+  
+  const handleStemWallTypeChange = (value: string) => {
+    setValue("stemWallType", value as "standard" | "large");
   };
   
   useEffect(() => {
@@ -52,9 +81,15 @@ export default function StemWallsPage() {
         page_path: '/calculator/stem-walls'
       });
     }
+    
+    // Log current form values
+    console.log('StemWallsPage - Current options:', getStepOptions());
   }, []);
 
   const isNextDisabled = !formValues.needStemWalls || (formValues.needStemWalls === "yes" && !formValues.stemWallType);
+
+  // Get options with the current step's required values
+  const options = getStepOptions();
 
   return (
     <>
@@ -68,17 +103,13 @@ export default function StemWallsPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={isNextDisabled}
-        options={{
-          garageFinish: formValues.garageFinish,
-          needStemWalls: formValues.needStemWalls,
-          stemWallType: formValues.stemWallType
-        }}
+        options={options}
       >
         <StemWallsStep 
           needStemWalls={needStemWalls} 
           stemWallType={formValues.stemWallType}
-          onStemWallsChange={value => setValue("needStemWalls", value as "yes" | "no")}
-          onStemWallTypeChange={value => setValue("stemWallType", value as "standard" | "large")}
+          onStemWallsChange={handleStemWallsChange}
+          onStemWallTypeChange={handleStemWallTypeChange}
         />
       </CalcPageLayout>
     </>

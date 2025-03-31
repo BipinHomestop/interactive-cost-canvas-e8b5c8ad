@@ -5,6 +5,7 @@ import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useToast } from "@/components/ui/use-toast";
+import * as imageUtils from "@/components/calculator/hooks/utils/imageUtils";
 
 export default function AdditionalFootagePage() {
   const {
@@ -14,12 +15,14 @@ export default function AdditionalFootagePage() {
     formValues,
     needExtraFootage,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
   
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Validation checks
     if (!formValues.needExtraFootage) {
       toast({
         title: "Error",
@@ -29,21 +32,33 @@ export default function AdditionalFootagePage() {
       return;
     }
     
+    // If they need extra footage, make sure they've selected how much
     if (formValues.needExtraFootage === "yes" && !formValues.extraFootage) {
       toast({
         title: "Error",
-        description: "Please select the additional footage amount",
+        description: "Please select how much extra footage you need",
         variant: "destructive",
       });
       return;
     }
     
+    // Store the extra footage image before proceeding
+    try {
+      await imageUtils.handleExtraFootageImage(formValues);
+      console.log('Stored extra footage image for', formValues.needExtraFootage, formValues.extraFootage);
+    } catch (error) {
+      console.error('Error storing extra footage image:', error);
+    }
+    
     handleNextStep();
   };
   
-  // Separate handlers for option changes to prevent automatic navigation
   const handleNeedExtraFootageChange = (value: string) => {
     setValue("needExtraFootage", value as "yes" | "no");
+    // Reset extra footage if user selects no
+    if (value === "no") {
+      setValue("extraFootage", undefined);
+    }
   };
   
   const handleExtraFootageChange = (value: string) => {
@@ -62,11 +77,14 @@ export default function AdditionalFootagePage() {
 
   const isNextDisabled = !formValues.needExtraFootage || (formValues.needExtraFootage === "yes" && !formValues.extraFootage);
 
+  // Get options with the current step's required values
+  const options = getStepOptions();
+
   return (
     <>
       <Helmet>
-        <title>Additional Square Footage | Garage Floor Coating Calculator</title>
-        <meta name="description" content="Specify if you need additional square footage coated for your garage floor project." />
+        <title>Additional Footage | Garage Floor Coating Calculator</title>
+        <meta name="description" content="Specify if you need additional square footage beyond your garage floor." />
       </Helmet>
       <CalcPageLayout
         step={step}
@@ -74,13 +92,10 @@ export default function AdditionalFootagePage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={isNextDisabled}
-        options={{
-          needExtraFootage: formValues.needExtraFootage,
-          extraFootage: formValues.extraFootage
-        }}
+        options={options}
       >
         <AdditionalFootageStep 
-          needExtraFootage={needExtraFootage}
+          needExtraFootage={needExtraFootage} 
           extraFootage={formValues.extraFootage}
           onNeedExtraFootageChange={handleNeedExtraFootageChange}
           onExtraFootageChange={handleExtraFootageChange}

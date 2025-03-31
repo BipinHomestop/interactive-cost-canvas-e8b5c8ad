@@ -49,11 +49,54 @@ export const useCalculator = () => {
   
   const step = getCurrentStep();
   
+  // Get the appropriate options for each step for image display
+  const getStepOptions = (): Partial<CalculatorInputs> => {
+    const baseOptions = {
+      garageFinish: formValues.garageFinish,
+    };
+    
+    switch (step) {
+      case 5:
+        return {
+          ...baseOptions,
+          needStemWalls: formValues.needStemWalls,
+          stemWallType: formValues.stemWallType
+        };
+      case 6:
+        return {
+          ...baseOptions,
+          needSteps: formValues.needSteps
+        };
+      case 7:
+        return {
+          ...baseOptions,
+          needExtraFootage: formValues.needExtraFootage,
+          extraFootage: formValues.extraFootage
+        };
+      case 8:
+        return {
+          ...baseOptions,
+          currentCondition: formValues.currentCondition
+        };
+      case 9:
+        return {
+          ...baseOptions,
+          needStemWalls: formValues.needStemWalls,
+          stemWallType: formValues.stemWallType
+        };
+      default:
+        return baseOptions;
+    }
+  };
+  
   // Handle navigation between steps
   const handleNextStep = async () => {
     const nextStepUrl = getStepUrl(step + 1);
     const success = await saveSubmission(formValues, step === 1, totalCost);
+    
     if (success) {
+      // Log the current form values before navigating
+      console.log('Form values before navigating to next step:', formValues);
       navigate(nextStepUrl);
     }
   };
@@ -90,6 +133,7 @@ export const useCalculator = () => {
     console.log('Current step:', step);
     console.log('Current form values:', formValues);
     console.log('Current totalCost:', totalCost);
+    console.log('Current step options:', getStepOptions());
     
     // Track step progression for analytics
     if (typeof window !== 'undefined' && window.gtag) {
@@ -134,6 +178,7 @@ export const useCalculator = () => {
     control,
     handleNextStep,
     handlePrevStep,
-    getStepUrl
+    getStepUrl,
+    getStepOptions
   };
 };

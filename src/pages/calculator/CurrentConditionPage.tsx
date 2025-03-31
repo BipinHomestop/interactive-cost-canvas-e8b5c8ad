@@ -5,6 +5,7 @@ import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useToast } from "@/components/ui/use-toast";
+import * as imageUtils from "@/components/calculator/hooks/utils/imageUtils";
 
 export default function CurrentConditionPage() {
   const {
@@ -14,12 +15,13 @@ export default function CurrentConditionPage() {
     formValues,
     currentCondition,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
   
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!formValues.currentCondition) {
       toast({
         title: "Error",
@@ -28,7 +30,20 @@ export default function CurrentConditionPage() {
       });
       return;
     }
+    
+    // Store the condition image before proceeding
+    try {
+      await imageUtils.handleConditionImage(formValues.currentCondition);
+      console.log('Stored condition image for', formValues.currentCondition);
+    } catch (error) {
+      console.error('Error storing condition image:', error);
+    }
+    
     handleNextStep();
+  };
+  
+  const handleConditionChange = (value: string) => {
+    setValue("currentCondition", value as "original" | "existing");
   };
   
   useEffect(() => {
@@ -40,6 +55,9 @@ export default function CurrentConditionPage() {
       });
     }
   }, []);
+
+  // Get options with the current step's required values
+  const options = getStepOptions();
 
   return (
     <>
@@ -54,13 +72,11 @@ export default function CurrentConditionPage() {
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.currentCondition}
         isLastStep={true}
-        options={{
-          currentCondition: formValues.currentCondition
-        }}
+        options={options}
       >
         <CurrentConditionStep 
           condition={currentCondition}
-          onConditionChange={value => setValue("currentCondition", value as "original" | "existing")}
+          onConditionChange={handleConditionChange}
         />
       </CalcPageLayout>
     </>

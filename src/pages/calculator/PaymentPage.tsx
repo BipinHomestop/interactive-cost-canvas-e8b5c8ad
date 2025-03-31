@@ -11,7 +11,8 @@ export default function PaymentPage() {
     step,
     totalCost,
     formValues,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
@@ -36,6 +37,9 @@ export default function PaymentPage() {
     }
   }, []);
 
+  // Get options with the current step's required values
+  const options = getStepOptions();
+
   return (
     <>
       <Helmet>
@@ -48,6 +52,7 @@ export default function PaymentPage() {
         onNext={() => {}}
         onPrev={handlePrevStep}
         isNextDisabled={false}
+        options={options}
       >
         <PaymentStep 
           formData={formValues} 

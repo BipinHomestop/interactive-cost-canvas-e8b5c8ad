@@ -1,4 +1,3 @@
-
 import React, { ReactNode } from 'react';
 import { ImageDisplay } from './ImageDisplay';
 import { FormNavigation } from './FormNavigation';
@@ -38,6 +37,8 @@ export function CalcPageLayout({
   const needsScrollOnMobile = () => {
     return [2, 4].includes(step);
   };
+
+  console.log('CalcPageLayout rendering with options:', options);
 
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
