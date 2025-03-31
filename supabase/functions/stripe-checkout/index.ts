@@ -20,21 +20,7 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    // Parse request data with error handling
-    let requestData;
-    try {
-      requestData = await req.json();
-    } catch (error) {
-      console.error("Error parsing request JSON:", error);
-      return new Response(
-        JSON.stringify({ error: "Invalid request format" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        }
-      );
-    }
-    
+    const requestData = await req.json();
     const {
       lineItems,
       totalAmount,
@@ -42,45 +28,10 @@ serve(async (req) => {
       successUrl,
       cancelUrl
     } = requestData;
-    
-    // Validate required parameters
-    if (!lineItems || !Array.isArray(lineItems) || lineItems.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Missing or invalid line items" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        }
-      );
-    }
-    
-    if (!successUrl || !cancelUrl) {
-      return new Response(
-        JSON.stringify({ error: "Missing success or cancel URL" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        }
-      );
-    }
 
-    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeSecretKey) {
-      console.error("Missing Stripe secret key");
-      return new Response(
-        JSON.stringify({ error: "Configuration error: Stripe key missing" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 500,
-        }
-      );
-    }
-
-    const stripe = new Stripe(stripeSecretKey, {
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2022-11-15",
     });
-    
-    console.log("Creating Stripe checkout session...");
     
     // Create a checkout session
     const session = await stripe.checkout.sessions.create({
@@ -89,14 +40,11 @@ serve(async (req) => {
       mode: "payment",
       success_url: successUrl,
       cancel_url: cancelUrl,
-      metadata: metadata || {},
+      metadata: metadata,
     });
-    
-    console.log("Checkout session created:", session.id);
     
     // If we have a submission_id in the metadata, update the record
     if (metadata && metadata.submission_id) {
-      console.log("Updating submission record:", metadata.submission_id);
       await supabaseClient
         .from('cost_calculator_submissions')
         .update({

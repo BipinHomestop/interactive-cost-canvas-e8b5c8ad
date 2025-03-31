@@ -136,22 +136,12 @@ export function GarageFinishStep({
     }
   }, [finishImages, selectedFinish, onFinishChange]);
 
-  const handleFinishSelection = (value: string) => (e: React.MouseEvent) => {
-    // Prevent the event from propagating up to any parent elements
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Update the selected finish
-    onFinishChange(value);
-  };
-
   const optionsGrid = (
     <div className={`grid grid-cols-2 gap-4 ${isMobile ? 'pb-24' : 'pb-6'}`}>
       {finishOptions.map(finish => (
         <button
           key={finish.value}
-          onClick={handleFinishSelection(finish.value)}
-          type="button" // Explicitly set type to prevent form submission
+          onClick={() => onFinishChange(finish.value)}
           className={`
             flex items-center gap-3 p-3 border transition-all w-full
             ${selectedFinish === finish.value 

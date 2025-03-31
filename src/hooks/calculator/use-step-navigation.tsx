@@ -1,47 +1,13 @@
 
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useStepNavigation = (
-  saveSubmission: (formValues: Partial<CalculatorInputs>, isNewSubmission: boolean, totalCost?: number) => Promise<boolean>
+  saveSubmission: (formValues: Partial<CalculatorInputs>, isNewSubmission: boolean) => Promise<boolean>
 ) => {
-  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
   const { toast } = useToast();
-  
-  // Helper function to get URL for a step
-  const getStepUrl = (stepNumber: number): string => {
-    const stepUrls: Record<number, string> = {
-      1: "/calculator/location",
-      2: "/calculator/contact",
-      3: "/calculator/garage-capacity",
-      4: "/calculator/garage-finish",
-      5: "/calculator/stem-walls",
-      6: "/calculator/house-steps",
-      7: "/calculator/additional-footage",
-      8: "/calculator/current-condition",
-      9: "/calculator/payment"
-    };
-    
-    return stepUrls[stepNumber] || "/calculator/location";
-  };
-
-  // Function to get current step from URL
-  const getStepFromUrl = (url: string): number => {
-    const pathMap: Record<string, number> = {
-      "/calculator/location": 1,
-      "/calculator/contact": 2,
-      "/calculator/garage-capacity": 3,
-      "/calculator/garage-finish": 4,
-      "/calculator/stem-walls": 5,
-      "/calculator/house-steps": 6,
-      "/calculator/additional-footage": 7,
-      "/calculator/current-condition": 8,
-      "/calculator/payment": 9
-    };
-    
-    return pathMap[url] || 1;
-  };
 
   // Validate phone number function
   const isValidPhoneNumber = (phone: string): boolean => {
@@ -59,10 +25,8 @@ export const useStepNavigation = (
   };
 
   const handleNextStep = async (formValues: Partial<CalculatorInputs>) => {
-    const currentStep = getStepFromUrl(window.location.pathname);
-    
-    // Handle step-specific validation
-    if (currentStep === 1) {
+    // For step 1 (location), validate ZIP code
+    if (step === 1) {
       if (!formValues.location || !isValidZipCode(formValues.location)) {
         toast({
           title: "Error",
@@ -76,7 +40,8 @@ export const useStepNavigation = (
       const success = await saveSubmission(formValues, true);
       if (!success) return;
     }
-    else if (currentStep === 2) {
+    // For step 2 (contact info), validate required fields and phone format
+    else if (step === 2) {
       if (!formValues.name || !formValues.phone || !formValues.email) {
         toast({
           title: "Error",
@@ -100,30 +65,20 @@ export const useStepNavigation = (
       if (!success) return;
     } else {
       // For any other step, just save what we have without validation
+      // This captures incomplete data
       await saveSubmission(formValues, false);
     }
     
-    // Navigate to next step
-    const nextStepUrl = getStepUrl(currentStep + 1);
-    navigate(nextStepUrl);
+    setStep((prev) => Math.min(prev + 1, 9));
   };
 
   const handlePrevStep = async (formValues: Partial<CalculatorInputs>) => {
-    const currentStep = getStepFromUrl(window.location.pathname);
-    
     // Always save current data when going back
-    if (currentStep > 1) {
+    if (step > 1) {
       await saveSubmission(formValues, false);
     }
-    
-    // Navigate to previous step
-    const prevStepUrl = getStepUrl(currentStep - 1);
-    navigate(prevStepUrl);
+    setStep((prev) => Math.max(prev - 1, 1));
   };
 
-  return { 
-    step: getStepFromUrl(window.location.pathname), 
-    handleNextStep, 
-    handlePrevStep 
-  };
+  return { step, handleNextStep, handlePrevStep };
 };

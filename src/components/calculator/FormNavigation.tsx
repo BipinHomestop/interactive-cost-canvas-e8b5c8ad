@@ -6,20 +6,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisabled }: NavigationProps) {
   const isMobile = useIsMobile();
   
-  const handleNextClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default form submission
-    if (onNext && !isNextDisabled) {
-      onNext();
-    }
-  };
-  
-  const handlePrevClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default form submission
-    if (onPrev) {
-      onPrev();
-    }
-  };
-  
   return (
     <div className={`
       grid grid-cols-2 gap-4 w-full
@@ -29,7 +15,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
         <Button 
           type="button" 
           variant="outline" 
-          onClick={handlePrevClick}
+          onClick={onPrev}
           className={`
             w-full border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10
             ${isMobile ? 'h-12 rounded-full' : ''}
@@ -47,7 +33,7 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
             w-full bg-[#1A3174] hover:bg-[#1A3174]/90
             ${isMobile ? 'h-12 rounded-full' : ''}
           `}
-          onClick={handleNextClick}
+          onClick={onNext}
           disabled={isNextDisabled}
         >
           {isLastStep ? "Finish" : "Next"}

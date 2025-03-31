@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,11 +49,7 @@ export function AdditionalFootageStep({
     loadImages();
   }, []);
 
-  const handleNeedExtraFootageChange = (value: string) => (e: React.MouseEvent) => {
-    // Prevent default and stop propagation to avoid form submission
-    e.preventDefault();
-    e.stopPropagation();
-    
+  const handleNeedExtraFootageChange = (value: string) => {
     console.log('Step 7 - Need Extra Footage Change:', value);
     onNeedExtraFootageChange(value);
     if (value === 'no') {
@@ -62,11 +57,7 @@ export function AdditionalFootageStep({
     }
   };
 
-  const handleExtraFootageChange = (value: string) => (e: React.MouseEvent) => {
-    // Prevent default and stop propagation to avoid form submission
-    e.preventDefault();
-    e.stopPropagation();
-    
+  const handleExtraFootageChange = (value: string) => {
     console.log('Step 7 - Extra Footage Type Change:', value);
     onExtraFootageChange(value);
   };
@@ -90,7 +81,7 @@ export function AdditionalFootageStep({
                 ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             } ${isMobile ? 'h-14' : ''}`}
-            onClick={handleNeedExtraFootageChange("yes")}
+            onClick={() => handleNeedExtraFootageChange("yes")}
           >
             Yes
           </Button>
@@ -102,7 +93,7 @@ export function AdditionalFootageStep({
                 ? "bg-[#1A3174] text-white hover:bg-[#1A3174]/90 border-[#1A3174]"
                 : "bg-white text-[#1A3174] border-[#1A3174] hover:bg-[#1A3174]/10"
             } ${isMobile ? 'h-14' : ''}`}
-            onClick={handleNeedExtraFootageChange("no")}
+            onClick={() => handleNeedExtraFootageChange("no")}
           >
             No
           </Button>
@@ -119,14 +110,13 @@ export function AdditionalFootageStep({
                 {["up-to-50", "51-100", "101-150", "151-200"].map((value) => (
                   <Button
                     key={value}
-                    type="button"
                     variant="outline"
                     className={`p-4 border-2 h-auto ${
                       extraFootage === value
                         ? "border-[#1A3174] bg-[#1A3174] text-white hover:bg-[#1A3174]/90"
                         : "border-gray-200 hover:border-[#1A3174]/50 bg-white text-[#0A0B3B] hover:bg-[#1A3174]/10"
                     } ${isMobile ? 'min-h-14' : ''}`}
-                    onClick={handleExtraFootageChange(value)}
+                    onClick={() => handleExtraFootageChange(value)}
                   >
                     <span className="font-medium">
                       {value === "up-to-50" ? "Up to 50 sq ft" :

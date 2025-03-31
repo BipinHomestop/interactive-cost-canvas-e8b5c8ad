@@ -10,7 +10,7 @@ export const useFormState = () => {
       phone: "",
       email: "",
       garageCapacity: 1,
-      garageFinish: "", // Removed default value "snowfall"
+      garageFinish: "snowfall", // Default value
       needStemWalls: "no",
       stemWallType: undefined,
       needSteps: "no",
