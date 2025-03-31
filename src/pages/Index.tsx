@@ -1,4 +1,3 @@
-
 import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, HelpCircle, Phone, X } from "lucide-react";
@@ -17,7 +16,6 @@ const Index = () => {
   const currentStep = stepNumber ? parseInt(stepNumber, 10) : 1;
   const stepTitle = getStepTitle(currentStep);
   
-  // Function to get step-specific title and description for SEO
   function getStepTitle(step: number): string {
     const stepTitles = {
       1: "Enter Your Location | Garage Floor Coating Calculator",
@@ -49,14 +47,12 @@ const Index = () => {
       "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get pricing on epoxy, polyurea, and polyaspartic coatings.";
   }
   
-  // Generate canonical URL for current step
   const getCanonicalUrl = (step: number): string => {
     const baseUrl = "https://quote.garagefloorcoatingsdfw.com";
     return step === 1 ? baseUrl : `${baseUrl}/step/${step}`;
   };
   
   useEffect(() => {
-    // Track page view for analytics
     if (window.gtag) {
       window.gtag('event', 'page_view', {
         page_title: stepTitle,
@@ -97,10 +93,10 @@ const Index = () => {
               variant="outline" 
               size="sm"
               className={`${isMobile ? 'h-9' : 'h-12'} border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5`}
-              onClick={() => window.location.href = "tel:+1234567890"}
+              onClick={() => window.location.href = "tel:+18175882055"}
             >
               <Phone className="w-4 h-4 mr-1" />
-              <span className={`${isMobile ? 'text-xs' : ''}`}>Call Us</span>
+              <span className={`${isMobile ? 'text-xs' : ''}`}>Call (817) 588-2055</span>
             </Button>
           </div>
         </div>
@@ -110,7 +106,6 @@ const Index = () => {
         <CostCalculator />
       </div>
       
-      {/* Mobile FAQ Overlay */}
       {showFAQs && isMobile && (
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
           <div className="bg-[#1A3174] text-white p-4 flex justify-between items-center">

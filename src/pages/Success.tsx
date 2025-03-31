@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { Phone } from 'lucide-react';
 
 export default function Success() {
   const navigate = useNavigate();
@@ -40,12 +41,20 @@ export default function Success() {
               Your information has been submitted successfully. One of our representatives will contact you shortly.
             </p>
           </div>
-          <div className="flex justify-center">
+          <div className="flex flex-col sm:flex-row justify-center gap-3">
             <Button 
               onClick={() => navigate('/')}
               className="bg-[#1A3174] hover:bg-[#132355] text-white"
             >
               Return Home
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => window.location.href = "tel:+18175882055"}
+              className="border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
+            >
+              <Phone className="w-4 h-4 mr-1" />
+              Call (817) 588-2055
             </Button>
           </div>
         </div>
