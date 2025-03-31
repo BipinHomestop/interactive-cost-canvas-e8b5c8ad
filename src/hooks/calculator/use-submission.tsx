@@ -73,8 +73,10 @@ export const useSubmission = () => {
         }
 
         if (data && data[0]) {
-          setSubmissionId(data[0].id);
           console.log('Saved new submission with ID:', data[0].id);
+          setSubmissionId(data[0].id);
+          // Store submission ID in session storage to persist across page reloads
+          sessionStorage.setItem('calculatorSubmissionId', data[0].id);
         }
 
         toast({
@@ -121,6 +123,23 @@ export const useSubmission = () => {
         }
         
         console.log('Updated submission with ID:', submissionId);
+      } else {
+        // Try to recover submission ID from session storage
+        const storedId = sessionStorage.getItem('calculatorSubmissionId');
+        if (storedId) {
+          console.log('Recovered submission ID from session storage:', storedId);
+          setSubmissionId(storedId);
+          // Recursively call this function again now that we have the ID
+          return await saveSubmission(formValues, false, totalPrice, discountCode, discountPercentage);
+        } else {
+          console.error('No submission ID found and could not recover from session storage');
+          toast({
+            title: "Error",
+            description: "Something went wrong with your session. Please refresh the page and try again.",
+            variant: "destructive",
+          });
+          return false;
+        }
       }
       return true;
     } catch (error) {
@@ -139,13 +158,22 @@ export const useSubmission = () => {
     checkoutSessionId?: string,
     paymentStatus?: string
   ) => {
-    if (!submissionId) {
+    // Try to use stored ID if not available in state
+    const idToUse = submissionId || sessionStorage.getItem('calculatorSubmissionId');
+    
+    if (!idToUse) {
       console.error('No submission ID found for payment update');
+      toast({
+        title: "Error",
+        description: "Session information is missing. Please refresh the page and try again.",
+        variant: "destructive",
+      });
       return false;
     }
     
     try {
       console.log('Updating payment info with:', {
+        id: idToUse,
         date: preferredInstallationDate,
         sessionId: checkoutSessionId,
         status: paymentStatus
@@ -153,7 +181,8 @@ export const useSubmission = () => {
       
       // Convert Date object to ISO string format before sending to the database
       const formattedDate = preferredInstallationDate 
-        ? preferredInstallationDate.toISOString().split('T')[0] 
+        ? new Date(preferredInstallationDate.getTime() - (preferredInstallationDate.getTimezoneOffset() * 60000))
+            .toISOString().split('T')[0]
         : undefined;
       
       const updateData: Record<string, any> = {};
@@ -165,20 +194,34 @@ export const useSubmission = () => {
       const { error } = await supabase
         .from('cost_calculator_submissions')
         .update(updateData)
-        .eq('id', submissionId);
+        .eq('id', idToUse);
 
       if (error) {
         console.error('Payment info update error:', error);
         throw error;
       }
       
-      console.log('Successfully updated payment info for submission:', submissionId);
+      console.log('Successfully updated payment info for submission:', idToUse);
       return true;
     } catch (error) {
       console.error('Error updating payment information:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update payment information. Please try again.",
+        variant: "destructive",
+      });
       return false;
     }
   };
+
+  // Try to recover submission ID from session storage on component mount
+  useState(() => {
+    const storedId = sessionStorage.getItem('calculatorSubmissionId');
+    if (storedId && !submissionId) {
+      console.log('Recovered submission ID from session storage on init:', storedId);
+      setSubmissionId(storedId);
+    }
+  });
 
   return { submissionId, saveSubmission, updatePaymentInfo };
 };

@@ -35,6 +35,12 @@ serve(async (req) => {
       throw new Error("No line items provided");
     }
 
+    // Validate that we have a submission ID
+    if (!metadata || !metadata.submission_id) {
+      console.error("Missing submission_id in metadata");
+      throw new Error("Missing submission ID. Please complete the previous steps first.");
+    }
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2022-11-15",
     });
