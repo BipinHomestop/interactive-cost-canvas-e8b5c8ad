@@ -1,13 +1,31 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const useStepNavigation = (
   saveSubmission: (formValues: Partial<CalculatorInputs>, isNewSubmission: boolean) => Promise<boolean>
 ) => {
-  const [step, setStep] = useState(1);
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { stepNumber } = useParams<{ stepNumber: string }>();
+  
+  // Initialize step from URL if provided, otherwise default to 1
+  const [step, setStep] = useState(() => {
+    const urlStep = stepNumber ? parseInt(stepNumber, 10) : 1;
+    return !isNaN(urlStep) && urlStep >= 1 && urlStep <= 9 ? urlStep : 1;
+  });
+
+  // Keep URL in sync with step state
+  useEffect(() => {
+    // Only update URL if it doesn't match current step
+    if (stepNumber !== step.toString() && step !== 1) {
+      navigate(`/step/${step}`, { replace: true });
+    } else if (!stepNumber && step === 1) {
+      // Keep root URL for step 1
+      navigate('/', { replace: true });
+    }
+  }, [step, stepNumber, navigate]);
 
   // Validate phone number function
   const isValidPhoneNumber = (phone: string): boolean => {
@@ -69,7 +87,15 @@ export const useStepNavigation = (
       await saveSubmission(formValues, false);
     }
     
-    setStep((prev) => Math.min(prev + 1, 9));
+    const nextStep = Math.min(step + 1, 9);
+    setStep(nextStep);
+    
+    // Update URL for step tracking
+    if (nextStep === 1) {
+      navigate('/', { replace: true });
+    } else {
+      navigate(`/step/${nextStep}`, { replace: true });
+    }
   };
 
   const handlePrevStep = async (formValues: Partial<CalculatorInputs>) => {
@@ -77,7 +103,16 @@ export const useStepNavigation = (
     if (step > 1) {
       await saveSubmission(formValues, false);
     }
-    setStep((prev) => Math.max(prev - 1, 1));
+    
+    const prevStep = Math.max(step - 1, 1);
+    setStep(prevStep);
+    
+    // Update URL for step tracking
+    if (prevStep === 1) {
+      navigate('/', { replace: true });
+    } else {
+      navigate(`/step/${prevStep}`, { replace: true });
+    }
   };
 
   return { step, handleNextStep, handlePrevStep };
