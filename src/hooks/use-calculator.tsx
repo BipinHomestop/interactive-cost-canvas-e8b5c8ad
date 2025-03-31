@@ -30,6 +30,7 @@ export const useCalculator = () => {
   // Determine current step based on URL path
   const getCurrentStep = (): number => {
     const pathMap: Record<string, number> = {
+      "/": 1,
       "/calculator/location": 1,
       "/calculator/contact": 2,
       "/calculator/garage-capacity": 3,
@@ -38,8 +39,7 @@ export const useCalculator = () => {
       "/calculator/house-steps": 6,
       "/calculator/additional-footage": 7,
       "/calculator/current-condition": 8,
-      "/calculator/payment": 9,
-      "/": 1 // Default to first step if on home page
+      "/calculator/payment": 9
     };
     
     return pathMap[location.pathname] || 1;
@@ -67,7 +67,7 @@ export const useCalculator = () => {
   // Convert step number to URL
   const getStepUrl = (stepNumber: number): string => {
     const stepUrls: Record<number, string> = {
-      1: "/calculator/location",
+      1: "/",
       2: "/calculator/contact",
       3: "/calculator/garage-capacity",
       4: "/calculator/garage-finish",
@@ -78,7 +78,7 @@ export const useCalculator = () => {
       9: "/calculator/payment"
     };
     
-    return stepUrls[stepNumber] || "/calculator/location";
+    return stepUrls[stepNumber] || "/";
   };
   
   const { totalCost } = useCostCalculation(formValues, step);
