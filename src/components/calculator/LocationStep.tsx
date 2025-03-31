@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -67,6 +68,7 @@ export function LocationStep({
       
       if (!data) {
         setError("We do not serve that area");
+        setIsValid(false);
         setIsValidating(false);
         return false;
       }
