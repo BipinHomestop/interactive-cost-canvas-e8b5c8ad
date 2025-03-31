@@ -4,12 +4,13 @@ import { CalculatorInputs } from "@/components/calculator/types";
 import { useToast } from "@/components/ui/use-toast";
 
 export const useStepNavigation = (
-  saveSubmission: (formValues: CalculatorInputs, isNewSubmission: boolean) => Promise<boolean>
+  saveSubmission: (formValues: Partial<CalculatorInputs>, isNewSubmission: boolean) => Promise<boolean>
 ) => {
   const [step, setStep] = useState(1);
   const { toast } = useToast();
 
-  const handleNextStep = async (formValues: CalculatorInputs) => {
+  const handleNextStep = async (formValues: Partial<CalculatorInputs>) => {
+    // For step 2 (contact info), validate required fields
     if (step === 2) {
       if (!formValues.name || !formValues.phone || !formValues.email) {
         toast({
@@ -22,17 +23,19 @@ export const useStepNavigation = (
 
       const success = await saveSubmission(formValues, true);
       if (!success) return;
-    } else if (step > 2) {
-      const success = await saveSubmission(formValues, false);
-      if (!success) return;
+    } else {
+      // For any other step, just save what we have without validation
+      // This captures incomplete data
+      await saveSubmission(formValues, step <= 2);
     }
     
     setStep((prev) => Math.min(prev + 1, 9));
   };
 
-  const handlePrevStep = async (formValues: CalculatorInputs) => {
-    if (step > 2) {
-      await saveSubmission(formValues, false);
+  const handlePrevStep = async (formValues: Partial<CalculatorInputs>) => {
+    // Always save current data when going back
+    if (step > 1) {
+      await saveSubmission(formValues, step <= 2);
     }
     setStep((prev) => Math.max(prev - 1, 1));
   };

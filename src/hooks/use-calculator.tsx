@@ -21,9 +21,12 @@ export const useCalculator = () => {
   } = useFormState();
 
   const { submissionId, saveSubmission } = useSubmission();
+  
+  // Changed to pass Partial<CalculatorInputs> to allow for incomplete data
   const { step, handleNextStep, handlePrevStep } = useStepNavigation(
-    (formData: CalculatorInputs) => saveSubmission(formData, true, totalCost)
+    (formData: Partial<CalculatorInputs>) => saveSubmission(formData, true, totalCost)
   );
+  
   const { totalCost } = useCostCalculation(formValues, step);
 
   // Debug the current form values, step, and totalCost
@@ -46,7 +49,7 @@ export const useCalculator = () => {
     needSteps,
     needExtraFootage,
     currentCondition,
-    handleNextStep: () => handleNextStep(formValues as CalculatorInputs),
-    handlePrevStep: () => handlePrevStep(formValues as CalculatorInputs),
+    handleNextStep: () => handleNextStep(formValues),
+    handlePrevStep: () => handlePrevStep(formValues),
   };
 };

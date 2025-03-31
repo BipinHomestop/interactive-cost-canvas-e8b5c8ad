@@ -9,7 +9,7 @@ export const useSubmission = () => {
   const { toast } = useToast();
 
   const saveSubmission = async (
-    formValues: CalculatorInputs, 
+    formValues: Partial<CalculatorInputs>, 
     isNewSubmission: boolean = true,
     totalPrice?: number,
     discountCode?: string,
@@ -17,16 +17,17 @@ export const useSubmission = () => {
   ) => {
     try {
       if (isNewSubmission) {
+        // For new submissions, save whatever data we have so far
         const { data, error } = await supabase
           .from('cost_calculator_submissions')
           .insert([{
-            location: formValues.location,
-            name: formValues.name,
-            phone: formValues.phone,
-            email: formValues.email,
-            garage_capacity: formValues.garageCapacity,
-            garage_finish: formValues.garageFinish,
-            need_stem_walls: formValues.needStemWalls,
+            location: formValues.location || '',
+            name: formValues.name || '',
+            phone: formValues.phone || '',
+            email: formValues.email || '',
+            garage_capacity: formValues.garageCapacity || null,
+            garage_finish: formValues.garageFinish || 'snowfall', // Default value
+            need_stem_walls: formValues.needStemWalls || 'no',
             stem_wall_type: formValues.stemWallType,
             need_steps: formValues.needSteps,
             need_extra_footage: formValues.needExtraFootage,
@@ -35,7 +36,7 @@ export const useSubmission = () => {
             total_price: totalPrice,
             discount_code: discountCode,
             discount_percentage: discountPercentage,
-            payment_status: 'pending'
+            payment_status: 'incomplete' // Mark as incomplete until payment step
           }])
           .select();
 
@@ -51,21 +52,36 @@ export const useSubmission = () => {
           className: "bg-green-500 text-white border-none",
         });
       } else if (submissionId) {
+        // For updates, create update object with only non-undefined values
+        const updateData: Record<string, any> = {};
+        
+        // Only include fields that have values
+        if (formValues.garageCapacity !== undefined) updateData.garage_capacity = formValues.garageCapacity;
+        if (formValues.garageFinish !== undefined) updateData.garage_finish = formValues.garageFinish;
+        if (formValues.needStemWalls !== undefined) updateData.need_stem_walls = formValues.needStemWalls;
+        if (formValues.stemWallType !== undefined) updateData.stem_wall_type = formValues.stemWallType;
+        if (formValues.needSteps !== undefined) updateData.need_steps = formValues.needSteps;
+        if (formValues.needExtraFootage !== undefined) updateData.need_extra_footage = formValues.needExtraFootage;
+        if (formValues.extraFootage !== undefined) updateData.extra_footage = formValues.extraFootage;
+        if (formValues.currentCondition !== undefined) updateData.current_condition = formValues.currentCondition;
+        if (formValues.location !== undefined) updateData.location = formValues.location;
+        if (formValues.name !== undefined) updateData.name = formValues.name;
+        if (formValues.phone !== undefined) updateData.phone = formValues.phone;
+        if (formValues.email !== undefined) updateData.email = formValues.email;
+        
+        // Add optional fields
+        if (totalPrice !== undefined) updateData.total_price = totalPrice;
+        if (discountCode !== undefined) updateData.discount_code = discountCode;
+        if (discountPercentage !== undefined) updateData.discount_percentage = discountPercentage;
+
+        // Update payment status to 'pending' if we reach the last step
+        if (formValues.currentCondition !== undefined) {
+          updateData.payment_status = 'pending';
+        }
+
         const { error } = await supabase
           .from('cost_calculator_submissions')
-          .update({
-            garage_capacity: formValues.garageCapacity,
-            garage_finish: formValues.garageFinish,
-            need_stem_walls: formValues.needStemWalls,
-            stem_wall_type: formValues.stemWallType,
-            need_steps: formValues.needSteps,
-            need_extra_footage: formValues.needExtraFootage,
-            extra_footage: formValues.extraFootage,
-            current_condition: formValues.currentCondition,
-            total_price: totalPrice,
-            discount_code: discountCode,
-            discount_percentage: discountPercentage
-          })
+          .update(updateData)
           .eq('id', submissionId);
 
         if (error) throw error;
