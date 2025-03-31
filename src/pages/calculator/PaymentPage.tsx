@@ -27,7 +27,7 @@ export default function PaymentPage() {
     }
     
     // Check if we have all the required data
-    if (!formValues.name || !formValues.email || !formValues.phone) {
+    if (!formValues.name || !formValues.email || !formValues.phone || !formValues.garageFinish) {
       toast({
         title: "Missing information",
         description: "Please complete all previous steps before proceeding to payment",
