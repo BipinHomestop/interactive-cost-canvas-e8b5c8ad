@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { LocationStep } from "./calculator/LocationStep";
 import { ContactStep } from "./calculator/ContactStep";
@@ -36,6 +35,7 @@ export function CostCalculator() {
     needSteps,
     needExtraFootage,
     currentCondition,
+    setError,
     handleNextStep,
     handlePrevStep
   } = useCalculator();
@@ -74,11 +74,12 @@ export function CostCalculator() {
   const isNextDisabled = () => {
     switch (step) {
       case 1:
-        // For the LocationStep, the component now handles validation internally 
-        // and only calls onLocationChange when valid, so we don't need to disable next
         return false;
       case 2:
-        return !formValues.name || !formValues.phone || !formValues.email;
+        const phoneValue = formValues.phone || "";
+        const cleanedPhone = phoneValue.replace(/\D/g, '');
+        const isPhoneValid = cleanedPhone.length === 10;
+        return !formValues.name || !formValues.phone || !formValues.email || !isPhoneValid;
       case 3:
         return !formValues.garageCapacity;
       case 4:
@@ -101,7 +102,7 @@ export function CostCalculator() {
       case 1:
         return <LocationStep onLocationChange={value => setValue("location", value)} />;
       case 2:
-        return <ContactStep register={register} />;
+        return <ContactStep register={register} watch={watch} setError={setError} />;
       case 3:
         return <GarageCapacityStep capacity={formValues.garageCapacity} onCapacityChange={([value]) => setValue("garageCapacity", value)} />;
       case 4:

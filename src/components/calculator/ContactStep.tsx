@@ -1,17 +1,56 @@
 
 import { Input } from "@/components/ui/input";
-import { UseFormRegister } from "react-hook-form";
+import { UseFormRegister, UseFormSetError, UseFormWatch } from "react-hook-form";
 import { CalculatorInputs } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/components/ui/form";
+import { useState, useEffect } from "react";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
+  watch?: UseFormWatch<CalculatorInputs>;
+  setError?: UseFormSetError<CalculatorInputs>;
 }
 
 export function ContactStep({
-  register
+  register,
+  watch,
+  setError
 }: ContactStepProps) {
   const isMobile = useIsMobile();
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  
+  // Phone validation function
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Clean the input from any non-digit characters
+    const cleanedPhone = phone.replace(/\D/g, '');
+    
+    // Check if it has exactly 10 digits for US phone numbers
+    return cleanedPhone.length === 10;
+  };
+  
+  // Watch phone value if watch is provided
+  const phoneValue = watch ? watch("phone") : "";
+  
+  // Validate phone number on change
+  useEffect(() => {
+    if (phoneValue && phoneValue.length > 0) {
+      const isValid = validatePhoneNumber(phoneValue);
+      if (!isValid) {
+        setPhoneError("Please enter a valid 10-digit phone number");
+        if (setError) {
+          setError("phone", { 
+            type: "manual", 
+            message: "Please enter a valid 10-digit phone number" 
+          });
+        }
+      } else {
+        setPhoneError(null);
+      }
+    } else {
+      setPhoneError(null);
+    }
+  }, [phoneValue, setError]);
   
   return (
     <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : 'px-4'}`}>
@@ -43,10 +82,13 @@ export function ContactStep({
           <Input 
             id="phone" 
             type="tel" 
-            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${isMobile ? 'h-12' : ''}`} 
+            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${phoneError ? 'border-red-500' : ''} ${isMobile ? 'h-12' : ''}`} 
             {...register("phone")} 
-            placeholder="Enter your phone number" 
+            placeholder="Enter your phone number (10 digits)" 
           />
+          {phoneError && (
+            <p className="mt-1 text-sm text-red-500">{phoneError}</p>
+          )}
         </div>
 
         <div>
@@ -65,3 +107,4 @@ export function ContactStep({
     </div>
   );
 }
+

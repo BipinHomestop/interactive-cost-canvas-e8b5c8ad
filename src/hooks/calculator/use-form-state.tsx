@@ -3,7 +3,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { CalculatorInputs } from "@/components/calculator/types";
 
 export const useFormState = () => {
-  const { register, handleSubmit, setValue, watch, control } = useForm<CalculatorInputs>({
+  const { register, handleSubmit, setValue, watch, control, setError } = useForm<CalculatorInputs>({
     defaultValues: {
       location: "",
       name: "",
@@ -33,6 +33,7 @@ export const useFormState = () => {
     setValue,
     watch,
     control,
+    setError,
     formValues,
     selectedFinish,
     needStemWalls,

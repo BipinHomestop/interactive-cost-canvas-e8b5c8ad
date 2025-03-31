@@ -17,7 +17,9 @@ export const useCalculator = () => {
     needStemWalls,
     needSteps,
     needExtraFootage,
-    currentCondition
+    currentCondition,
+    setError,
+    control
   } = useFormState();
 
   const { submissionId, saveSubmission } = useSubmission();
@@ -49,6 +51,7 @@ export const useCalculator = () => {
     needSteps,
     needExtraFootage,
     currentCondition,
+    setError,
     handleNextStep: () => handleNextStep(formValues),
     handlePrevStep: () => handlePrevStep(formValues),
   };

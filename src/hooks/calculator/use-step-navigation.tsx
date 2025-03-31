@@ -9,13 +9,32 @@ export const useStepNavigation = (
   const [step, setStep] = useState(1);
   const { toast } = useToast();
 
+  // Validate phone number function
+  const isValidPhoneNumber = (phone: string): boolean => {
+    // Clean the input from any non-digit characters
+    const cleanedPhone = phone.replace(/\D/g, '');
+    
+    // Check if it has exactly 10 digits for US phone numbers
+    return cleanedPhone.length === 10;
+  };
+
   const handleNextStep = async (formValues: Partial<CalculatorInputs>) => {
-    // For step 2 (contact info), validate required fields
+    // For step 2 (contact info), validate required fields and phone format
     if (step === 2) {
       if (!formValues.name || !formValues.phone || !formValues.email) {
         toast({
           title: "Error",
           description: "Please fill in all required fields",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate phone number format
+      if (formValues.phone && !isValidPhoneNumber(formValues.phone)) {
+        toast({
+          title: "Error",
+          description: "Please enter a valid 10-digit phone number",
           variant: "destructive",
         });
         return;
