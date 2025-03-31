@@ -14,8 +14,7 @@ export default function GarageFinishPage() {
     formValues,
     selectedFinish,
     handleNextStep,
-    handlePrevStep,
-    getStepOptions
+    handlePrevStep
   } = useCalculator();
   
   const { toast } = useToast();
@@ -34,7 +33,6 @@ export default function GarageFinishPage() {
   
   // Use a separate handler for finish changes to prevent automatic navigation
   const handleFinishChange = (value: string) => {
-    console.log('Changing garage finish to:', value);
     setValue("garageFinish", value);
   };
   
@@ -46,13 +44,7 @@ export default function GarageFinishPage() {
         page_path: '/calculator/garage-finish'
       });
     }
-    
-    console.log('GarageFinishPage - Current form values:', formValues);
   }, []);
-
-  // Get options for image display
-  const options = getStepOptions();
-  console.log('GarageFinishPage - Using options for image display:', options);
 
   return (
     <>
@@ -66,7 +58,7 @@ export default function GarageFinishPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.garageFinish}
-        options={options}
+        options={{ garageFinish: formValues.garageFinish }}
       >
         <GarageFinishStep 
           selectedFinish={selectedFinish} 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "../types";
@@ -25,17 +26,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
       try {
         let imageData = null;
         
-        // Always check if we have a garage finish selection first
-        const selectedFinish = options?.garageFinish;
-        console.log('Selected garage finish:', selectedFinish);
-        
-        // Special case for Shoreline in Stem Wall step
-        if (step === 5 && selectedFinish === 'shoreline') {
-          console.log('Using special Shoreline image for step 5');
-          imageData = { 
-            image_path: 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/garage-images/46e087b9-8b35-4a4c-94ca-213ac8a96ab6' 
-          };
-        } else if (step === 8 && options?.currentCondition) {
+        if (step === 8 && options?.currentCondition) {
           console.log('Step 8 - Loading image for condition:', options.currentCondition);
           
           const { data, error } = await supabase
@@ -86,74 +77,26 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
             imageData = data;
             console.log('Found image for extra footage:', data);
           }
-        } else if ((step === 5 || step === 6) && selectedFinish) {
-          console.log('Step 5/6 - Loading finish-specific image for:', selectedFinish);
-          
-          const finishCollection = await db.getFinishCollectionImage(selectedFinish);
+        } else if ((step === 5 || step === 6) && options?.garageFinish) {
+          const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
           
           if (finishCollection) {
-            console.log('Found finish collection:', finishCollection);
             if (step === 5) {
-              imageData = await imageUtils.handleStemWallImage(finishCollection, options || {});
+              imageData = await imageUtils.handleStemWallImage(finishCollection, options);
             } else if (step === 6) {
-              imageData = imageUtils.handleStepsImage(finishCollection, options?.needSteps || 'no');
+              imageData = imageUtils.handleStepsImage(finishCollection, options.needSteps || 'no');
             }
-          } else {
-            console.warn('No finish collection found for:', selectedFinish);
           }
-        } else if (step === 4 && selectedFinish) {
-          console.log('Step 4 - Loading main image for finish:', selectedFinish);
-          
-          const finishCollection = await db.getFinishCollectionImage(selectedFinish);
+        } else if (step === 4 && options?.garageFinish) {
+          const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
           if (finishCollection) {
-            console.log('Found finish collection main image:', finishCollection.garage_finish_image);
             imageData = { image_path: finishCollection.garage_finish_image };
-            
-            // Store this as the last selected finish image for persistence
-            await db.updateStepImagesLastSelected(4);
-            await db.insertStepImage(4, `finish-${selectedFinish}`, finishCollection.garage_finish_image, true);
-          } else {
-            console.warn('No finish collection found for:', selectedFinish);
           }
         } else if (step === 9) {
-          // For payment page, get the last selected finish image
-          imageData = await db.getLastSelectedImage(4);
-          if (!imageData) {
-            console.log('No last selected image found, falling back to step 5');
-            imageData = await db.getLastSelectedImage(5);
-          }
+          imageData = await db.getLastSelectedImage(5);
         } else {
-          // For all other steps, check if we have a finish option
-          if (selectedFinish) {
-            console.log('Using garage finish for default image:', selectedFinish);
-            
-            // First try to get from the stored images
-            const { data, error } = await supabase
-              .from('calculator_step_images')
-              .select('image_path')
-              .eq('step_number', 4)
-              .eq('image_type', `finish-${selectedFinish}`)
-              .maybeSingle();
-              
-            if (!error && data) {
-              imageData = data;
-              console.log('Found cached finish image:', data);
-            } else {
-              // If not found in stored images, get directly from the collection
-              console.log('No cached finish image found, trying to get from collection');
-              const finishCollection = await db.getFinishCollectionImage(selectedFinish);
-              if (finishCollection) {
-                imageData = { image_path: finishCollection.garage_finish_image };
-                console.log('Found image from collection:', imageData);
-              }
-            }
-          }
-          
-          // If still no image data, fall back to default
-          if (!imageData) {
-            console.log('Falling back to default image for step:', step);
-            imageData = await db.getStepImage(step, 'default');
-          }
+          // For all other steps, get the default image
+          imageData = await db.getStepImage(step, 'default');
         }
 
         if (!isMounted) return;

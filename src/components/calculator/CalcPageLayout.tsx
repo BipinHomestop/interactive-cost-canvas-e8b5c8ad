@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import { ImageDisplay } from './ImageDisplay';
 import { FormNavigation } from './FormNavigation';
 import { FAQSection } from './FAQSection';
@@ -38,11 +38,6 @@ export function CalcPageLayout({
   const needsScrollOnMobile = () => {
     return [2, 4].includes(step);
   };
-  
-  useEffect(() => {
-    // Log options to help with debugging
-    console.log('CalcPageLayout passing options to ImageDisplay:', options);
-  }, [options]);
 
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">

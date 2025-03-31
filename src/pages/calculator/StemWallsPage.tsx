@@ -10,17 +10,17 @@ export default function StemWallsPage() {
   const {
     step,
     totalCost,
-    formValues,
     setValue,
+    formValues,
     needStemWalls,
     handleNextStep,
-    handlePrevStep,
-    getStepOptions
+    handlePrevStep
   } = useCalculator();
   
   const { toast } = useToast();
   
   const handleNext = () => {
+    // Validation check
     if (!formValues.needStemWalls) {
       toast({
         title: "Error",
@@ -30,15 +30,17 @@ export default function StemWallsPage() {
       return;
     }
     
-    if (formValues.needStemWalls === 'yes' && !formValues.stemWallType) {
+    // If user selected "yes" for stem walls, make sure they've selected a type
+    if (formValues.needStemWalls === "yes" && !formValues.stemWallType) {
       toast({
         title: "Error",
-        description: "Please select a stem wall type",
+        description: "Please select the stem wall type",
         variant: "destructive",
       });
       return;
     }
     
+    // If all validations pass, proceed to next step
     handleNextStep();
   };
   
@@ -50,36 +52,33 @@ export default function StemWallsPage() {
         page_path: '/calculator/stem-walls'
       });
     }
-    
-    console.log('StemWallsPage - Current form values:', formValues);
   }, []);
 
-  // Get options with garage finish for image display
-  const options = getStepOptions();
-  console.log('StemWallsPage - Using options for image display:', options);
+  const isNextDisabled = !formValues.needStemWalls || (formValues.needStemWalls === "yes" && !formValues.stemWallType);
 
   return (
     <>
       <Helmet>
         <title>Stem Walls | Garage Floor Coating Calculator</title>
-        <meta name="description" content="Specify if your garage needs stem wall coating and the type required." />
+        <meta name="description" content="Specify if your garage requires stem wall coating and select the stem wall type." />
       </Helmet>
       <CalcPageLayout
         step={step}
         totalCost={totalCost}
         onNext={handleNext}
         onPrev={handlePrevStep}
-        isNextDisabled={
-          !formValues.needStemWalls || 
-          (formValues.needStemWalls === 'yes' && !formValues.stemWallType)
-        }
-        options={options}
+        isNextDisabled={isNextDisabled}
+        options={{
+          garageFinish: formValues.garageFinish,
+          needStemWalls: formValues.needStemWalls,
+          stemWallType: formValues.stemWallType
+        }}
       >
         <StemWallsStep 
           needStemWalls={needStemWalls} 
-          stemWallType={formValues.stemWallType} 
-          onStemWallsChange={value => setValue("needStemWalls", value as "yes" | "no")} 
-          onStemWallTypeChange={value => setValue("stemWallType", value as "standard" | "large")} 
+          stemWallType={formValues.stemWallType}
+          onStemWallsChange={value => setValue("needStemWalls", value as "yes" | "no")}
+          onStemWallTypeChange={value => setValue("stemWallType", value as "standard" | "large")}
         />
       </CalcPageLayout>
     </>

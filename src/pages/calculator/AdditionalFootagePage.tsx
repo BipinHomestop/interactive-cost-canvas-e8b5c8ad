@@ -10,12 +10,11 @@ export default function AdditionalFootagePage() {
   const {
     step,
     totalCost,
-    formValues,
     setValue,
+    formValues,
     needExtraFootage,
     handleNextStep,
-    handlePrevStep,
-    getStepOptions
+    handlePrevStep
   } = useCalculator();
   
   const { toast } = useToast();
@@ -30,7 +29,7 @@ export default function AdditionalFootagePage() {
       return;
     }
     
-    if (formValues.needExtraFootage === 'yes' && !formValues.extraFootage) {
+    if (formValues.needExtraFootage === "yes" && !formValues.extraFootage) {
       toast({
         title: "Error",
         description: "Please select the additional footage amount",
@@ -42,6 +41,15 @@ export default function AdditionalFootagePage() {
     handleNextStep();
   };
   
+  // Separate handlers for option changes to prevent automatic navigation
+  const handleNeedExtraFootageChange = (value: string) => {
+    setValue("needExtraFootage", value as "yes" | "no");
+  };
+  
+  const handleExtraFootageChange = (value: string) => {
+    setValue("extraFootage", value as "up-to-50" | "51-100" | "101-150" | "151-200");
+  };
+  
   useEffect(() => {
     // Track page view
     if (typeof window !== 'undefined' && window.gtag) {
@@ -50,36 +58,32 @@ export default function AdditionalFootagePage() {
         page_path: '/calculator/additional-footage'
       });
     }
-    
-    console.log('AdditionalFootagePage - Current form values:', formValues);
   }, []);
 
-  // Get options with garage finish for image display
-  const options = getStepOptions();
-  console.log('AdditionalFootagePage - Using options for image display:', options);
+  const isNextDisabled = !formValues.needExtraFootage || (formValues.needExtraFootage === "yes" && !formValues.extraFootage);
 
   return (
     <>
       <Helmet>
-        <title>Additional Footage | Garage Floor Coating Calculator</title>
-        <meta name="description" content="Specify if you need additional square footage beyond your garage coated." />
+        <title>Additional Square Footage | Garage Floor Coating Calculator</title>
+        <meta name="description" content="Specify if you need additional square footage coated for your garage floor project." />
       </Helmet>
       <CalcPageLayout
         step={step}
         totalCost={totalCost}
         onNext={handleNext}
         onPrev={handlePrevStep}
-        isNextDisabled={
-          !formValues.needExtraFootage || 
-          (formValues.needExtraFootage === 'yes' && !formValues.extraFootage)
-        }
-        options={options}
+        isNextDisabled={isNextDisabled}
+        options={{
+          needExtraFootage: formValues.needExtraFootage,
+          extraFootage: formValues.extraFootage
+        }}
       >
         <AdditionalFootageStep 
-          needExtraFootage={needExtraFootage} 
-          extraFootage={formValues.extraFootage} 
-          onNeedExtraFootageChange={value => setValue("needExtraFootage", value as "yes" | "no")} 
-          onExtraFootageChange={value => setValue("extraFootage", value as "up-to-50" | "51-100" | "101-150" | "151-200")} 
+          needExtraFootage={needExtraFootage}
+          extraFootage={formValues.extraFootage}
+          onNeedExtraFootageChange={handleNeedExtraFootageChange}
+          onExtraFootageChange={handleExtraFootageChange}
         />
       </CalcPageLayout>
     </>

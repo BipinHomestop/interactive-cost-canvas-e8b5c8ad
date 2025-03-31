@@ -10,12 +10,11 @@ export default function HouseStepsPage() {
   const {
     step,
     totalCost,
-    formValues,
     setValue,
+    formValues,
     needSteps,
     handleNextStep,
-    handlePrevStep,
-    getStepOptions
+    handlePrevStep
   } = useCalculator();
   
   const { toast } = useToast();
@@ -24,12 +23,11 @@ export default function HouseStepsPage() {
     if (!formValues.needSteps) {
       toast({
         title: "Error",
-        description: "Please select whether you need steps",
+        description: "Please select whether you need steps coated",
         variant: "destructive",
       });
       return;
     }
-    
     handleNextStep();
   };
   
@@ -41,19 +39,13 @@ export default function HouseStepsPage() {
         page_path: '/calculator/house-steps'
       });
     }
-    
-    console.log('HouseStepsPage - Current form values:', formValues);
   }, []);
-
-  // Get options with garage finish for image display
-  const options = getStepOptions();
-  console.log('HouseStepsPage - Using options for image display:', options);
 
   return (
     <>
       <Helmet>
         <title>House Steps | Garage Floor Coating Calculator</title>
-        <meta name="description" content="Specify if your garage has steps leading to the house that need coating." />
+        <meta name="description" content="Indicate if you need steps from your house to the garage for your flooring project." />
       </Helmet>
       <CalcPageLayout
         step={step}
@@ -61,11 +53,14 @@ export default function HouseStepsPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.needSteps}
-        options={options}
+        options={{
+          garageFinish: formValues.garageFinish,
+          needSteps: formValues.needSteps
+        }}
       >
         <HouseStepsStep 
-          needSteps={needSteps} 
-          onNeedStepsChange={value => setValue("needSteps", value as "yes" | "no")} 
+          needSteps={needSteps}
+          onNeedStepsChange={value => setValue("needSteps", value as "yes" | "no")}
         />
       </CalcPageLayout>
     </>
