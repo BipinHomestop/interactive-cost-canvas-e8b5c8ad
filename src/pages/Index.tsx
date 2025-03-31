@@ -18,7 +18,7 @@ const Index = () => {
   
   function getStepTitle(step: number): string {
     const stepTitles = {
-      1: "Enter Your Location | Garage Floor Coating Calculator",
+      1: "Estimate Your Garage Concrete Coating Cost | American Concrete Coatings",
       2: "Contact Information | Garage Floor Coating Calculator",
       3: "Select Garage Size | Garage Floor Coating Calculator",
       4: "Choose Finish Style | Garage Floor Coating Calculator",
@@ -33,7 +33,7 @@ const Index = () => {
   
   function getStepDescription(step: number): string {
     const stepDescriptions = {
-      1: "Start by entering your ZIP code to check if we service your area for premium garage floor coatings.",
+      1: "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get an instant quote on durable, long-lasting floor coatings at American Concrete Coatings.",
       2: "Provide your contact details to receive your customized garage floor coating estimate.",
       3: "Select the size of your garage to get an accurate cost calculation for your floor coating project.",
       4: "Choose from our premium garage floor coating finishes including Snowfall, Carbon, and Granite.",
@@ -44,7 +44,7 @@ const Index = () => {
       9: "Review your selections and complete your garage floor coating order."
     };
     return stepDescriptions[step as keyof typeof stepDescriptions] || 
-      "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get pricing on epoxy, polyurea, and polyaspartic coatings.";
+      "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get an instant quote on durable, long-lasting floor coatings at American Concrete Coatings.";
   }
   
   const getCanonicalUrl = (step: number): string => {
