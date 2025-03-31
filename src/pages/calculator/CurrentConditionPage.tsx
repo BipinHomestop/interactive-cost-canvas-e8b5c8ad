@@ -66,7 +66,7 @@ export default function CurrentConditionPage() {
       >
         <CurrentConditionStep 
           condition={currentCondition} 
-          onConditionChange={value => setValue("currentCondition", value)} 
+          onConditionChange={value => setValue("currentCondition", value as "original" | "existing")} 
         />
       </CalcPageLayout>
     </>

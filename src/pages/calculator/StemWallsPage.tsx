@@ -78,8 +78,8 @@ export default function StemWallsPage() {
         <StemWallsStep 
           needStemWalls={needStemWalls} 
           stemWallType={formValues.stemWallType} 
-          onStemWallsChange={value => setValue("needStemWalls", value)} 
-          onStemWallTypeChange={value => setValue("stemWallType", value)} 
+          onStemWallsChange={value => setValue("needStemWalls", value as "yes" | "no")} 
+          onStemWallTypeChange={value => setValue("stemWallType", value as "standard" | "large")} 
         />
       </CalcPageLayout>
     </>

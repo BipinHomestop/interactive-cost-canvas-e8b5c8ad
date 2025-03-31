@@ -65,7 +65,7 @@ export default function HouseStepsPage() {
       >
         <HouseStepsStep 
           needSteps={needSteps} 
-          onNeedStepsChange={value => setValue("needSteps", value)} 
+          onNeedStepsChange={value => setValue("needSteps", value as "yes" | "no")} 
         />
       </CalcPageLayout>
     </>

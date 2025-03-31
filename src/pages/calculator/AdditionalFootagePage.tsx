@@ -78,8 +78,8 @@ export default function AdditionalFootagePage() {
         <AdditionalFootageStep 
           needExtraFootage={needExtraFootage} 
           extraFootage={formValues.extraFootage} 
-          onNeedExtraFootageChange={value => setValue("needExtraFootage", value)} 
-          onExtraFootageChange={value => setValue("extraFootage", value)} 
+          onNeedExtraFootageChange={value => setValue("needExtraFootage", value as "yes" | "no")} 
+          onExtraFootageChange={value => setValue("extraFootage", value as "up-to-50" | "51-100" | "101-150" | "151-200")} 
         />
       </CalcPageLayout>
     </>
