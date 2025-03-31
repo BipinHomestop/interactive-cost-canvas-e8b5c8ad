@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { cn } from "@/lib/utils";
 
 interface LocationStepProps {
   onLocationChange: (value: string) => void;
@@ -126,7 +127,11 @@ export function LocationStep({
             type="text"
             value={zipCode}
             onChange={handleZipCodeChange}
-            className={`w-full h-12 pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174] ${isValid ? 'border-green-500 pr-10' : error ? 'border-red-500 pr-10' : ''}`}
+            className={cn(
+              "w-full h-12 pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]",
+              isValid && "border-green-500 pr-10",
+              error && "border-red-500 pr-10"
+            )}
             placeholder="Enter ZIP code"
             inputMode="numeric"
             maxLength={5}
@@ -158,9 +163,12 @@ export function LocationStep({
         )}
         
         {isValid && !isValidating && (
-          <Alert className="bg-green-50 border-green-200 py-2">
-            <CheckCircle className="h-4 w-4 text-green-500" />
-            <AlertDescription className="text-green-700 text-sm">
+          <Alert 
+            variant="default" 
+            className="bg-green-50 border-green-200 py-2 flex items-center gap-2"
+          >
+            <CheckCircle className="h-5 w-5 text-green-500" />
+            <AlertDescription className="text-green-700 text-sm font-medium">
               Great! We serve your area.
             </AlertDescription>
           </Alert>
