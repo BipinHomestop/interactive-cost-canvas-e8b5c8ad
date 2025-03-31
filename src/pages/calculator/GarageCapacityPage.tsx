@@ -52,7 +52,6 @@ export default function GarageCapacityPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.garageCapacity}
-        options={{ garageFinish: formValues.garageFinish }}
       >
         <GarageCapacityStep 
           capacity={formValues.garageCapacity} 

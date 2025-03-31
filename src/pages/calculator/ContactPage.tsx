@@ -70,7 +70,6 @@ export default function ContactPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={false}
-        options={{ garageFinish: formValues.garageFinish }}
       >
         <ContactStep register={register} watch={watch} setError={setError} />
       </CalcPageLayout>

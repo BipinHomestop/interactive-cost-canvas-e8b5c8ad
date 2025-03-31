@@ -48,7 +48,6 @@ export default function PaymentPage() {
         onNext={() => {}}
         onPrev={handlePrevStep}
         isNextDisabled={false}
-        options={{ garageFinish: formValues.garageFinish }}
       >
         <PaymentStep 
           formData={formValues} 
