@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "../types";
@@ -30,7 +29,13 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         const selectedFinish = options?.garageFinish;
         console.log('Selected garage finish:', selectedFinish);
         
-        if (step === 8 && options?.currentCondition) {
+        // Special case for Shoreline in Stem Wall step
+        if (step === 5 && selectedFinish === 'shoreline') {
+          console.log('Using special Shoreline image for step 5');
+          imageData = { 
+            image_path: 'https://tseksgdxfldgppzgfcwl.supabase.co/storage/v1/object/public/garage-images/46e087b9-8b35-4a4c-94ca-213ac8a96ab6' 
+          };
+        } else if (step === 8 && options?.currentCondition) {
           console.log('Step 8 - Loading image for condition:', options.currentCondition);
           
           const { data, error } = await supabase

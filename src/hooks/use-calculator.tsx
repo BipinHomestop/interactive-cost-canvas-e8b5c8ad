@@ -1,4 +1,3 @@
-
 import { useFormState } from "./calculator/use-form-state";
 import { useCostCalculation } from "./calculator/use-cost-calculation";
 import { useSubmission } from "./calculator/use-submission";
@@ -29,7 +28,6 @@ export const useCalculator = () => {
   
   const { submissionId, saveSubmission } = useSubmission();
   
-  // Determine current step based on URL path
   const getCurrentStep = (): number => {
     const pathMap: Record<string, number> = {
       "/": 1,
@@ -49,7 +47,6 @@ export const useCalculator = () => {
   
   const step = getCurrentStep();
   
-  // Handle navigation between steps
   const handleNextStep = async () => {
     const nextStepUrl = getStepUrl(step + 1);
     console.log('Moving to next step with form values:', formValues);
@@ -68,7 +65,6 @@ export const useCalculator = () => {
     }
   };
   
-  // Convert step number to URL
   const getStepUrl = (stepNumber: number): string => {
     const stepUrls: Record<number, string> = {
       1: "/",
@@ -87,13 +83,11 @@ export const useCalculator = () => {
   
   const { totalCost } = useCostCalculation(formValues, step);
 
-  // Debug the current form values, step, and totalCost
   useEffect(() => {
     console.log('Current step:', step);
     console.log('Current form values:', formValues);
     console.log('Current totalCost:', totalCost);
     
-    // Track step progression for analytics
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'calculator_step', {
         'step_number': step,
@@ -103,7 +97,6 @@ export const useCalculator = () => {
     }
   }, [formValues, totalCost, step]);
   
-  // Helper function to get step name for analytics
   const getStepName = (stepNumber: number): string => {
     const stepNames = {
       1: 'location',
@@ -119,20 +112,19 @@ export const useCalculator = () => {
     return stepNames[stepNumber as keyof typeof stepNames] || 'unknown';
   };
 
-  // Get the current step options needed for image display
   const getStepOptions = (): Partial<CalculatorInputs> => {
-    // Always include garageFinish in options if it exists
     const options: Partial<CalculatorInputs> = {};
     
     if (formValues.garageFinish) {
       options.garageFinish = formValues.garageFinish;
+      console.log('Including garage finish in options:', formValues.garageFinish);
     }
     
-    // Add step-specific options
     switch (step) {
       case 5:
         if (formValues.needStemWalls) options.needStemWalls = formValues.needStemWalls;
         if (formValues.stemWallType) options.stemWallType = formValues.stemWallType;
+        console.log('Step 5 options:', options);
         break;
       case 6:
         if (formValues.needSteps) options.needSteps = formValues.needSteps;
@@ -168,6 +160,6 @@ export const useCalculator = () => {
     handleNextStep,
     handlePrevStep,
     getStepUrl,
-    getStepOptions // Export the function to get options for the current step
+    getStepOptions
   };
 };
