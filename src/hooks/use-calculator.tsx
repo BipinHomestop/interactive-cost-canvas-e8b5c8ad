@@ -1,4 +1,3 @@
-
 import { useFormState } from "./calculator/use-form-state";
 import { useCostCalculation } from "./calculator/use-cost-calculation";
 import { useSubmission } from "./calculator/use-submission";
@@ -38,9 +37,8 @@ export const useCalculator = () => {
     console.log('Current totalCost:', totalCost);
     
     // Track step progression for analytics
-    if (typeof window !== 'undefined' && window.dataLayer) {
-      window.dataLayer.push({
-        'event': 'calculator_step',
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'calculator_step', {
         'step_number': step,
         'step_name': getStepName(step),
         'current_total': totalCost
