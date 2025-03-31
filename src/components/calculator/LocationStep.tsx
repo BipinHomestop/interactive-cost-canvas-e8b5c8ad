@@ -1,10 +1,12 @@
 
-import { useState } from "react";
-import { MapPin, AlertTriangle } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface LocationStepProps {
   onLocationChange: (value: string) => void;
@@ -17,18 +19,36 @@ export function LocationStep({
   const [zipCode, setZipCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
   
   const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Allow only numbers and limit to 5 digits
     const value = e.target.value.replace(/\D/g, '').slice(0, 5);
     setZipCode(value);
     
-    // Clear error when user is typing
-    if (error) setError(null);
+    // Clear states
+    setError(null);
+    setIsValid(false);
+    
+    // Clear any existing timeout
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+    
+    // Only validate if we have 5 digits
+    if (value.length === 5) {
+      // Set a small timeout to prevent too many queries while typing
+      const timeout = setTimeout(() => {
+        validateZipCode(value);
+      }, 300);
+      
+      setTypingTimeout(timeout);
+    }
   };
   
-  const validateZipCode = async () => {
-    if (zipCode.length !== 5) {
+  const validateZipCode = async (value: string = zipCode) => {
+    if (value.length !== 5) {
       setError("Please enter a valid 5-digit ZIP code");
       return false;
     }
@@ -40,7 +60,7 @@ export function LocationStep({
       const { data, error: queryError } = await supabase
         .from('service_area_zipcodes')
         .select('zipcode')
-        .eq('zipcode', zipCode)
+        .eq('zipcode', value)
         .eq('is_active', true)
         .maybeSingle();
       
@@ -57,10 +77,9 @@ export function LocationStep({
         return false;
       }
       
-      // Clear any previous errors
+      // Clear any previous errors and set as valid
       setError(null);
-      // Pass the zipcode to parent component
-      onLocationChange(zipCode);
+      setIsValid(true);
       setIsValidating(false);
       return true;
     } catch (err) {
@@ -68,6 +87,24 @@ export function LocationStep({
       setError("There was an error checking your ZIP code. Please try again.");
       setIsValidating(false);
       return false;
+    }
+  };
+  
+  const handleContinue = () => {
+    if (isValid) {
+      onLocationChange(zipCode);
+    } else {
+      validateZipCode().then(isValid => {
+        if (isValid) {
+          onLocationChange(zipCode);
+        } else {
+          toast({
+            title: "Invalid ZIP Code",
+            description: error || "Please fix the error with your ZIP code before continuing.",
+            variant: "destructive"
+          });
+        }
+      });
     }
   };
   
@@ -89,25 +126,51 @@ export function LocationStep({
             type="text"
             value={zipCode}
             onChange={handleZipCodeChange}
-            className="w-full h-12 pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]"
+            className={`w-full h-12 pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174] ${isValid ? 'border-green-500 pr-10' : error ? 'border-red-500 pr-10' : ''}`}
             placeholder="Enter ZIP code"
             inputMode="numeric"
             maxLength={5}
           />
+          {isValid && !isValidating && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 z-10">
+              <CheckCircle size={20} />
+            </div>
+          )}
+          {error && !isValidating && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 z-10">
+              <AlertTriangle size={20} />
+            </div>
+          )}
         </div>
         
-        {error && (
+        {isValidating && (
+          <div className="text-sm text-blue-500 flex items-center gap-2">
+            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            <span>Checking availability...</span>
+          </div>
+        )}
+        
+        {error && !isValidating && (
           <div className="flex items-center gap-2 text-red-500 text-sm">
             <AlertTriangle size={16} />
             <span>{error}</span>
           </div>
         )}
         
+        {isValid && !isValidating && (
+          <Alert className="bg-green-50 border-green-200 py-2">
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            <AlertDescription className="text-green-700 text-sm">
+              Great! We serve your area.
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <Button 
           type="button" 
-          onClick={validateZipCode}
+          onClick={handleContinue}
           className="w-full bg-[#1A3174] hover:bg-[#132456] text-white h-12"
-          disabled={zipCode.length !== 5 || isValidating}
+          disabled={(zipCode.length !== 5 && !isValid) || isValidating}
         >
           {isValidating ? "Checking..." : "Check Availability"}
         </Button>
