@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -6,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { Label } from "@/components/ui/label";
@@ -43,6 +42,17 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
   const VALID_COUPONS = {
     "TEST99": 99.5, // 99.5% discount for testing
   };
+  
+  // Load submission ID from session storage if not available in state
+  useEffect(() => {
+    // This is just a backup - our hook should already be doing this
+    if (!submissionId) {
+      const storedId = sessionStorage.getItem('calculatorSubmissionId');
+      console.log('PaymentStep checking for stored submission ID:', storedId);
+    } else {
+      console.log('PaymentStep has submission ID from state:', submissionId);
+    }
+  }, [submissionId]);
   
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -205,8 +215,23 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     setIsLoading(true);
 
     try {
+      // Get the submission ID - either from state or session storage
+      const currentSubmissionId = submissionId || sessionStorage.getItem('calculatorSubmissionId');
+      
+      if (!currentSubmissionId) {
+        console.error('No submission ID found. User may need to start over from the beginning.');
+        toast({
+          title: "Session Error",
+          description: "Your session information is missing. Please start over from the beginning.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      console.log('Proceeding with checkout using submission ID:', currentSubmissionId);
+
       // First, update the submission with the installation date
-      // This is separate from creating the checkout session
       console.log('Calling updatePaymentInfo with date:', date);
       const updated = await updatePaymentInfo(date);
       
@@ -239,7 +264,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         garage_finish: formData.garageFinish,
         coupon_code: couponCode || 'none',
         discount_percentage: discountPercentage.toString(),
-        submission_id: submissionId
+        submission_id: currentSubmissionId
       };
 
       console.log('Calling Stripe checkout with metadata:', metadata);

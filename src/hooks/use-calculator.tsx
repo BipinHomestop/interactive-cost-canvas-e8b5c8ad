@@ -1,3 +1,4 @@
+
 import { useFormState } from "./calculator/use-form-state";
 import { useCostCalculation } from "./calculator/use-cost-calculation";
 import { useSubmission } from "./calculator/use-submission";
@@ -35,16 +36,18 @@ export const useCalculator = () => {
     console.log('Current step:', step);
     console.log('Current form values:', formValues);
     console.log('Current totalCost:', totalCost);
+    console.log('Current submissionId:', submissionId || sessionStorage.getItem('calculatorSubmissionId') || 'none');
     
     // Track step progression for analytics
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'calculator_step', {
         'step_number': step,
         'step_name': getStepName(step),
-        'current_total': totalCost
+        'current_total': totalCost,
+        'has_submission_id': !!submissionId || !!sessionStorage.getItem('calculatorSubmissionId')
       });
     }
-  }, [formValues, totalCost, step]);
+  }, [formValues, totalCost, step, submissionId]);
   
   // Helper function to get step name for analytics
   const getStepName = (stepNumber: number): string => {

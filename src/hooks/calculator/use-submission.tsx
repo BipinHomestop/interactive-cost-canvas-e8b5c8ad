@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "@/components/calculator/types";
@@ -7,6 +7,15 @@ import { CalculatorInputs } from "@/components/calculator/types";
 export const useSubmission = () => {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Load submission ID from session storage on mount
+  useEffect(() => {
+    const storedId = sessionStorage.getItem('calculatorSubmissionId');
+    if (storedId && !submissionId) {
+      console.log('useSubmission: Recovered submission ID from session storage on init:', storedId);
+      setSubmissionId(storedId);
+    }
+  }, [submissionId]);
 
   // Helper function to validate ZIP code format
   const isValidZipCode = (zipcode: string | undefined): boolean => {
@@ -213,15 +222,6 @@ export const useSubmission = () => {
       return false;
     }
   };
-
-  // Try to recover submission ID from session storage on component mount
-  useState(() => {
-    const storedId = sessionStorage.getItem('calculatorSubmissionId');
-    if (storedId && !submissionId) {
-      console.log('Recovered submission ID from session storage on init:', storedId);
-      setSubmissionId(storedId);
-    }
-  });
 
   return { submissionId, saveSubmission, updatePaymentInfo };
 };
