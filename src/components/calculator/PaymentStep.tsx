@@ -40,20 +40,83 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     handleApplyCoupon 
   } = useDiscountCode(totalCost);
 
-  // Get price breakdown items via the component
-  const getPriceBreakdown = () => {
-    // This is a bit of a hack to reuse the price breakdown logic
-    // In a real-world scenario, we'd refactor this to extract the logic separately
-    const priceBreakdownComponent = <PriceBreakdown 
-      formData={formData} 
-      totalCost={totalCost} 
-      discountPercentage={discountPercentage} 
-      discountedTotal={discountedTotal} 
-    />;
+  // Get price breakdown items for checkout
+  const getBreakdownItems = () => {
+    // Generate the breakdown items directly - no more rendering component
+    const basePrice = formData.garageCapacity === 1 ? 1000 : 
+                      formData.garageCapacity === 2 ? 2000 : 
+                      formData.garageCapacity === 3 ? 3500 : 
+                      formData.garageCapacity === 4 ? 4000 : 5000;
+                      
+    const finishMultiplier = formData.garageFinish === 'snowfall' ? 1.2 :
+                            formData.garageFinish === 'carbon' ? 1.1 : 
+                            formData.garageFinish === 'cabin_fever' ? 1.15 :
+                            formData.garageFinish === 'creekbed' ? 1.2 :
+                            formData.garageFinish === 'nightfall' ? 1.3 :
+                            formData.garageFinish === 'orbit' ? 1.35 :
+                            formData.garageFinish === 'outback' ? 1.4 :
+                            formData.garageFinish === 'pecan' ? 1.45 :
+                            formData.garageFinish === 'shoreline' ? 1.5 :
+                            formData.garageFinish === 'tidal_wave' ? 1.55 :
+                            formData.garageFinish === 'wombat' ? 1.6 :
+                            formData.garageFinish === 'domino' ? 2 : 1.2;
+                            
+    const items = [
+      {
+        label: `${formData.garageCapacity}-Car Garage Base Price`,
+        price: basePrice,
+      },
+      {
+        label: `${formData.garageFinish.charAt(0).toUpperCase() + formData.garageFinish.slice(1)} Finish`,
+        price: (basePrice * finishMultiplier) - basePrice,
+      }
+    ];
     
-    // Access the underlying component instance to get the breakdown items
-    // @ts-ignore - we know this component has this method
-    return priceBreakdownComponent.type.render(priceBreakdownComponent.props).props.breakdownItems;
+    // Add optional items
+    if (formData.needStemWalls === 'yes' && formData.stemWallType) {
+      const stemWallPrice = formData.stemWallType === 'standard' ? 500 : 1000;
+      items.push({
+        label: `${formData.stemWallType.charAt(0).toUpperCase() + formData.stemWallType.slice(1)} Stem Walls`,
+        price: stemWallPrice,
+      });
+    }
+    
+    if (formData.needSteps === 'yes') {
+      items.push({
+        label: 'House Steps',
+        price: 300,
+      });
+    }
+    
+    if (formData.needExtraFootage === 'yes' && formData.extraFootage) {
+      const extraFootagePrice = 
+        formData.extraFootage === 'up-to-50' ? 200 :
+        formData.extraFootage === '51-100' ? 400 :
+        formData.extraFootage === '101-150' ? 600 : 800;
+      
+      items.push({
+        label: 'Additional Square Footage',
+        price: extraFootagePrice,
+      });
+    }
+    
+    if (formData.currentCondition === 'existing') {
+      items.push({
+        label: 'Existing Condition Fee',
+        price: 200,
+      });
+    }
+    
+    // Add discount if applicable
+    if (discountPercentage > 0) {
+      const discountAmount = (totalCost * (discountPercentage / 100)) * -1;
+      items.push({
+        label: `Discount (${discountPercentage}%)`,
+        price: discountAmount,
+      });
+    }
+    
+    return items;
   };
 
   const { isLoading, handleCheckout } = useCheckout(
@@ -63,7 +126,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     discountPercentage,
     totalCost,
     discountedTotal,
-    getPriceBreakdown
+    getBreakdownItems
   );
 
   return (

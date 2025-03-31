@@ -16,6 +16,28 @@ export function DiscountCodeInput({
   discountPercentage, 
   onApplyCoupon 
 }: DiscountCodeInputProps) {
+  const { toast } = useToast();
+  
+  const handleApplyCoupon = () => {
+    if (!couponCode.trim()) {
+      toast({
+        title: "Empty code",
+        description: "Please enter a discount code first",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    onApplyCoupon();
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleApplyCoupon();
+    }
+  };
+  
   return (
     <div className="space-y-3 sm:space-y-4">
       <h3 className="font-semibold text-lg">Discount Code</h3>
@@ -25,11 +47,12 @@ export function DiscountCodeInput({
           className="h-12 sm:h-14 flex-1 text-sm" 
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <Button 
           variant="default" 
           className="bg-[#1A3174] h-12 sm:h-14 px-4 sm:px-8 text-sm sm:text-base"
-          onClick={onApplyCoupon}
+          onClick={handleApplyCoupon}
         >
           Apply
         </Button>

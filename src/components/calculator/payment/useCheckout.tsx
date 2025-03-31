@@ -4,7 +4,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSubmission } from "@/hooks/calculator/use-submission";
 import { format } from "date-fns";
-import { BreakdownItem } from "./PriceBreakdown";
 
 export function useCheckout(
   formData: any,
@@ -13,7 +12,7 @@ export function useCheckout(
   discountPercentage: number,
   totalCost: number,
   discountedTotal: number,
-  renderPriceBreakdown: () => BreakdownItem[]
+  getBreakdownItems: () => Array<{label: string, price: number}>
 ) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
@@ -60,7 +59,8 @@ export function useCheckout(
       console.log('Successfully updated installation date, proceeding to checkout');
 
       // Prepare line items for Stripe based on price breakdown
-      const lineItems = renderPriceBreakdown().map(item => ({
+      const breakdownItems = getBreakdownItems();
+      const lineItems = breakdownItems.map(item => ({
         price_data: {
           currency: 'usd',
           product_data: {
