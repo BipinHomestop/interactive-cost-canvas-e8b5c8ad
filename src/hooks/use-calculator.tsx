@@ -38,7 +38,7 @@ export const useCalculator = () => {
     console.log('Current totalCost:', totalCost);
     
     // Track step progression for analytics
-    if (window.dataLayer) {
+    if (typeof window !== 'undefined' && window.dataLayer) {
       window.dataLayer.push({
         'event': 'calculator_step',
         'step_number': step,
