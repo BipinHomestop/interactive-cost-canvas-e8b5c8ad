@@ -31,6 +31,11 @@ export default function GarageFinishPage() {
     handleNextStep();
   };
   
+  // Use a separate handler for finish changes to prevent automatic navigation
+  const handleFinishChange = (value: string) => {
+    setValue("garageFinish", value);
+  };
+  
   useEffect(() => {
     // Track page view
     if (typeof window !== 'undefined' && window.gtag) {
@@ -57,7 +62,7 @@ export default function GarageFinishPage() {
       >
         <GarageFinishStep 
           selectedFinish={selectedFinish} 
-          onFinishChange={value => setValue("garageFinish", value)} 
+          onFinishChange={handleFinishChange} 
         />
       </CalcPageLayout>
     </>
