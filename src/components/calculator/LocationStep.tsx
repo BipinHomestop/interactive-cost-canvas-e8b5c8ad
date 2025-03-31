@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -24,22 +23,17 @@ export function LocationStep({
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
   
   const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Allow only numbers and limit to 5 digits
     const value = e.target.value.replace(/\D/g, '').slice(0, 5);
     setZipCode(value);
     
-    // Clear states
     setError(null);
     setIsValid(false);
     
-    // Clear any existing timeout
     if (typingTimeout) {
       clearTimeout(typingTimeout);
     }
     
-    // Only validate if we have 5 digits
     if (value.length === 5) {
-      // Set a small timeout to prevent too many queries while typing
       const timeout = setTimeout(() => {
         validateZipCode(value);
       }, 300);
@@ -57,7 +51,6 @@ export function LocationStep({
     setIsValidating(true);
     
     try {
-      // Query the service_area_zipcodes table to check if the zipcode is in our service area
       const { data, error: queryError } = await supabase
         .from('service_area_zipcodes')
         .select('zipcode')
@@ -78,7 +71,6 @@ export function LocationStep({
         return false;
       }
       
-      // Clear any previous errors and set as valid
       setError(null);
       setIsValid(true);
       setIsValidating(false);
@@ -165,12 +157,14 @@ export function LocationStep({
         {isValid && !isValidating && (
           <Alert 
             variant="default" 
-            className="bg-green-50 border-green-200 py-2 flex items-center gap-2"
+            className="bg-green-50 border-green-200 py-2"
           >
-            <CheckCircle className="h-5 w-5 text-green-500" />
-            <AlertDescription className="text-green-700 text-sm font-medium">
-              Great! We serve your area.
-            </AlertDescription>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+              <AlertDescription className="text-green-700 text-sm font-medium">
+                Great! We serve your area.
+              </AlertDescription>
+            </div>
           </Alert>
         )}
         
