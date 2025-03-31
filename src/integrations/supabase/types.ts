@@ -159,6 +159,33 @@ export type Database = {
         }
         Relationships: []
       }
+      service_area_zipcodes: {
+        Row: {
+          city: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          state: string | null
+          zipcode: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          state?: string | null
+          zipcode: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          state?: string | null
+          zipcode?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
