@@ -21,6 +21,8 @@ serve(async (req) => {
     );
 
     const requestData = await req.json();
+    console.log("Received request data:", JSON.stringify(requestData));
+    
     const {
       lineItems,
       totalAmount,
@@ -28,9 +30,21 @@ serve(async (req) => {
       successUrl,
       cancelUrl
     } = requestData;
+    
+    if (!lineItems || !Array.isArray(lineItems) || lineItems.length === 0) {
+      throw new Error("No line items provided");
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2022-11-15",
+    });
+    
+    console.log("Creating checkout session with:", {
+      lineItems: lineItems.length,
+      totalAmount,
+      successUrl,
+      cancelUrl,
+      metadata: { ...metadata, submission_id: metadata.submission_id }
     });
     
     // Create a checkout session
@@ -43,9 +57,13 @@ serve(async (req) => {
       metadata: metadata,
     });
     
+    console.log("Checkout session created:", session.id);
+    
     // If we have a submission_id in the metadata, update the record
     if (metadata && metadata.submission_id) {
-      await supabaseClient
+      console.log("Updating submission record:", metadata.submission_id);
+      
+      const { error } = await supabaseClient
         .from('cost_calculator_submissions')
         .update({
           checkout_session_id: session.id,
@@ -55,6 +73,12 @@ serve(async (req) => {
           discount_percentage: metadata.discount_percentage !== '0' ? parseFloat(metadata.discount_percentage) : null
         })
         .eq('id', metadata.submission_id);
+        
+      if (error) {
+        console.error("Error updating submission:", error);
+      } else {
+        console.log("Submission updated successfully");
+      }
     }
 
     return new Response(

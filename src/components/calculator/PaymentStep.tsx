@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
@@ -204,11 +205,17 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     setIsLoading(true);
 
     try {
-      // Save the installation date and payment status first
+      // First, update the submission with the installation date
+      // This is separate from creating the checkout session
+      console.log('Calling updatePaymentInfo with date:', date);
       const updated = await updatePaymentInfo(date);
+      
       if (!updated) {
+        console.error('Failed to update submission with installation date');
         throw new Error("Failed to update submission with installation date");
       }
+
+      console.log('Successfully updated installation date, proceeding to checkout');
 
       // Prepare line items for Stripe based on price breakdown
       const lineItems = renderPriceBreakdown().map(item => ({
@@ -235,6 +242,8 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         submission_id: submissionId
       };
 
+      console.log('Calling Stripe checkout with metadata:', metadata);
+
       // Create the checkout session
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: {
@@ -242,26 +251,30 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
           totalAmount: discountPercentage > 0 ? discountedTotal : totalCost,
           metadata: metadata,
           successUrl: window.location.origin + '/success',
-          cancelUrl: window.location.origin + '/?step=9', // Return to payment step
+          cancelUrl: window.location.origin + '/step/9', // Return to payment step
         },
       });
 
+      console.log('Stripe checkout response:', { data, error });
+
       if (error) {
         console.error('Supabase function error:', error);
-        throw new Error(error.message);
+        throw new Error(error.message || 'Error creating checkout session');
       }
 
       if (data && data.url) {
         // Update submission with checkout session ID
         if (data.sessionId) {
+          console.log('Updating with checkout session ID:', data.sessionId);
           await updatePaymentInfo(date, data.sessionId, 'checkout_started');
         }
         
         // Redirect to Stripe Checkout
+        console.log('Redirecting to Stripe checkout URL:', data.url);
         window.location.href = data.url;
       } else {
         console.error('No checkout URL returned:', data);
-        throw new Error('No checkout URL returned');
+        throw new Error('No checkout URL returned from payment processor');
       }
     } catch (error) {
       console.error('Error creating checkout session:', error);

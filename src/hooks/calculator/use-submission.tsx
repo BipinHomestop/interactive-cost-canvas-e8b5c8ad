@@ -74,6 +74,7 @@ export const useSubmission = () => {
 
         if (data && data[0]) {
           setSubmissionId(data[0].id);
+          console.log('Saved new submission with ID:', data[0].id);
         }
 
         toast({
@@ -114,7 +115,12 @@ export const useSubmission = () => {
           .update(updateData)
           .eq('id', submissionId);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        
+        console.log('Updated submission with ID:', submissionId);
       }
       return true;
     } catch (error) {
@@ -133,24 +139,40 @@ export const useSubmission = () => {
     checkoutSessionId?: string,
     paymentStatus?: string
   ) => {
-    if (!submissionId) return false;
+    if (!submissionId) {
+      console.error('No submission ID found for payment update');
+      return false;
+    }
     
     try {
+      console.log('Updating payment info with:', {
+        date: preferredInstallationDate,
+        sessionId: checkoutSessionId,
+        status: paymentStatus
+      });
+      
       // Convert Date object to ISO string format before sending to the database
       const formattedDate = preferredInstallationDate 
         ? preferredInstallationDate.toISOString().split('T')[0] 
         : undefined;
       
+      const updateData: Record<string, any> = {};
+      
+      if (formattedDate) updateData.preferred_installation_date = formattedDate;
+      if (checkoutSessionId) updateData.checkout_session_id = checkoutSessionId;
+      if (paymentStatus) updateData.payment_status = paymentStatus;
+      
       const { error } = await supabase
         .from('cost_calculator_submissions')
-        .update({
-          preferred_installation_date: formattedDate,
-          checkout_session_id: checkoutSessionId,
-          payment_status: paymentStatus || 'processing'
-        })
+        .update(updateData)
         .eq('id', submissionId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Payment info update error:', error);
+        throw error;
+      }
+      
+      console.log('Successfully updated payment info for submission:', submissionId);
       return true;
     } catch (error) {
       console.error('Error updating payment information:', error);
