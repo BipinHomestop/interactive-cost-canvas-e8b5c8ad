@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -75,6 +74,7 @@ export function LocationStep({
       
       setError(null);
       setIsValid(true);
+      onLocationChange(value);
       setIsValidating(false);
       return true;
     } catch (err) {
@@ -82,24 +82,6 @@ export function LocationStep({
       setError("There was an error checking your ZIP code. Please try again.");
       setIsValidating(false);
       return false;
-    }
-  };
-  
-  const handleContinue = () => {
-    if (isValid) {
-      onLocationChange(zipCode);
-    } else {
-      validateZipCode().then(isValid => {
-        if (isValid) {
-          onLocationChange(zipCode);
-        } else {
-          toast({
-            title: "Invalid ZIP Code",
-            description: error || "Please fix the error with your ZIP code before continuing.",
-            variant: "destructive"
-          });
-        }
-      });
     }
   };
   
@@ -169,15 +151,6 @@ export function LocationStep({
             </div>
           </Alert>
         )}
-        
-        <Button 
-          type="button" 
-          onClick={handleContinue}
-          className="w-full bg-[#1A3174] hover:bg-[#132456] text-white h-12"
-          disabled={zipCode.length !== 5 || !isValid || isValidating}
-        >
-          {isValidating ? "Checking..." : "Continue"}
-        </Button>
       </div>
 
       <p className="text-sm text-gray-500 text-center">
@@ -186,3 +159,4 @@ export function LocationStep({
     </div>
   );
 }
+
