@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 // Valid coupon codes for testing
@@ -14,14 +14,14 @@ export function useDiscountCode(totalCost: number) {
   const { toast } = useToast();
 
   // Update discounted total when total cost changes
-  useState(() => {
+  useEffect(() => {
     if (discountPercentage > 0) {
       const discountAmount = totalCost * (discountPercentage / 100);
       setDiscountedTotal(totalCost - discountAmount);
     } else {
       setDiscountedTotal(totalCost);
     }
-  });
+  }, [totalCost, discountPercentage]);
 
   const handleApplyCoupon = () => {
     if (!couponCode.trim()) {
