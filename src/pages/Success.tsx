@@ -10,6 +10,14 @@ export default function Success() {
   useEffect(() => {
     // Track successful submission
     console.log('Success page viewed');
+    
+    // Track conversion for analytics
+    if (window.gtag) {
+      window.gtag('event', 'conversion', {
+        'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL',
+        'transaction_id': sessionStorage.getItem('calculatorSubmissionId')
+      });
+    }
   }, []);
   
   return (
@@ -18,7 +26,6 @@ export default function Success() {
         <title>Thank You | Form Submitted Successfully | American Concrete Coatings</title>
         <meta name="description" content="Thank you for submitting your information. An American Concrete Coatings representative will contact you shortly about your garage floor coating project." />
         <link rel="canonical" href="https://quote.garagefloorcoatingsdfw.com/success" />
-        <meta name="robots" content="noindex, follow" />
       </Helmet>
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50">
         <div className="w-full max-w-md rounded-lg border bg-white p-8 shadow-md">
