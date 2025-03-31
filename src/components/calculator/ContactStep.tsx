@@ -5,6 +5,7 @@ import { CalculatorInputs } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/components/ui/form";
 import { useState, useEffect } from "react";
+import { Flag } from "lucide-react";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -79,13 +80,21 @@ export function ContactStep({
           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
             Phone Number
           </label>
-          <Input 
-            id="phone" 
-            type="tel" 
-            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${phoneError ? 'border-red-500' : ''} ${isMobile ? 'h-12' : ''}`} 
-            {...register("phone")} 
-            placeholder="Enter your phone number (10 digits)" 
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <div className="flex items-center gap-1.5">
+                <Flag className="h-4 w-4 text-gray-500" />
+                <span className="text-gray-500 text-sm">+1</span>
+              </div>
+            </div>
+            <Input 
+              id="phone" 
+              type="tel" 
+              className={`w-full pl-16 focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${phoneError ? 'border-red-500' : ''} ${isMobile ? 'h-12' : ''}`} 
+              {...register("phone")} 
+              placeholder="(555) 123-4567" 
+            />
+          </div>
           {phoneError && (
             <p className="mt-1 text-sm text-red-500">{phoneError}</p>
           )}
@@ -107,4 +116,3 @@ export function ContactStep({
     </div>
   );
 }
-
