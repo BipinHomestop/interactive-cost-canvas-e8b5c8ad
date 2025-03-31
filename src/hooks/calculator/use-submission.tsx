@@ -90,10 +90,15 @@ export const useSubmission = () => {
     if (!submissionId) return false;
     
     try {
+      // Convert Date object to ISO string format before sending to the database
+      const formattedDate = preferredInstallationDate 
+        ? preferredInstallationDate.toISOString().split('T')[0] 
+        : undefined;
+      
       const { error } = await supabase
         .from('cost_calculator_submissions')
         .update({
-          preferred_installation_date: preferredInstallationDate,
+          preferred_installation_date: formattedDate,
           checkout_session_id: checkoutSessionId,
           payment_status: paymentStatus || 'processing'
         })
