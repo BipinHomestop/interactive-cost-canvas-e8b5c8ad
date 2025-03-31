@@ -55,7 +55,8 @@ export default function CurrentConditionPage() {
         isNextDisabled={!formValues.currentCondition}
         isLastStep={true}
         options={{
-          currentCondition: formValues.currentCondition
+          currentCondition: formValues.currentCondition,
+          garageFinish: formValues.garageFinish
         }}
       >
         <CurrentConditionStep 

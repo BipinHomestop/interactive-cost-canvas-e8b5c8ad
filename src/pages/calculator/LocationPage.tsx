@@ -58,6 +58,7 @@ export default function LocationPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={false}
+        options={{ garageFinish: formValues.garageFinish }}
       >
         <LocationStep onLocationChange={value => setValue("location", value)} />
       </CalcPageLayout>
