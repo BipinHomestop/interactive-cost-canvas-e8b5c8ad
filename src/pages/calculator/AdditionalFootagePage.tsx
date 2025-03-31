@@ -41,6 +41,15 @@ export default function AdditionalFootagePage() {
     handleNextStep();
   };
   
+  // Separate handlers for option changes to prevent automatic navigation
+  const handleNeedExtraFootageChange = (value: string) => {
+    setValue("needExtraFootage", value as "yes" | "no");
+  };
+  
+  const handleExtraFootageChange = (value: string) => {
+    setValue("extraFootage", value as "up-to-50" | "51-100" | "101-150" | "151-200");
+  };
+  
   useEffect(() => {
     // Track page view
     if (typeof window !== 'undefined' && window.gtag) {
@@ -73,8 +82,8 @@ export default function AdditionalFootagePage() {
         <AdditionalFootageStep 
           needExtraFootage={needExtraFootage}
           extraFootage={formValues.extraFootage}
-          onNeedExtraFootageChange={value => setValue("needExtraFootage", value as "yes" | "no")}
-          onExtraFootageChange={value => setValue("extraFootage", value as "up-to-50" | "51-100" | "101-150" | "151-200")}
+          onNeedExtraFootageChange={handleNeedExtraFootageChange}
+          onExtraFootageChange={handleExtraFootageChange}
         />
       </CalcPageLayout>
     </>
