@@ -8,6 +8,12 @@ export const useSubmission = () => {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const { toast } = useToast();
 
+  // Helper function to validate ZIP code format
+  const isValidZipCode = (zipcode: string | undefined): boolean => {
+    if (!zipcode) return false;
+    return /^\d{5}$/.test(zipcode); // Must be exactly 5 digits
+  };
+
   const saveSubmission = async (
     formValues: Partial<CalculatorInputs>, 
     isNewSubmission: boolean = true,
@@ -16,6 +22,16 @@ export const useSubmission = () => {
     discountPercentage?: number
   ) => {
     try {
+      // Validate ZIP code format before saving
+      if (isNewSubmission && (!formValues.location || !isValidZipCode(formValues.location))) {
+        toast({
+          title: "Error",
+          description: "Please enter a valid 5-digit ZIP code before continuing",
+          variant: "destructive",
+        });
+        return false;
+      }
+
       if (isNewSubmission) {
         // For new submissions, save whatever data we have so far
         const { data, error } = await supabase
@@ -40,7 +56,21 @@ export const useSubmission = () => {
           }])
           .select();
 
-        if (error) throw error;
+        if (error) {
+          console.error('Database error:', error);
+          
+          let errorMessage = "Failed to save your information";
+          if (error.code === '23514' && error.message.includes('valid_zipcode_format')) {
+            errorMessage = "Please enter a valid 5-digit ZIP code";
+          }
+          
+          toast({
+            title: "Error",
+            description: errorMessage,
+            variant: "destructive",
+          });
+          return false;
+        }
 
         if (data && data[0]) {
           setSubmissionId(data[0].id);

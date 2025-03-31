@@ -24,9 +24,9 @@ export const useCalculator = () => {
 
   const { submissionId, saveSubmission } = useSubmission();
   
-  // Changed to pass Partial<CalculatorInputs> to allow for incomplete data
   const { step, handleNextStep, handlePrevStep } = useStepNavigation(
-    (formData: Partial<CalculatorInputs>) => saveSubmission(formData, true, totalCost)
+    (formData: Partial<CalculatorInputs>, isNewSubmission: boolean) => 
+      saveSubmission(formData, isNewSubmission, totalCost)
   );
   
   const { totalCost } = useCostCalculation(formValues, step);

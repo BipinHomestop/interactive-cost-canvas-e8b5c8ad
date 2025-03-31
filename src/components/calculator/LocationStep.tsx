@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "@/components/ui/input";
@@ -174,9 +174,9 @@ export function LocationStep({
           type="button" 
           onClick={handleContinue}
           className="w-full bg-[#1A3174] hover:bg-[#132456] text-white h-12"
-          disabled={(zipCode.length !== 5 && !isValid) || isValidating}
+          disabled={zipCode.length !== 5 || !isValid || isValidating}
         >
-          {isValidating ? "Checking..." : "Check Availability"}
+          {isValidating ? "Checking..." : "Continue"}
         </Button>
       </div>
 

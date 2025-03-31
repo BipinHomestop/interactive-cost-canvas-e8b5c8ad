@@ -18,9 +18,30 @@ export const useStepNavigation = (
     return cleanedPhone.length === 10;
   };
 
+  // Validate ZIP code function
+  const isValidZipCode = (zipcode: string | undefined): boolean => {
+    if (!zipcode) return false;
+    return /^\d{5}$/.test(zipcode); // Must be exactly 5 digits
+  };
+
   const handleNextStep = async (formValues: Partial<CalculatorInputs>) => {
+    // For step 1 (location), validate ZIP code
+    if (step === 1) {
+      if (!formValues.location || !isValidZipCode(formValues.location)) {
+        toast({
+          title: "Error",
+          description: "Please enter a valid 5-digit ZIP code",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Attempt to save with the valid ZIP code
+      const success = await saveSubmission(formValues, true);
+      if (!success) return;
+    }
     // For step 2 (contact info), validate required fields and phone format
-    if (step === 2) {
+    else if (step === 2) {
       if (!formValues.name || !formValues.phone || !formValues.email) {
         toast({
           title: "Error",
@@ -40,12 +61,12 @@ export const useStepNavigation = (
         return;
       }
 
-      const success = await saveSubmission(formValues, true);
+      const success = await saveSubmission(formValues, false);
       if (!success) return;
     } else {
       // For any other step, just save what we have without validation
       // This captures incomplete data
-      await saveSubmission(formValues, step <= 2);
+      await saveSubmission(formValues, false);
     }
     
     setStep((prev) => Math.min(prev + 1, 9));
@@ -54,7 +75,7 @@ export const useStepNavigation = (
   const handlePrevStep = async (formValues: Partial<CalculatorInputs>) => {
     // Always save current data when going back
     if (step > 1) {
-      await saveSubmission(formValues, step <= 2);
+      await saveSubmission(formValues, false);
     }
     setStep((prev) => Math.max(prev - 1, 1));
   };
