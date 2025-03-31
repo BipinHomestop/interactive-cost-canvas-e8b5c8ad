@@ -52,6 +52,9 @@ export default function StemWallsPage() {
         page_path: '/calculator/stem-walls'
       });
     }
+    
+    // Log the current form values to help with debugging
+    console.log('StemWallsPage - Current form values:', formValues);
   }, []);
 
   const isNextDisabled = !formValues.needStemWalls || (formValues.needStemWalls === "yes" && !formValues.stemWallType);

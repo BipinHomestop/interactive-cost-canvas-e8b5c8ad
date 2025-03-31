@@ -6,7 +6,6 @@ import { LoadingSpinner } from "./components/LoadingSpinner";
 import { ImageError } from "./components/ImageError";
 import { PriceOverlay } from "./components/PriceOverlay";
 import { useCalculatorImage } from "./hooks/useCalculatorImage";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect } from "react";
 
 export function ImageDisplay({
@@ -18,9 +17,16 @@ export function ImageDisplay({
   const { toast } = useToast();
   
   useEffect(() => {
-    // Log options to help with debugging
-    console.log('ImageDisplay received options:', options);
-  }, [options]);
+    // Enhanced logging for debugging
+    console.log('ImageDisplay - Current step:', step);
+    console.log('ImageDisplay - Received options:', options);
+    
+    if (options?.garageFinish) {
+      console.log('ImageDisplay - Garage finish is set to:', options.garageFinish);
+    } else {
+      console.log('ImageDisplay - Warning: No garage finish option provided');
+    }
+  }, [step, options]);
   
   const {
     isLoading,

@@ -34,6 +34,8 @@ export default function PaymentPage() {
       });
       handlePrevStep();
     }
+    
+    console.log('PaymentPage - Current form values:', formValues);
   }, []);
 
   return (
@@ -48,6 +50,9 @@ export default function PaymentPage() {
         onNext={() => {}}
         onPrev={handlePrevStep}
         isNextDisabled={false}
+        options={{
+          garageFinish: formValues.garageFinish
+        }}
       >
         <PaymentStep 
           formData={formValues} 

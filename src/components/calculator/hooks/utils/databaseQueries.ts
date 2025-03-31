@@ -40,50 +40,55 @@ export const insertStepImage = async (
 ) => {
   console.log('Inserting/updating step image:', { stepNumber, imageType, imagePath, isLastSelected });
   
-  const { data: existingImage, error: fetchError } = await supabase
-    .from('calculator_step_images')
-    .select('id')
-    .eq('step_number', stepNumber)
-    .eq('image_type', imageType)
-    .maybeSingle();
-
-  if (fetchError) {
-    console.error('Error checking existing image:', fetchError);
-    throw fetchError;
-  }
-
-  if (existingImage) {
-    console.log('Updating existing image:', existingImage.id);
-    const { error: updateError } = await supabase
+  try {
+    const { data: existingImage, error: fetchError } = await supabase
       .from('calculator_step_images')
-      .update({
-        image_path: imagePath,
-        is_last_selected: isLastSelected
-      })
-      .eq('id', existingImage.id);
+      .select('id')
+      .eq('step_number', stepNumber)
+      .eq('image_type', imageType)
+      .maybeSingle();
 
-    if (updateError) {
-      console.error('Error updating image:', updateError);
-      throw updateError;
+    if (fetchError) {
+      console.error('Error checking existing image:', fetchError);
+      throw fetchError;
     }
-  } else {
-    console.log('Inserting new image');
-    const { error: insertError } = await supabase
-      .from('calculator_step_images')
-      .insert({
-        step_number: stepNumber,
-        image_type: imageType,
-        image_path: imagePath,
-        is_last_selected: isLastSelected
-      });
 
-    if (insertError) {
-      console.error('Error inserting image:', insertError);
-      throw insertError;
+    if (existingImage) {
+      console.log('Updating existing image:', existingImage.id);
+      const { error: updateError } = await supabase
+        .from('calculator_step_images')
+        .update({
+          image_path: imagePath,
+          is_last_selected: isLastSelected
+        })
+        .eq('id', existingImage.id);
+
+      if (updateError) {
+        console.error('Error updating image:', updateError);
+        throw updateError;
+      }
+    } else {
+      console.log('Inserting new image');
+      const { error: insertError } = await supabase
+        .from('calculator_step_images')
+        .insert({
+          step_number: stepNumber,
+          image_type: imageType,
+          image_path: imagePath,
+          is_last_selected: isLastSelected
+        });
+
+      if (insertError) {
+        console.error('Error inserting image:', insertError);
+        throw insertError;
+      }
     }
+    
+    console.log('Successfully inserted/updated image');
+  } catch (error) {
+    console.error('Error in insertStepImage:', error);
+    throw error;
   }
-  
-  console.log('Successfully inserted/updated image');
 };
 
 export const getLastSelectedImage = async (stepNumber: number) => {

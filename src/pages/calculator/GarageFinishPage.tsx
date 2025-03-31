@@ -33,6 +33,7 @@ export default function GarageFinishPage() {
   
   // Use a separate handler for finish changes to prevent automatic navigation
   const handleFinishChange = (value: string) => {
+    console.log('Changing garage finish to:', value);
     setValue("garageFinish", value);
   };
   
@@ -44,6 +45,8 @@ export default function GarageFinishPage() {
         page_path: '/calculator/garage-finish'
       });
     }
+    
+    console.log('GarageFinishPage - Current form values:', formValues);
   }, []);
 
   return (
