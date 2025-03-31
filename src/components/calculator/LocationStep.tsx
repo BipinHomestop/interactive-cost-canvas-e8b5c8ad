@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { MapPin, AlertTriangle } from "lucide-react";
+import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -159,9 +159,12 @@ export function LocationStep({
             variant="default" 
             className="bg-green-50 border-green-200 py-2"
           >
-            <AlertDescription className="text-green-700 text-sm font-medium text-center">
-              Great! We serve your area.
-            </AlertDescription>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+              <AlertDescription className="text-green-700 text-sm font-medium">
+                Great! We serve your area.
+              </AlertDescription>
+            </div>
           </Alert>
         )}
         
