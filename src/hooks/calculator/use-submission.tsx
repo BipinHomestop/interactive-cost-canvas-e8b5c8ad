@@ -74,6 +74,7 @@ export const useSubmission = () => {
 
         if (data && data[0]) {
           setSubmissionId(data[0].id);
+          console.log("New submission created with ID:", data[0].id);
         }
 
         toast({
@@ -109,12 +110,16 @@ export const useSubmission = () => {
           updateData.payment_status = 'pending';
         }
 
+        console.log("Updating submission:", submissionId, updateData);
         const { error } = await supabase
           .from('cost_calculator_submissions')
           .update(updateData)
           .eq('id', submissionId);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating submission:', error);
+          throw error;
+        }
       }
       return true;
     } catch (error) {
@@ -133,13 +138,22 @@ export const useSubmission = () => {
     checkoutSessionId?: string,
     paymentStatus?: string
   ) => {
-    if (!submissionId) return false;
+    if (!submissionId) {
+      console.error("Cannot update payment info: No submission ID");
+      return false;
+    }
     
     try {
       // Convert Date object to ISO string format before sending to the database
       const formattedDate = preferredInstallationDate 
         ? preferredInstallationDate.toISOString().split('T')[0] 
         : undefined;
+      
+      console.log("Updating payment info for submission:", submissionId, {
+        preferredInstallationDate: formattedDate,
+        checkoutSessionId,
+        paymentStatus
+      });
       
       const { error } = await supabase
         .from('cost_calculator_submissions')
@@ -150,7 +164,10 @@ export const useSubmission = () => {
         })
         .eq('id', submissionId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating payment information:', error);
+        throw error;
+      }
       return true;
     } catch (error) {
       console.error('Error updating payment information:', error);

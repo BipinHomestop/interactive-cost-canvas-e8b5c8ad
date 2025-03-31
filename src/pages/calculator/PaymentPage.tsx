@@ -4,6 +4,7 @@ import { PaymentStep } from "@/components/calculator/PaymentStep";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function PaymentPage() {
   const {
@@ -13,6 +14,8 @@ export default function PaymentPage() {
     handlePrevStep
   } = useCalculator();
   
+  const { toast } = useToast();
+  
   useEffect(() => {
     // Track page view
     if (typeof window !== 'undefined' && window.gtag) {
@@ -20,6 +23,16 @@ export default function PaymentPage() {
         page_title: 'Payment Step',
         page_path: '/calculator/payment'
       });
+    }
+    
+    // Check if we have all the required data
+    if (!formValues.name || !formValues.email || !formValues.phone) {
+      toast({
+        title: "Missing information",
+        description: "Please complete all previous steps before proceeding to payment",
+        variant: "destructive",
+      });
+      handlePrevStep();
     }
   }, []);
 
