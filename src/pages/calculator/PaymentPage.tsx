@@ -11,7 +11,8 @@ export default function PaymentPage() {
     step,
     totalCost,
     formValues,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
@@ -38,6 +39,10 @@ export default function PaymentPage() {
     console.log('PaymentPage - Current form values:', formValues);
   }, []);
 
+  // Get options with garage finish for image display
+  const options = getStepOptions();
+  console.log('PaymentPage - Using options for image display:', options);
+
   return (
     <>
       <Helmet>
@@ -50,9 +55,7 @@ export default function PaymentPage() {
         onNext={() => {}}
         onPrev={handlePrevStep}
         isNextDisabled={false}
-        options={{
-          garageFinish: formValues.garageFinish
-        }}
+        options={options}
       >
         <PaymentStep 
           formData={formValues} 

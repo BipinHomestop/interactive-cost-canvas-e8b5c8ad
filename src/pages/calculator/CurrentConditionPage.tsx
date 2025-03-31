@@ -10,11 +10,12 @@ export default function CurrentConditionPage() {
   const {
     step,
     totalCost,
-    setValue,
     formValues,
+    setValue,
     currentCondition,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
@@ -28,6 +29,7 @@ export default function CurrentConditionPage() {
       });
       return;
     }
+    
     handleNextStep();
   };
   
@@ -39,13 +41,19 @@ export default function CurrentConditionPage() {
         page_path: '/calculator/current-condition'
       });
     }
+    
+    console.log('CurrentConditionPage - Current form values:', formValues);
   }, []);
+
+  // Get options with garage finish for image display
+  const options = getStepOptions();
+  console.log('CurrentConditionPage - Using options for image display:', options);
 
   return (
     <>
       <Helmet>
         <title>Current Condition | Garage Floor Coating Calculator</title>
-        <meta name="description" content="Indicate the current condition of your garage floor for an accurate coating estimate." />
+        <meta name="description" content="Specify the current condition of your garage floor for an accurate estimate." />
       </Helmet>
       <CalcPageLayout
         step={step}
@@ -54,13 +62,11 @@ export default function CurrentConditionPage() {
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.currentCondition}
         isLastStep={true}
-        options={{
-          currentCondition: formValues.currentCondition
-        }}
+        options={options}
       >
         <CurrentConditionStep 
-          condition={currentCondition}
-          onConditionChange={value => setValue("currentCondition", value as "original" | "existing")}
+          condition={currentCondition} 
+          onConditionChange={value => setValue("currentCondition", value)} 
         />
       </CalcPageLayout>
     </>

@@ -10,11 +10,12 @@ export default function HouseStepsPage() {
   const {
     step,
     totalCost,
-    setValue,
     formValues,
+    setValue,
     needSteps,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
@@ -23,11 +24,12 @@ export default function HouseStepsPage() {
     if (!formValues.needSteps) {
       toast({
         title: "Error",
-        description: "Please select whether you need steps coated",
+        description: "Please select whether you need steps",
         variant: "destructive",
       });
       return;
     }
+    
     handleNextStep();
   };
   
@@ -39,13 +41,19 @@ export default function HouseStepsPage() {
         page_path: '/calculator/house-steps'
       });
     }
+    
+    console.log('HouseStepsPage - Current form values:', formValues);
   }, []);
+
+  // Get options with garage finish for image display
+  const options = getStepOptions();
+  console.log('HouseStepsPage - Using options for image display:', options);
 
   return (
     <>
       <Helmet>
         <title>House Steps | Garage Floor Coating Calculator</title>
-        <meta name="description" content="Indicate if you need steps from your house to the garage for your flooring project." />
+        <meta name="description" content="Specify if your garage has steps leading to the house that need coating." />
       </Helmet>
       <CalcPageLayout
         step={step}
@@ -53,14 +61,11 @@ export default function HouseStepsPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.needSteps}
-        options={{
-          garageFinish: formValues.garageFinish,
-          needSteps: formValues.needSteps
-        }}
+        options={options}
       >
         <HouseStepsStep 
-          needSteps={needSteps}
-          onNeedStepsChange={value => setValue("needSteps", value as "yes" | "no")}
+          needSteps={needSteps} 
+          onNeedStepsChange={value => setValue("needSteps", value)} 
         />
       </CalcPageLayout>
     </>

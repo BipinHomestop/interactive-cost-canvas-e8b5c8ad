@@ -52,6 +52,7 @@ export const useCalculator = () => {
   // Handle navigation between steps
   const handleNextStep = async () => {
     const nextStepUrl = getStepUrl(step + 1);
+    console.log('Moving to next step with form values:', formValues);
     const success = await saveSubmission(formValues, step === 1, totalCost);
     if (success) {
       navigate(nextStepUrl);
@@ -61,6 +62,7 @@ export const useCalculator = () => {
   const handlePrevStep = async () => {
     if (step > 1) {
       const prevStepUrl = getStepUrl(step - 1);
+      console.log('Moving to previous step with form values:', formValues);
       await saveSubmission(formValues, false, totalCost);
       navigate(prevStepUrl);
     }
@@ -117,6 +119,37 @@ export const useCalculator = () => {
     return stepNames[stepNumber as keyof typeof stepNames] || 'unknown';
   };
 
+  // Get the current step options needed for image display
+  const getStepOptions = (): Partial<CalculatorInputs> => {
+    // Always include garageFinish in options if it exists
+    const options: Partial<CalculatorInputs> = {};
+    
+    if (formValues.garageFinish) {
+      options.garageFinish = formValues.garageFinish;
+    }
+    
+    // Add step-specific options
+    switch (step) {
+      case 5:
+        if (formValues.needStemWalls) options.needStemWalls = formValues.needStemWalls;
+        if (formValues.stemWallType) options.stemWallType = formValues.stemWallType;
+        break;
+      case 6:
+        if (formValues.needSteps) options.needSteps = formValues.needSteps;
+        break;
+      case 7:
+        if (formValues.needExtraFootage) options.needExtraFootage = formValues.needExtraFootage;
+        if (formValues.extraFootage) options.extraFootage = formValues.extraFootage;
+        break;
+      case 8:
+        if (formValues.currentCondition) options.currentCondition = formValues.currentCondition;
+        break;
+    }
+    
+    console.log('getStepOptions returning:', options);
+    return options;
+  };
+
   return {
     step,
     totalCost,
@@ -134,6 +167,7 @@ export const useCalculator = () => {
     control,
     handleNextStep,
     handlePrevStep,
-    getStepUrl
+    getStepUrl,
+    getStepOptions // Export the function to get options for the current step
   };
 };

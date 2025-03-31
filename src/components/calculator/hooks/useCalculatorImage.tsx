@@ -89,7 +89,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           if (finishCollection) {
             console.log('Found finish collection:', finishCollection);
             if (step === 5) {
-              imageData = await imageUtils.handleStemWallImage(finishCollection, options);
+              imageData = await imageUtils.handleStemWallImage(finishCollection, options || {});
             } else if (step === 6) {
               imageData = imageUtils.handleStepsImage(finishCollection, options?.needSteps || 'no');
             }

@@ -12,7 +12,7 @@ export const handleStemWallImage = async (collection: any, options: Partial<Calc
   let imagePath = '';
   console.log('Handling stem wall image with options:', options);
   
-  if (options.needStemWalls === 'no') {
+  if (!options.needStemWalls || options.needStemWalls === 'no') {
     imagePath = collection.stem_wall_no_image;
     console.log('Using stem-wall-no image:', imagePath);
   } else if (options.needStemWalls === 'yes' && !options.stemWallType) {

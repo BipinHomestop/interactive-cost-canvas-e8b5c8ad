@@ -14,7 +14,8 @@ export default function GarageFinishPage() {
     formValues,
     selectedFinish,
     handleNextStep,
-    handlePrevStep
+    handlePrevStep,
+    getStepOptions
   } = useCalculator();
   
   const { toast } = useToast();
@@ -49,6 +50,10 @@ export default function GarageFinishPage() {
     console.log('GarageFinishPage - Current form values:', formValues);
   }, []);
 
+  // Get options for image display
+  const options = getStepOptions();
+  console.log('GarageFinishPage - Using options for image display:', options);
+
   return (
     <>
       <Helmet>
@@ -61,7 +66,7 @@ export default function GarageFinishPage() {
         onNext={handleNext}
         onPrev={handlePrevStep}
         isNextDisabled={!formValues.garageFinish}
-        options={{ garageFinish: formValues.garageFinish }}
+        options={options}
       >
         <GarageFinishStep 
           selectedFinish={selectedFinish} 
