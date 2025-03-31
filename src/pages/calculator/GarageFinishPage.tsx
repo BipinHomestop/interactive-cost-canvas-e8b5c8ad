@@ -55,6 +55,12 @@ export default function GarageFinishPage() {
         page_path: '/calculator/garage-finish'
       });
     }
+    
+    // Preselect the first finish option if none is selected
+    if (!formValues.garageFinish) {
+      // We'll use "carbon" as it's the first in the GARAGE_FINISHES array
+      setValue("garageFinish", "carbon");
+    }
   }, []);
 
   // Get options with the current step's required values
