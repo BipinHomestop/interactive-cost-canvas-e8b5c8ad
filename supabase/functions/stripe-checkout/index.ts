@@ -41,7 +41,14 @@ serve(async (req) => {
       throw new Error("Missing submission ID. Please complete the previous steps first.");
     }
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+    // Get the Stripe secret key from environment variables
+    const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeSecretKey) {
+      console.error("STRIPE_SECRET_KEY environment variable is not set");
+      throw new Error("Stripe configuration is incomplete. Please contact support.");
+    }
+
+    const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2022-11-15",
     });
     

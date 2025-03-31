@@ -60,7 +60,7 @@ export function DiscountCodeInput({
       <p className="text-gray-500 text-xs sm:text-sm">
         {discountPercentage > 0 
           ? `Coupon applied: ${discountPercentage}% discount` 
-          : "No coupon applied"}
+          : "Enter a coupon code if you have one"}
       </p>
     </div>
   );
