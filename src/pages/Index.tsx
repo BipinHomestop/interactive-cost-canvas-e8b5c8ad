@@ -1,4 +1,3 @@
-
 import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, HelpCircle, Phone, X } from "lucide-react";
@@ -97,7 +96,8 @@ const Index = () => {
               onClick={() => window.location.href = "tel:+18175882055"}
             >
               <Phone className="w-4 h-4 mr-1" />
-              <span className={`${isMobile ? 'text-xs' : ''}`}>Call +1 (817) 588-2055</span>
+              {!isMobile && <span>Call +1 (817) 588-2055</span>}
+              {isMobile && <span className="text-xs">Call Us</span>}
             </Button>
           </div>
         </div>
