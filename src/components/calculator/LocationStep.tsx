@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -61,13 +60,13 @@ export function LocationStep({
       
       if (queryError) {
         console.error('Error checking zipcode:', queryError);
-        setError("There was an error checking your ZIP code. Please try again.");
+        setError("Unable to verify ZIP code. Please try again.");
         setIsValidating(false);
         return false;
       }
       
       if (!data) {
-        setError("We do not serve that area");
+        setError("We currently do not serve the area with this ZIP code");
         setIsValid(false);
         setIsValidating(false);
         return false;
@@ -79,7 +78,7 @@ export function LocationStep({
       return true;
     } catch (err) {
       console.error('Unexpected error during zipcode validation:', err);
-      setError("There was an error checking your ZIP code. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
       setIsValidating(false);
       return false;
     }
@@ -95,7 +94,7 @@ export function LocationStep({
         } else {
           toast({
             title: "Invalid ZIP Code",
-            description: error || "Please fix the error with your ZIP code before continuing.",
+            description: error || "Please check your ZIP code and try again.",
             variant: "destructive"
           });
         }
