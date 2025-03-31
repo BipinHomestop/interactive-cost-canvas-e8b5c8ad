@@ -4,6 +4,7 @@ import { StemWallsStep } from "@/components/calculator/StemWallsStep";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function StemWallsPage() {
   const {
@@ -16,10 +17,30 @@ export default function StemWallsPage() {
     handlePrevStep
   } = useCalculator();
   
+  const { toast } = useToast();
+  
   const handleNext = () => {
-    if (!formValues.needStemWalls || (formValues.needStemWalls === "yes" && !formValues.stemWallType)) {
+    // Validation check
+    if (!formValues.needStemWalls) {
+      toast({
+        title: "Error",
+        description: "Please select whether you need stem walls",
+        variant: "destructive",
+      });
       return;
     }
+    
+    // If user selected "yes" for stem walls, make sure they've selected a type
+    if (formValues.needStemWalls === "yes" && !formValues.stemWallType) {
+      toast({
+        title: "Error",
+        description: "Please select the stem wall type",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // If all validations pass, proceed to next step
     handleNextStep();
   };
   
