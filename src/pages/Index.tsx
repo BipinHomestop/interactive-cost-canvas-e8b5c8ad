@@ -1,3 +1,4 @@
+
 import { CostCalculator } from "@/components/CostCalculator";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, HelpCircle, Phone, X } from "lucide-react";
@@ -6,10 +7,11 @@ import { useState, useEffect } from "react";
 import { FAQSection } from "@/components/calculator/FAQSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Helmet } from "react-helmet";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Index = () => {
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const [showFAQs, setShowFAQs] = useState(false);
   const { stepNumber } = useParams<{ stepNumber: string }>();
   
@@ -63,6 +65,50 @@ const Index = () => {
     console.log(`Viewing step ${currentStep}: ${stepTitle}`);
   }, [currentStep, stepTitle, stepNumber]);
   
+  // Admin password check for analytics access
+  const [showAdmin, setShowAdmin] = useState(false);
+  
+  useEffect(() => {
+    // Check if user has admin access in session storage
+    const hasAdminAccess = sessionStorage.getItem('adminAccess') === 'true';
+    setShowAdmin(hasAdminAccess);
+    
+    // Double-click event listener for admin access
+    let clickCount = 0;
+    let clickTimer: ReturnType<typeof setTimeout>;
+    
+    const handleLogoClick = () => {
+      clickCount++;
+      
+      if (clickCount === 5) {
+        const password = prompt("Enter admin password:");
+        if (password === "ACC2024admin") { // Simple password for demo
+          sessionStorage.setItem('adminAccess', 'true');
+          setShowAdmin(true);
+          alert("Admin access granted");
+        }
+        clickCount = 0;
+      }
+      
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => {
+        clickCount = 0;
+      }, 2000);
+    };
+    
+    const logoElement = document.querySelector('nav img');
+    if (logoElement) {
+      logoElement.addEventListener('click', handleLogoClick);
+    }
+    
+    return () => {
+      if (logoElement) {
+        logoElement.removeEventListener('click', handleLogoClick);
+      }
+      clearTimeout(clickTimer);
+    };
+  }, []);
+  
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
       <Helmet>
@@ -78,6 +124,16 @@ const Index = () => {
             className={`${isMobile ? 'h-8' : 'h-10'} w-auto`}
           />
           <div className="flex items-center gap-2">
+            {showAdmin && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="h-9 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
+                onClick={() => navigate('/analytics')}
+              >
+                <span className="text-xs">Analytics</span>
+              </Button>
+            )}
             {isMobile && (
               <Button 
                 variant="outline" 
