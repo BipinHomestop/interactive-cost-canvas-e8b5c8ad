@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { 
@@ -12,7 +11,8 @@ import {
   Users, 
   Clock, 
   Activity,
-  Download
+  Download,
+  MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,9 +50,7 @@ import {
   YAxis
 } from 'recharts';
 
-// Mock data generator functions
 const generateDailyVisitorsData = (range) => {
-  // Generate data for the past x days based on range
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
@@ -68,7 +66,6 @@ const generateDailyVisitorsData = (range) => {
 };
 
 const generateConversionFunnelData = (range) => {
-  // Multiplier based on range
   const multiplier = range === '7d' ? 1 : range === '30d' ? 4 : 12;
   
   return [
@@ -80,7 +77,6 @@ const generateConversionFunnelData = (range) => {
 };
 
 const generatePopularPagesData = (range) => {
-  // Multiplier based on range
   const multiplier = range === '7d' ? 1 : range === '30d' ? 4 : 12;
   
   return [
@@ -93,7 +89,6 @@ const generatePopularPagesData = (range) => {
 };
 
 const generateTrafficSourceData = () => {
-  // Traffic sources don't change much with time range
   return [
     { name: 'Organic Search', value: 55 },
     { name: 'Direct', value: 24 },
@@ -110,7 +105,6 @@ const generateHourlyActivityData = () => {
 };
 
 const generateMonthlyTrendData = (range) => {
-  // For monthly trend, show different number of months based on range
   const months = range === '7d' ? 3 : range === '30d' ? 6 : 12;
   
   return Array.from({ length: months }, (_, i) => {
@@ -125,7 +119,6 @@ const generateMonthlyTrendData = (range) => {
 };
 
 const generateDetailedVisitData = (range) => {
-  // Generate detailed visit data for the past x days
   const days = range === '7d' ? 7 : range === '30d' ? 14 : 30;
   
   return Array.from({ length: days }, (_, i) => {
@@ -148,10 +141,39 @@ const generateDetailedVisitData = (range) => {
   }).reverse();
 };
 
-// Custom colors for charts
+const generateLocationData = (range) => {
+  const multiplier = range === '7d' ? 1 : range === '30d' ? 4 : 12;
+  
+  return [
+    { name: 'Dallas', visitors: Math.floor((Math.random() * 40) + 80) * multiplier, submissions: Math.floor((Math.random() * 10) + 10) * multiplier },
+    { name: 'Fort Worth', visitors: Math.floor((Math.random() * 35) + 70) * multiplier, submissions: Math.floor((Math.random() * 8) + 8) * multiplier },
+    { name: 'Arlington', visitors: Math.floor((Math.random() * 25) + 50) * multiplier, submissions: Math.floor((Math.random() * 6) + 6) * multiplier },
+    { name: 'Plano', visitors: Math.floor((Math.random() * 20) + 40) * multiplier, submissions: Math.floor((Math.random() * 5) + 5) * multiplier },
+    { name: 'Irving', visitors: Math.floor((Math.random() * 15) + 30) * multiplier, submissions: Math.floor((Math.random() * 4) + 4) * multiplier },
+    { name: 'Garland', visitors: Math.floor((Math.random() * 10) + 20) * multiplier, submissions: Math.floor((Math.random() * 3) + 3) * multiplier },
+    { name: 'Other', visitors: Math.floor((Math.random() * 30) + 60) * multiplier, submissions: Math.floor((Math.random() * 7) + 7) * multiplier },
+  ];
+};
+
+const generateZipCodeData = (range) => {
+  const multiplier = range === '7d' ? 1 : range === '30d' ? 4 : 12;
+  
+  return [
+    { name: '75001', visitors: Math.floor((Math.random() * 20) + 30) * multiplier, convRate: ((Math.random() * 5) + 12).toFixed(1) + '%' },
+    { name: '75002', visitors: Math.floor((Math.random() * 15) + 25) * multiplier, convRate: ((Math.random() * 5) + 10).toFixed(1) + '%' },
+    { name: '75006', visitors: Math.floor((Math.random() * 18) + 28) * multiplier, convRate: ((Math.random() * 5) + 11).toFixed(1) + '%' },
+    { name: '75007', visitors: Math.floor((Math.random() * 22) + 32) * multiplier, convRate: ((Math.random() * 5) + 13).toFixed(1) + '%' },
+    { name: '75019', visitors: Math.floor((Math.random() * 16) + 26) * multiplier, convRate: ((Math.random() * 5) + 9).toFixed(1) + '%' },
+    { name: '75023', visitors: Math.floor((Math.random() * 19) + 29) * multiplier, convRate: ((Math.random() * 5) + 14).toFixed(1) + '%' },
+    { name: '75024', visitors: Math.floor((Math.random() * 17) + 27) * multiplier, convRate: ((Math.random() * 5) + 15).toFixed(1) + '%' },
+    { name: '75025', visitors: Math.floor((Math.random() * 21) + 31) * multiplier, convRate: ((Math.random() * 5) + 12).toFixed(1) + '%' },
+    { name: '75028', visitors: Math.floor((Math.random() * 14) + 24) * multiplier, convRate: ((Math.random() * 5) + 10).toFixed(1) + '%' },
+    { name: '75034', visitors: Math.floor((Math.random() * 23) + 33) * multiplier, convRate: ((Math.random() * 5) + 13).toFixed(1) + '%' },
+  ];
+};
+
 const COLORS = ['#1A3174', '#4C63B6', '#818CF8', '#A5B4FC', '#C7D2FE'];
 
-// Chart config with both light and dark themes
 const CHART_CONFIG = {
   visitors: { 
     theme: { 
@@ -179,7 +201,6 @@ const CHART_CONFIG = {
   },
 };
 
-// Analytics Dashboard for tracking key metrics
 export default function Analytics() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -194,7 +215,6 @@ export default function Analytics() {
     completionRate: 0
   });
   
-  // State for chart data
   const [dailyVisitorsData, setDailyVisitorsData] = useState([]);
   const [conversionFunnelData, setConversionFunnelData] = useState([]);
   const [popularPagesData, setPopularPagesData] = useState([]);
@@ -202,14 +222,13 @@ export default function Analytics() {
   const [hourlyActivityData, setHourlyActivityData] = useState([]);
   const [monthlyTrendData, setMonthlyTrendData] = useState([]);
   const [detailedVisitData, setDetailedVisitData] = useState([]);
+  const [locationData, setLocationData] = useState([]);
+  const [zipCodeData, setZipCodeData] = useState([]);
 
-  // Update data when time range changes
   useEffect(() => {
     setIsLoading(true);
     
-    // Simulate loading analytics data
     const timeout = setTimeout(() => {
-      // Generate data based on selected time range
       const visitors = timeRange === '7d' ? 85 : timeRange === '30d' ? 245 : 780;
       const submissions = timeRange === '7d' ? 14 : timeRange === '30d' ? 42 : 132;
       const convRate = ((submissions / visitors) * 100).toFixed(1);
@@ -223,7 +242,6 @@ export default function Analytics() {
         completionRate: timeRange === '7d' ? 35.2 : timeRange === '30d' ? 38.4 : 40.1
       });
       
-      // Update chart data
       setDailyVisitorsData(generateDailyVisitorsData(timeRange));
       setConversionFunnelData(generateConversionFunnelData(timeRange));
       setPopularPagesData(generatePopularPagesData(timeRange));
@@ -232,31 +250,29 @@ export default function Analytics() {
       setMonthlyTrendData(generateMonthlyTrendData(timeRange));
       setDetailedVisitData(generateDetailedVisitData(timeRange));
       
+      setLocationData(generateLocationData(timeRange));
+      setZipCodeData(generateZipCodeData(timeRange));
+      
       setIsLoading(false);
     }, 800);
 
     return () => clearTimeout(timeout);
   }, [timeRange]);
 
-  // Function to download analytics data as CSV
   const downloadCSV = () => {
-    // Create CSV header
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += "Date,Visitors,Submissions,Conversion Rate,Avg Time\n";
     
-    // Add data rows
     detailedVisitData.forEach(row => {
       csvContent += `${row.date},${row.visitors},${row.submissions},${row.convRate},${row.avgTime}\n`;
     });
     
-    // Create download link
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", `analytics_data_${timeRange}.csv`);
     document.body.appendChild(link);
     
-    // Trigger download
     link.click();
     document.body.removeChild(link);
   };
@@ -343,7 +359,6 @@ export default function Analytics() {
           </div>
         </div>
         
-        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card className="p-6 shadow-md">
             <div className="flex items-start justify-between">
@@ -436,7 +451,6 @@ export default function Analytics() {
           </Card>
         </div>
 
-        {/* Visitor Trends Chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <Card className="shadow-md">
             <CardHeader>
@@ -502,7 +516,6 @@ export default function Analytics() {
           </Card>
         </div>
 
-        {/* Popular Pages and Traffic Sources */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <Card className="shadow-md">
             <CardHeader>
@@ -572,7 +585,6 @@ export default function Analytics() {
           </Card>
         </div>
 
-        {/* Monthly Trend */}
         <Card className="shadow-md mb-8">
           <CardHeader>
             <CardTitle className="text-xl text-[#1A3174]">Monthly Performance</CardTitle>
@@ -615,7 +627,6 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        {/* Hourly Activity */}
         <Card className="shadow-md mb-8">
           <CardHeader>
             <CardTitle className="text-xl text-[#1A3174]">Hourly Activity</CardTitle>
@@ -656,7 +667,6 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        {/* Detailed Data Table */}
         <Card className="shadow-md mb-8">
           <CardHeader>
             <CardTitle className="text-xl text-[#1A3174]">Daily Performance</CardTitle>
@@ -713,6 +723,143 @@ export default function Analytics() {
             </div>
           </Card>
         </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl text-[#1A3174]">City Performance</CardTitle>
+              <CardDescription>Visitors and conversions by city</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-[300px] w-full" />
+              ) : (
+                <div className="h-[300px]">
+                  <ChartContainer config={CHART_CONFIG}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RechartsBarChart data={locationData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip content={<ChartTooltipContent />} />
+                        <Legend />
+                        <Bar dataKey="visitors" name="Visitors" fill="var(--color-visitors)" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="submissions" name="Submissions" fill="var(--color-submissions)" radius={[4, 4, 0, 0]} />
+                      </RechartsBarChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl text-[#1A3174]">Top ZIP Codes</CardTitle>
+              <CardDescription>Performance metrics by ZIP code</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-[300px] w-full" />
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ZIP Code</TableHead>
+                      <TableHead>Visitors</TableHead>
+                      <TableHead>Conv. Rate</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {zipCodeData.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{row.name}</TableCell>
+                        <TableCell>{row.visitors}</TableCell>
+                        <TableCell>{row.convRate}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="shadow-md mb-8">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-xl text-[#1A3174]">Service Area Coverage</CardTitle>
+              <CardDescription>Visitor distribution across service areas</CardDescription>
+            </div>
+            <MapPin className="h-6 w-6 text-[#1A3174]" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium text-gray-700">Dallas-Fort Worth</h3>
+                  <span className="text-[#1A3174] font-bold">{timeRange === '7d' ? '64%' : timeRange === '30d' ? '68%' : '71%'}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-[#1A3174] h-2 rounded-full" style={{ width: timeRange === '7d' ? '64%' : timeRange === '30d' ? '68%' : '71%' }}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Primary service area</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium text-gray-700">Surrounding Counties</h3>
+                  <span className="text-[#4C63B6] font-bold">{timeRange === '7d' ? '27%' : timeRange === '30d' ? '24%' : '22%'}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-[#4C63B6] h-2 rounded-full" style={{ width: timeRange === '7d' ? '27%' : timeRange === '30d' ? '24%' : '22%' }}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Secondary service area</p>
+              </div>
+              
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium text-gray-700">Out of Service Area</h3>
+                  <span className="text-[#818CF8] font-bold">{timeRange === '7d' ? '9%' : timeRange === '30d' ? '8%' : '7%'}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-[#818CF8] h-2 rounded-full" style={{ width: timeRange === '7d' ? '9%' : timeRange === '30d' ? '8%' : '7%' }}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Visitors outside coverage</p>
+              </div>
+            </div>
+            
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h3 className="font-medium text-gray-700 mb-2">Location Coverage Insights</h3>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <div className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">75% of visitors</span> are from ZIP codes with service coverage
+                  </p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Conversion rate is {timeRange === '7d' ? '18%' : timeRange === '30d' ? '17%' : '16%'} higher</span> in primary service areas
+                  </p>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5">
+                    <CheckCircle className="h-5 w-5" />
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Top performing ZIP:</span> 75007 with {timeRange === '7d' ? '13.6%' : timeRange === '30d' ? '14.2%' : '15.1%'} conversion rate
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
