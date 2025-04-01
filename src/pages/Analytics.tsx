@@ -49,6 +49,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { supabase } from '@/integrations/supabase/client';
 
 const generateDailyVisitorsData = (range) => {
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
@@ -224,6 +225,16 @@ export default function Analytics() {
   const [detailedVisitData, setDetailedVisitData] = useState([]);
   const [locationData, setLocationData] = useState([]);
   const [zipCodeData, setZipCodeData] = useState([]);
+  const [detailedLocationData, setDetailedLocationData] = useState([]);
+  const [detailedZipCodeData, setDetailedZipCodeData] = useState([]);
+  const [userLocationData, setUserLocationData] = useState({
+    latitude: null,
+    longitude: null,
+    city: 'Unknown',
+    region: 'Unknown',
+    country: 'Unknown',
+    ip: 'Unknown'
+  });
 
   useEffect(() => {
     setIsLoading(true);
@@ -253,6 +264,92 @@ export default function Analytics() {
       setLocationData(generateLocationData(timeRange));
       setZipCodeData(generateZipCodeData(timeRange));
       
+      setDetailedLocationData([
+        { 
+          city: 'Dallas', 
+          region: 'TX', 
+          visitors: timeRange === '7d' ? 245 : timeRange === '30d' ? 735 : 2205,
+          submissions: timeRange === '7d' ? 42 : timeRange === '30d' ? 126 : 378,
+          convRate: timeRange === '7d' ? '17.1%' : timeRange === '30d' ? '17.1%' : '17.1%',
+          avgTime: '4:32'
+        },
+        { 
+          city: 'Fort Worth', 
+          region: 'TX', 
+          visitors: timeRange === '7d' ? 185 : timeRange === '30d' ? 555 : 1665,
+          submissions: timeRange === '7d' ? 28 : timeRange === '30d' ? 84 : 252,
+          convRate: timeRange === '7d' ? '15.1%' : timeRange === '30d' ? '15.1%' : '15.1%',
+          avgTime: '4:05'
+        },
+        { 
+          city: 'Arlington', 
+          region: 'TX', 
+          visitors: timeRange === '7d' ? 135 : timeRange === '30d' ? 405 : 1215,
+          submissions: timeRange === '7d' ? 19 : timeRange === '30d' ? 57 : 171,
+          convRate: timeRange === '7d' ? '14.1%' : timeRange === '30d' ? '14.1%' : '14.1%',
+          avgTime: '3:48'
+        },
+        { 
+          city: 'Plano', 
+          region: 'TX', 
+          visitors: timeRange === '7d' ? 110 : timeRange === '30d' ? 330 : 990,
+          submissions: timeRange === '7d' ? 15 : timeRange === '30d' ? 45 : 135,
+          convRate: timeRange === '7d' ? '13.6%' : timeRange === '30d' ? '13.6%' : '13.6%',
+          avgTime: '3:52'
+        },
+        { 
+          city: 'Irving', 
+          region: 'TX', 
+          visitors: timeRange === '7d' ? 90 : timeRange === '30d' ? 270 : 810,
+          submissions: timeRange === '7d' ? 12 : timeRange === '30d' ? 36 : 108,
+          convRate: timeRange === '7d' ? '13.3%' : timeRange === '30d' ? '13.3%' : '13.3%',
+          avgTime: '3:25'
+        }
+      ]);
+
+      setDetailedZipCodeData([
+        { 
+          zipcode: '75001', 
+          city: 'Addison',
+          visitors: timeRange === '7d' ? 65 : timeRange === '30d' ? 195 : 585,
+          submissions: timeRange === '7d' ? 12 : timeRange === '30d' ? 36 : 108,
+          convRate: timeRange === '7d' ? '18.5%' : timeRange === '30d' ? '18.5%' : '18.5%',
+          avgTime: '4:42'
+        },
+        { 
+          zipcode: '75002', 
+          city: 'Allen',
+          visitors: timeRange === '7d' ? 55 : timeRange === '30d' ? 165 : 495,
+          submissions: timeRange === '7d' ? 9 : timeRange === '30d' ? 27 : 81,
+          convRate: timeRange === '7d' ? '16.4%' : timeRange === '30d' ? '16.4%' : '16.4%',
+          avgTime: '4:12'
+        },
+        { 
+          zipcode: '75006', 
+          city: 'Carrollton',
+          visitors: timeRange === '7d' ? 60 : timeRange === '30d' ? 180 : 540,
+          submissions: timeRange === '7d' ? 10 : timeRange === '30d' ? 30 : 90,
+          convRate: timeRange === '7d' ? '16.7%' : timeRange === '30d' ? '16.7%' : '16.7%',
+          avgTime: '4:18'
+        },
+        { 
+          zipcode: '75007', 
+          city: 'Carrollton',
+          visitors: timeRange === '7d' ? 70 : timeRange === '30d' ? 210 : 630,
+          submissions: timeRange === '7d' ? 13 : timeRange === '30d' ? 39 : 117,
+          convRate: timeRange === '7d' ? '18.6%' : timeRange === '30d' ? '18.6%' : '18.6%',
+          avgTime: '4:36'
+        },
+        { 
+          zipcode: '75019', 
+          city: 'Coppell',
+          visitors: timeRange === '7d' ? 50 : timeRange === '30d' ? 150 : 450,
+          submissions: timeRange === '7d' ? 8 : timeRange === '30d' ? 24 : 72,
+          convRate: timeRange === '7d' ? '16.0%' : timeRange === '30d' ? '16.0%' : '16.0%',
+          avgTime: '4:05'
+        }
+      ]);
+      
       setIsLoading(false);
     }, 800);
 
@@ -276,6 +373,54 @@ export default function Analytics() {
     link.click();
     document.body.removeChild(link);
   };
+
+  const trackUserLocation = async () => {
+    try {
+      const response = await fetch('https://ipapi.co/json/');
+      if (response.ok) {
+        const data = await response.json();
+        
+        setUserLocationData({
+          latitude: data.latitude,
+          longitude: data.longitude,
+          city: data.city || 'Unknown',
+          region: data.region || 'Unknown',
+          country: data.country_name || 'Unknown',
+          ip: data.ip || 'Unknown'
+        });
+        
+        if (data.city && data.postal) {
+          logLocationVisit(data.city, data.postal, data.region);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching location data:', error);
+    }
+  };
+
+  const logLocationVisit = async (city, zipCode, region) => {
+    try {
+      const { error } = await supabase
+        .from('analytics_location_visits')
+        .insert([
+          { 
+            city: city, 
+            zipcode: zipCode, 
+            region: region,
+            visit_date: new Date().toISOString().split('T')[0],
+            time_range: timeRange
+          }
+        ]);
+      
+      if (error) console.error('Error logging location visit:', error);
+    } catch (err) {
+      console.error('Failed to log location visit:', err);
+    }
+  };
+
+  useEffect(() => {
+    trackUserLocation();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -736,37 +881,109 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        <div className="mt-8">
-          <Card className="p-6 shadow-md">
-            <h2 className="text-xl font-medium text-gray-700 mb-2">Location Data</h2>
-            {isLoading ? (
-              <Skeleton className="h-10 w-20" />
-            ) : (
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-700 mb-2">Location Data</h3>
-                  <p className="text-sm text-gray-500 mt-2">Location data for the last 7 days</p>
-                </div>
-                <MapPin className="h-8 w-8 text-[#1A3174] opacity-80" />
-              </div>
-            )}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl text-[#1A3174]">Location Performance</CardTitle>
+              <CardDescription>Performance metrics by city</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-[300px] w-full" />
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>City</TableHead>
+                      <TableHead>Region</TableHead>
+                      <TableHead>Visitors</TableHead>
+                      <TableHead>Submissions</TableHead>
+                      <TableHead>Conv. Rate</TableHead>
+                      <TableHead>Avg Time</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {detailedLocationData.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{row.city}</TableCell>
+                        <TableCell>{row.region}</TableCell>
+                        <TableCell>{row.visitors}</TableCell>
+                        <TableCell>{row.submissions}</TableCell>
+                        <TableCell>{row.convRate}</TableCell>
+                        <TableCell>{row.avgTime}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
           </Card>
 
-          <Card className="p-6 shadow-md">
-            <h2 className="text-xl font-medium text-gray-700 mb-2">Zip Code Data</h2>
-            {isLoading ? (
-              <Skeleton className="h-10 w-20" />
-            ) : (
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-700 mb-2">Zip Code Data</h3>
-                  <p className="text-sm text-gray-500 mt-2">Zip code data for the last 7 days</p>
-                </div>
-                <CheckCircle className="h-8 w-8 text-[#1A3174] opacity-80" />
-              </div>
-            )}
+          <Card className="shadow-md">
+            <CardHeader>
+              <CardTitle className="text-xl text-[#1A3174]">ZIP Code Performance</CardTitle>
+              <CardDescription>Performance metrics by ZIP code</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-[300px] w-full" />
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ZIP Code</TableHead>
+                      <TableHead>City</TableHead>
+                      <TableHead>Visitors</TableHead>
+                      <TableHead>Submissions</TableHead>
+                      <TableHead>Conv. Rate</TableHead>
+                      <TableHead>Avg Time</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {detailedZipCodeData.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{row.zipcode}</TableCell>
+                        <TableCell>{row.city}</TableCell>
+                        <TableCell>{row.visitors}</TableCell>
+                        <TableCell>{row.submissions}</TableCell>
+                        <TableCell>{row.convRate}</TableCell>
+                        <TableCell>{row.avgTime}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
           </Card>
         </div>
+
+        <Card className="p-6 shadow-md mb-8">
+          <h2 className="text-xl font-medium text-[#1A3174] mb-4">Your Current Location</h2>
+          {isLoading ? (
+            <Skeleton className="h-20 w-full" />
+          ) : (
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center">
+                <MapPin className="h-5 w-5 text-[#1A3174] mr-2" />
+                <span className="font-medium">City:</span>
+                <span className="ml-2">{userLocationData.city}</span>
+              </div>
+              <div className="flex items-center">
+                <MapPin className="h-5 w-5 text-[#1A3174] mr-2" />
+                <span className="font-medium">Region:</span>
+                <span className="ml-2">{userLocationData.region}</span>
+              </div>
+              <div className="flex items-center">
+                <MapPin className="h-5 w-5 text-[#1A3174] mr-2" />
+                <span className="font-medium">Country:</span>
+                <span className="ml-2">{userLocationData.country}</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                *This information is collected anonymously for analytics purposes only and is not stored with any personally identifiable information.
+              </p>
+            </div>
+          )}
+        </Card>
       </div>
     </div>
   );
