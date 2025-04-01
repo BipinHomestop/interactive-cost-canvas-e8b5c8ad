@@ -23,7 +23,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { 
   ChartContainer, 
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 import { 
   AreaChart, 
   Area, 
@@ -48,7 +48,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 const generateDailyVisitorsData = (range) => {
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
@@ -704,4 +704,36 @@ export default function Analytics() {
 
         <div className="mt-8">
           <Card className="p-6 shadow-md">
-            <h2 className="text-xl font-medium text-gray-700 mb-
+            <h2 className="text-xl font-medium text-gray-700 mb-2">Location Data</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-700 mb-2">Location Data</h3>
+                  <p className="text-sm text-gray-500 mt-2">Location data for the last 7 days</p>
+                </div>
+                <MapPin className="h-8 w-8 text-[#1A3174] opacity-80" />
+              </div>
+            )}
+          </Card>
+
+          <Card className="p-6 shadow-md">
+            <h2 className="text-xl font-medium text-gray-700 mb-2">Zip Code Data</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-700 mb-2">Zip Code Data</h3>
+                  <p className="text-sm text-gray-500 mt-2">Zip code data for the last 7 days</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-[#1A3174] opacity-80" />
+              </div>
+            )}
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
