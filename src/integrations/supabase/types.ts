@@ -9,6 +9,54 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      analytics_location_visits: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string | null
+          id: string
+          ip_hash: string | null
+          latitude: number | null
+          longitude: number | null
+          page_visited: string | null
+          region: string | null
+          time_range: string | null
+          visit_date: string
+          visit_time: string
+          zipcode: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          page_visited?: string | null
+          region?: string | null
+          time_range?: string | null
+          visit_date?: string
+          visit_time?: string
+          zipcode?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          page_visited?: string | null
+          region?: string | null
+          time_range?: string | null
+          visit_date?: string
+          visit_time?: string
+          zipcode?: string | null
+        }
+        Relationships: []
+      }
       calculator_pricing_config: {
         Row: {
           config_key: string
