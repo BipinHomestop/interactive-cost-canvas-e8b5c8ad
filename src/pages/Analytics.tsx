@@ -106,11 +106,33 @@ const detailedVisitData = [
 
 // Custom colors for charts
 const COLORS = ['#1A3174', '#4C63B6', '#818CF8', '#A5B4FC', '#C7D2FE'];
+
+// Fixed chart config: Added dark theme values for each theme entry
 const CHART_CONFIG = {
-  visitors: { theme: { light: '#1A3174' } },
-  submissions: { theme: { light: '#38BDF8' } },
-  started: { theme: { light: '#4C63B6' } },
-  completed: { theme: { light: '#818CF8' } },
+  visitors: { 
+    theme: { 
+      light: '#1A3174',
+      dark: '#1A3174'
+    }
+  },
+  submissions: { 
+    theme: { 
+      light: '#38BDF8',
+      dark: '#38BDF8'
+    }
+  },
+  started: { 
+    theme: { 
+      light: '#4C63B6',
+      dark: '#4C63B6'
+    }
+  },
+  completed: { 
+    theme: { 
+      light: '#818CF8',
+      dark: '#818CF8'
+    }
+  },
 };
 
 // Analytics Dashboard for tracking key metrics
