@@ -449,6 +449,40 @@ export default function Analytics() {
             </div>
             <p className="text-sm text-gray-500 mt-2">Started to completed</p>
           </Card>
+
+          <Card className="p-6 shadow-md">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-medium text-gray-700 mb-2">Top Locations</h2>
+                {isLoading ? (
+                  <Skeleton className="h-10 w-40" />
+                ) : (
+                  <p className="text-xl font-bold text-[#1A3174]">
+                    {locationData.length > 0 ? locationData[0].name : "No data"}
+                  </p>
+                )}
+              </div>
+              <MapPin className="h-8 w-8 text-[#1A3174] opacity-80" />
+            </div>
+            <p className="text-sm text-gray-500 mt-2">Most active location</p>
+          </Card>
+
+          <Card className="p-6 shadow-md">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-medium text-gray-700 mb-2">Top Zip Code</h2>
+                {isLoading ? (
+                  <Skeleton className="h-10 w-20" />
+                ) : (
+                  <p className="text-xl font-bold text-[#1A3174]">
+                    {zipCodeData.length > 0 ? zipCodeData[0].name : "No data"}
+                  </p>
+                )}
+              </div>
+              <CheckCircle className="h-8 w-8 text-[#1A3174] opacity-80" />
+            </div>
+            <p className="text-sm text-gray-500 mt-2">Highest conversion zip</p>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
