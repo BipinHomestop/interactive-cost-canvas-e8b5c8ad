@@ -20,6 +20,35 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { 
+  ChartContainer, 
+  ChartTooltipContent,
+} from "@/components/ui/chart"
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer, 
+  BarChart as RechartsBarChart, 
+  Bar, 
+  PieChart as RechartsPieChart, 
+  Pie, 
+  Cell,
+  LineChart as RechartsLineChart,
+  Line,
+} from "recharts";
+import { 
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table"
 
 const generateDailyVisitorsData = (range) => {
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
@@ -675,163 +704,4 @@ export default function Analytics() {
 
         <div className="mt-8">
           <Card className="p-6 shadow-md">
-            <h2 className="text-xl font-medium text-gray-700 mb-4">Analytics Integration</h2>
-            <p className="text-gray-600 mb-4">
-              This dashboard currently displays simulated data. To view actual analytics:
-            </p>
-            <ol className="list-decimal pl-5 space-y-2 text-gray-600">
-              <li>Set up your Google Analytics property ID in the index.html file</li>
-              <li>Replace the placeholder G-YOUR_MEASUREMENT_ID with your actual GA4 Measurement ID</li>
-              <li>For more detailed analytics, consider connecting to the Google Analytics Data API</li>
-            </ol>
-            <div className="mt-6">
-              <Button
-                className="bg-[#1A3174] hover:bg-[#132355] text-white"
-                onClick={() => window.open('https://analytics.google.com/', '_blank')}
-              >
-                Open Google Analytics
-              </Button>
-            </div>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-xl text-[#1A3174]">City Performance</CardTitle>
-              <CardDescription>Visitors and conversions by city</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <Skeleton className="h-[300px] w-full" />
-              ) : (
-                <div className="h-[300px]">
-                  <ChartContainer config={CHART_CONFIG}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <RechartsBarChart data={locationData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip content={<ChartTooltipContent />} />
-                        <Legend />
-                        <Bar dataKey="visitors" name="Visitors" fill="var(--color-visitors)" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="submissions" name="Submissions" fill="var(--color-submissions)" radius={[4, 4, 0, 0]} />
-                      </RechartsBarChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-xl text-[#1A3174]">Top ZIP Codes</CardTitle>
-              <CardDescription>Performance metrics by ZIP code</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <Skeleton className="h-[300px] w-full" />
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ZIP Code</TableHead>
-                      <TableHead>Visitors</TableHead>
-                      <TableHead>Conv. Rate</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {zipCodeData.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{row.name}</TableCell>
-                        <TableCell>{row.visitors}</TableCell>
-                        <TableCell>{row.convRate}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="shadow-md mb-8">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-xl text-[#1A3174]">Service Area Coverage</CardTitle>
-              <CardDescription>Visitor distribution across service areas</CardDescription>
-            </div>
-            <MapPin className="h-6 w-6 text-[#1A3174]" />
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-700">Dallas-Fort Worth</h3>
-                  <span className="text-[#1A3174] font-bold">{timeRange === '7d' ? '64%' : timeRange === '30d' ? '68%' : '71%'}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-[#1A3174] h-2 rounded-full" style={{ width: timeRange === '7d' ? '64%' : timeRange === '30d' ? '68%' : '71%' }}></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Primary service area</p>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-700">Surrounding Counties</h3>
-                  <span className="text-[#4C63B6] font-bold">{timeRange === '7d' ? '27%' : timeRange === '30d' ? '24%' : '22%'}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-[#4C63B6] h-2 rounded-full" style={{ width: timeRange === '7d' ? '27%' : timeRange === '30d' ? '24%' : '22%' }}></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Secondary service area</p>
-              </div>
-              
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-700">Out of Service Area</h3>
-                  <span className="text-[#818CF8] font-bold">{timeRange === '7d' ? '9%' : timeRange === '30d' ? '8%' : '7%'}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-[#818CF8] h-2 rounded-full" style={{ width: timeRange === '7d' ? '9%' : timeRange === '30d' ? '8%' : '7%' }}></div>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Visitors outside coverage</p>
-              </div>
-            </div>
-            
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <h3 className="font-medium text-gray-700 mb-2">Location Coverage Insights</h3>
-              <ul className="space-y-2">
-                <li className="flex items-start gap-2">
-                  <div className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5">
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">75% of visitors</span> are from ZIP codes with service coverage
-                  </p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5">
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Conversion rate is {timeRange === '7d' ? '18%' : timeRange === '30d' ? '17%' : '16%'} higher</span> in primary service areas
-                  </p>
-                </li>
-                <li className="flex items-start gap-2">
-                  <div className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5">
-                    <CheckCircle className="h-5 w-5" />
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Top performing ZIP:</span> 75007 with {timeRange === '7d' ? '13.6%' : timeRange === '30d' ? '14.2%' : '15.1%'} conversion rate
-                  </p>
-                </li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
+            <h2 className="text-xl font-medium text-gray-700 mb-
