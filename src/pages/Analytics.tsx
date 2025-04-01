@@ -50,64 +50,108 @@ import {
   YAxis
 } from 'recharts';
 
-// Mock data for the charts
-const dailyVisitorsData = [
-  { name: 'Mon', visitors: 42 },
-  { name: 'Tue', visitors: 58 },
-  { name: 'Wed', visitors: 45 },
-  { name: 'Thu', visitors: 53 },
-  { name: 'Fri', visitors: 49 },
-  { name: 'Sat', visitors: 32 },
-  { name: 'Sun', visitors: 21 },
-];
+// Mock data generator functions
+const generateDailyVisitorsData = (range) => {
+  // Generate data for the past x days based on range
+  const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
+  const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  return Array.from({ length: Math.min(days, 7) }, (_, i) => {
+    const day = new Date();
+    day.setDate(day.getDate() - i);
+    const dayName = dayLabels[day.getDay()];
+    return {
+      name: dayName,
+      visitors: Math.floor(Math.random() * 40) + 20,
+    };
+  }).reverse();
+};
 
-const conversionFunnelData = [
-  { name: 'Visitors', value: 245 },
-  { name: 'Started Quote', value: 156 },
-  { name: 'Completed Form', value: 78 },
-  { name: 'Submissions', value: 42 },
-];
+const generateConversionFunnelData = (range) => {
+  // Multiplier based on range
+  const multiplier = range === '7d' ? 1 : range === '30d' ? 4 : 12;
+  
+  return [
+    { name: 'Visitors', value: Math.floor((Math.random() * 100) + 150) * multiplier },
+    { name: 'Started Quote', value: Math.floor((Math.random() * 60) + 70) * multiplier },
+    { name: 'Completed Form', value: Math.floor((Math.random() * 30) + 30) * multiplier },
+    { name: 'Submissions', value: Math.floor((Math.random() * 20) + 10) * multiplier },
+  ];
+};
 
-const popularPagesData = [
-  { name: 'Home', visits: 245 },
-  { name: 'Garage Finish', visits: 127 },
-  { name: 'Garage Size', visits: 102 },
-  { name: 'Stem Walls', visits: 87 },
-  { name: 'House Steps', visits: 64 },
-];
+const generatePopularPagesData = (range) => {
+  // Multiplier based on range
+  const multiplier = range === '7d' ? 1 : range === '30d' ? 4 : 12;
+  
+  return [
+    { name: 'Home', visits: Math.floor((Math.random() * 50) + 200) * multiplier },
+    { name: 'Garage Finish', visits: Math.floor((Math.random() * 30) + 100) * multiplier },
+    { name: 'Garage Size', visits: Math.floor((Math.random() * 20) + 80) * multiplier },
+    { name: 'Stem Walls', visits: Math.floor((Math.random() * 15) + 70) * multiplier },
+    { name: 'House Steps', visits: Math.floor((Math.random() * 10) + 50) * multiplier },
+  ];
+};
 
-const trafficSourceData = [
-  { name: 'Organic Search', value: 55 },
-  { name: 'Direct', value: 24 },
-  { name: 'Social Media', value: 12 },
-  { name: 'Referral', value: 9 },
-];
+const generateTrafficSourceData = () => {
+  // Traffic sources don't change much with time range
+  return [
+    { name: 'Organic Search', value: 55 },
+    { name: 'Direct', value: 24 },
+    { name: 'Social Media', value: 12 },
+    { name: 'Referral', value: 9 },
+  ];
+};
 
-const hourlyActivityData = Array.from({ length: 24 }, (_, i) => ({
-  hour: i,
-  visitors: Math.floor(Math.random() * 15) + (i > 7 && i < 22 ? 10 : 2),
-}));
+const generateHourlyActivityData = () => {
+  return Array.from({ length: 24 }, (_, i) => ({
+    hour: i,
+    visitors: Math.floor(Math.random() * 15) + (i > 7 && i < 22 ? 10 : 2),
+  }));
+};
 
-const monthlyTrendData = Array.from({ length: 12 }, (_, i) => ({
-  month: new Date(0, i).toLocaleString('default', { month: 'short' }),
-  visitors: Math.floor(Math.random() * 250) + 150,
-  submissions: Math.floor(Math.random() * 50) + 25,
-}));
+const generateMonthlyTrendData = (range) => {
+  // For monthly trend, show different number of months based on range
+  const months = range === '7d' ? 3 : range === '30d' ? 6 : 12;
+  
+  return Array.from({ length: months }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    return {
+      month: date.toLocaleString('default', { month: 'short' }),
+      visitors: Math.floor(Math.random() * 250) + 150,
+      submissions: Math.floor(Math.random() * 50) + 25,
+    };
+  }).reverse();
+};
 
-const detailedVisitData = [
-  { date: '2023-10-01', visitors: 38, submissions: 7, convRate: '18.4%', avgTime: '3:42' },
-  { date: '2023-10-02', visitors: 42, submissions: 8, convRate: '19.0%', avgTime: '4:12' },
-  { date: '2023-10-03', visitors: 45, submissions: 6, convRate: '13.3%', avgTime: '3:58' },
-  { date: '2023-10-04', visitors: 51, submissions: 9, convRate: '17.6%', avgTime: '4:35' },
-  { date: '2023-10-05', visitors: 49, submissions: 8, convRate: '16.3%', avgTime: '4:22' },
-  { date: '2023-10-06', visitors: 32, submissions: 5, convRate: '15.6%', avgTime: '3:45' },
-  { date: '2023-10-07', visitors: 28, submissions: 4, convRate: '14.3%', avgTime: '3:20' },
-];
+const generateDetailedVisitData = (range) => {
+  // Generate detailed visit data for the past x days
+  const days = range === '7d' ? 7 : range === '30d' ? 14 : 30;
+  
+  return Array.from({ length: days }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const visitors = Math.floor(Math.random() * 30) + 20;
+    const submissions = Math.floor(Math.random() * 8) + 2;
+    const convRate = ((submissions / visitors) * 100).toFixed(1) + '%';
+    const minutes = Math.floor(Math.random() * 3) + 2;
+    const seconds = Math.floor(Math.random() * 60);
+    const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+    
+    return {
+      date: date.toISOString().split('T')[0],
+      visitors,
+      submissions,
+      convRate,
+      avgTime,
+    };
+  }).reverse();
+};
 
 // Custom colors for charts
 const COLORS = ['#1A3174', '#4C63B6', '#818CF8', '#A5B4FC', '#C7D2FE'];
 
-// Fixed chart config: Added dark theme values for each theme entry
+// Chart config with both light and dark themes
 const CHART_CONFIG = {
   visitors: { 
     theme: { 
@@ -149,22 +193,47 @@ export default function Analytics() {
     mostPopularStep: '',
     completionRate: 0
   });
+  
+  // State for chart data
+  const [dailyVisitorsData, setDailyVisitorsData] = useState([]);
+  const [conversionFunnelData, setConversionFunnelData] = useState([]);
+  const [popularPagesData, setPopularPagesData] = useState([]);
+  const [trafficSourceData, setTrafficSourceData] = useState([]);
+  const [hourlyActivityData, setHourlyActivityData] = useState([]);
+  const [monthlyTrendData, setMonthlyTrendData] = useState([]);
+  const [detailedVisitData, setDetailedVisitData] = useState([]);
 
+  // Update data when time range changes
   useEffect(() => {
+    setIsLoading(true);
+    
     // Simulate loading analytics data
     const timeout = setTimeout(() => {
-      // This would normally be replaced with actual API calls to Google Analytics Data API
-      // For now, we'll use mock data
+      // Generate data based on selected time range
+      const visitors = timeRange === '7d' ? 85 : timeRange === '30d' ? 245 : 780;
+      const submissions = timeRange === '7d' ? 14 : timeRange === '30d' ? 42 : 132;
+      const convRate = ((submissions / visitors) * 100).toFixed(1);
+      
       setSummary({
-        totalVisitors: 245,
-        formSubmissions: 42,
-        conversionRate: 17.1,
-        avgTimeOnSite: 4.2,
+        totalVisitors: visitors,
+        formSubmissions: submissions,
+        conversionRate: parseFloat(convRate),
+        avgTimeOnSite: timeRange === '7d' ? 3.8 : timeRange === '30d' ? 4.2 : 4.5,
         mostPopularStep: 'Garage Finish Selection',
-        completionRate: 38.4
+        completionRate: timeRange === '7d' ? 35.2 : timeRange === '30d' ? 38.4 : 40.1
       });
+      
+      // Update chart data
+      setDailyVisitorsData(generateDailyVisitorsData(timeRange));
+      setConversionFunnelData(generateConversionFunnelData(timeRange));
+      setPopularPagesData(generatePopularPagesData(timeRange));
+      setTrafficSourceData(generateTrafficSourceData());
+      setHourlyActivityData(generateHourlyActivityData());
+      setMonthlyTrendData(generateMonthlyTrendData(timeRange));
+      setDetailedVisitData(generateDetailedVisitData(timeRange));
+      
       setIsLoading(false);
-    }, 1500);
+    }, 800);
 
     return () => clearTimeout(timeout);
   }, [timeRange]);
@@ -184,7 +253,7 @@ export default function Analytics() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "analytics_data.csv");
+    link.setAttribute("download", `analytics_data_${timeRange}.csv`);
     document.body.appendChild(link);
     
     // Trigger download
