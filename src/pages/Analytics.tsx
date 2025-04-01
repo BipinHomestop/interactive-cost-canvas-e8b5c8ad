@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { 
@@ -51,6 +50,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { supabase } from '@/integrations/supabase/client';
+import type { Tables } from '@/integrations/supabase/types';
 
 const generateDailyVisitorsData = (range) => {
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
@@ -401,11 +401,9 @@ export default function Analytics() {
 
   const logLocationVisit = async (city, zipCode, region) => {
     try {
-      // Use type assertion to bypass TypeScript checking
-      // This is a temporary solution until the types are properly updated
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('analytics_location_visits')
-        .insert([
+        .insert<Tables['analytics_location_visits']['Insert']>([
           { 
             city: city, 
             zipcode: zipCode, 
@@ -414,7 +412,7 @@ export default function Analytics() {
             time_range: timeRange
           }
         ]);
-      
+    
       if (error) console.error('Error logging location visit:', error);
     } catch (err) {
       console.error('Failed to log location visit:', err);
