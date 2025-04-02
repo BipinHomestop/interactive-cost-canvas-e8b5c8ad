@@ -650,11 +650,15 @@ export default function Analytics() {
         const seconds = Math.floor(Math.random() * 60);
         const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
         
+        // Ensure numeric types for zip data
+        const zipVisitors = typeof zip.visitors === 'number' ? zip.visitors : 0;
+        const zipSubmissions = typeof zip.submissions === 'number' ? zip.submissions : 0;
+        
         return {
           zipcode: zip.name,
           city: zipInfo.city || 'Unknown',
-          visitors: zip.visitors,
-          submissions: zip.submissions,
+          visitors: zipVisitors,
+          submissions: zipSubmissions,
           convRate: zip.convRate,
           avgTime
         };
