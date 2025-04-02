@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
 const AnalyticsTracker = () => {
   const location = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Track page view on route change
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'page_view', {
@@ -41,25 +41,23 @@ const AnalyticsTracker = () => {
 
 function App() {
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter basename="/">
-          <TooltipProvider>
-            <AnalyticsTracker />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/step/:stepNumber" element={<Index />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/analytics" element={<Analytics />} />
-              {/* Redirect any other routes to the home page */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-            <Toaster />
-            <Sonner />
-          </TooltipProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter basename="/">
+        <TooltipProvider>
+          <AnalyticsTracker />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/step/:stepNumber" element={<Index />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/analytics" element={<Analytics />} />
+            {/* Redirect any other routes to the home page */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <Toaster />
+          <Sonner />
+        </TooltipProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

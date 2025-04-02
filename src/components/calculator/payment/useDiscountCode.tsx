@@ -45,7 +45,7 @@ export function useDiscountCode(totalCost: number) {
     setIsLoading(true);
     
     try {
-      // Use a more generic approach to query the discount_codes table
+      // Query the discount_codes table
       const { data, error } = await supabase
         .from('discount_codes')
         .select('*')
@@ -66,19 +66,27 @@ export function useDiscountCode(totalCost: number) {
         return;
       }
       
-      // Safely cast data to DiscountCode using a type assertion with unknown as intermediate step
-      const discountCode = data as unknown as DiscountCode;
+      // Check if the coupon has expired
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        toast({
+          title: "Expired Coupon",
+          description: "This coupon code has expired",
+          variant: "destructive",
+        });
+        setDiscountPercentage(0);
+        return;
+      }
       
       // Apply the discount
-      setDiscountPercentage(discountCode.discount_percentage);
+      setDiscountPercentage(data.discount_percentage);
       
       // Save to session storage
-      sessionStorage.setItem('cachedDiscountPercentage', discountCode.discount_percentage.toString());
+      sessionStorage.setItem('cachedDiscountPercentage', data.discount_percentage.toString());
       sessionStorage.setItem('cachedCouponCode', couponCode);
       
       toast({
         title: "Coupon Applied",
-        description: `${discountCode.discount_percentage}% discount applied to your order`,
+        description: `${data.discount_percentage}% discount applied to your order`,
         className: "bg-green-500 text-white border-none",
       });
       
