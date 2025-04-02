@@ -32,6 +32,11 @@ export const useAnalyticsData = (timeRange: string) => {
   const [zipCodeData, setZipCodeData] = useState([]);
   const [detailedLocationData, setDetailedLocationData] = useState([]);
   const [detailedZipCodeData, setDetailedZipCodeData] = useState([]);
+  const [weeklyHeatMapData, setWeeklyHeatMapData] = useState([]);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [timeRange]);
 
   const fetchAnalyticsData = async () => {
     try {
@@ -72,21 +77,6 @@ export const useAnalyticsData = (timeRange: string) => {
     }
   };
 
-  const getStartDateFromRange = (range: string) => {
-    const today = new Date();
-    let startDate = new Date();
-    
-    if (range === '7d') {
-      startDate.setDate(today.getDate() - 7);
-    } else if (range === '30d') {
-      startDate.setDate(today.getDate() - 30);
-    } else if (range === '90d') {
-      startDate.setDate(today.getDate() - 90);
-    }
-    
-    return startOfDay(startDate);
-  };
-
   const processAnalyticsData = (visits: any[], submissions: any[]) => {
     if (!visits || visits.length === 0) {
       toast.warning('No analytics data available for the selected period');
@@ -119,6 +109,9 @@ export const useAnalyticsData = (timeRange: string) => {
     setDetailedVisitData(processDetailedVisitData(visits, submissions));
     
     processLocationData(visits, submissions);
+
+    // Process weekly heat map data
+    setWeeklyHeatMapData(processWeeklyHeatMapData(visits));
   };
 
   const resetDataStates = () => {
@@ -586,13 +579,9 @@ export const useAnalyticsData = (timeRange: string) => {
     
     Object.values(ipSessions).forEach((times: any[]) => {
       if (times.length > 1) {
-        // Sort chronologically
         times.sort((a, b) => a.getTime() - b.getTime());
-        
-        // Calculate duration in minutes
         const duration = (times[times.length - 1].getTime() - times[0].getTime()) / 60000;
         
-        // Only count reasonable durations
         if (duration > 0 && duration < 120) {
           totalMinutes += duration;
           sessionCount++;
@@ -799,7 +788,6 @@ export const useAnalyticsData = (timeRange: string) => {
     return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   };
 
-  // Add new function to process weekly heat map data
   const processWeeklyHeatMapData = (visits: any[]) => {
     const heatMapData = Array(7).fill(0).map((_, dayIndex) => ({
       day: format(new Date(2023, 0, dayIndex + 1), 'EEEE'), // Use a consistent date to get day names
@@ -843,7 +831,7 @@ export const useAnalyticsData = (timeRange: string) => {
     csvContent += "Date,Visitors,Submissions,Conversion Rate,Avg Time\n";
     
     detailedVisitData.forEach(row => {
-      csvContent += `${row.date},${row.visitors},${row.submissions},${row.convRate},${row.avgTime}\n";
+      csvContent += `${row.date},${row.visitors},${row.submissions},${row.convRate},${row.avgTime}\n`;
     });
     
     const encodedUri = encodeURI(csvContent);
@@ -864,4 +852,46 @@ export const useAnalyticsData = (timeRange: string) => {
       csvContent += `"${row.page}",${row.visits},${row.percentage},"${row.avgTimeOnPage}","${row.firstVisit}","${row.lastVisit}"\n`;
     });
     
-    const encodedUri = encodeURI(
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `page_visits_${timeRange}.csv`);
+    document.body.appendChild(link);
+    
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return {
+    isLoading,
+    summary,
+    dailyVisitorsData,
+    conversionFunnelData,
+    popularPagesData,
+    pageVisitDetails,
+    hourlyActivityData,
+    monthlyTrendData,
+    detailedVisitData,
+    locationData,
+    detailedLocationData,
+    detailedZipCodeData,
+    weeklyHeatMapData,
+    downloadCSV,
+    downloadPageVisitCSV
+  };
+};
+
+const getStartDateFromRange = (range: string) => {
+  const today = new Date();
+  let startDate = new Date();
+  
+  if (range === '7d') {
+    startDate.setDate(today.getDate() - 7);
+  } else if (range === '30d') {
+    startDate.setDate(today.getDate() - 30);
+  } else if (range === '90d') {
+    startDate.setDate(today.getDate() - 90);
+  }
+  
+  return startOfDay(startDate);
+};
