@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
@@ -10,7 +9,7 @@ import {
   PopularPagesChart, 
   MonthlyPerformanceChart,
   HourlyActivityChart
-} from '@/components/analytics/AnalyticsCharts';
+} from '@/components/analytics/charts';
 import { 
   PageVisitTable, 
   DailyPerformanceTable,
