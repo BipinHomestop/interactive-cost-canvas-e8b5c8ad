@@ -1,6 +1,6 @@
 
 import { useCallback } from 'react';
-import { processLocationData } from '../../utils/location-utils';
+import { processLocationData } from '../../utils/location/processor';
 
 type UseLocationProcessingProps = {
   setLocationData: React.Dispatch<React.SetStateAction<any[]>>;
