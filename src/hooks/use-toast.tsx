@@ -7,6 +7,8 @@ type ToastProps = {
   description?: string
   action?: React.ReactNode
   variant?: "default" | "destructive"
+  open?: boolean
+  className?: string
 }
 
 const TOAST_LIMIT = 5
@@ -14,10 +16,7 @@ const TOAST_REMOVE_DELAY = 5000
 
 type ToasterToast = ToastProps & {
   id: string
-  title?: string
-  description?: string
-  action?: React.ReactNode
-  variant?: "default" | "destructive"
+  open?: boolean
 }
 
 const actionTypes = {
@@ -123,10 +122,10 @@ const reducer = (state: State, action: Action): State => {
 
 const ToastContext = React.createContext<{
   toasts: ToasterToast[]
-  addToast: (props: Omit<ToasterToast, "id" | "open">) => void
+  addToast: (props: Omit<ToasterToast, "id">) => void
   updateToast: (
     id: string,
-    props: Partial<Omit<ToasterToast, "id" | "open">>
+    props: Partial<Omit<ToasterToast, "id">>
   ) => void
   dismissToast: (toastId?: string) => void
   removeToast: (toastId?: string) => void
@@ -170,7 +169,7 @@ export function ToastProvider({
   }, [state.toasts])
 
   const addToast = React.useCallback(
-    (props: Omit<ToasterToast, "id" | "open">) => {
+    (props: Omit<ToasterToast, "id">) => {
       const id = genId()
 
       dispatch({
@@ -190,7 +189,7 @@ export function ToastProvider({
   const updateToast = React.useCallback(
     (
       id: string,
-      props: Partial<Omit<ToasterToast, "id" | "open">>
+      props: Partial<Omit<ToasterToast, "id">>
     ) => {
       dispatch({
         type: "UPDATE_TOAST",
@@ -238,13 +237,14 @@ export function ToastProvider({
   )
 }
 
+// Global toast context hook
 export function useToast() {
   const { toasts, addToast, updateToast, dismissToast, removeToast } =
     React.useContext(ToastContext)
 
   return {
     toasts,
-    toast: (props: Omit<ToasterToast, "id" | "open">) => {
+    toast: (props: Omit<ToasterToast, "id">) => {
       return addToast(props)
     },
     update: (id: string, props: Partial<ToasterToast>) => {
@@ -255,24 +255,36 @@ export function useToast() {
   }
 }
 
+// Simple toast utility that doesn't use require
+let toastInstance: ReturnType<typeof useToast> | null = null;
+
+// Helper to set the toast instance (will be called by the Toaster component)
+export function setToastInstance(instance: ReturnType<typeof useToast>) {
+  toastInstance = instance;
+}
+
 // Export a simple toast function for easier use
 export const toast = {
   success: (opts: { title?: string; description?: string }) => {
-    const { useToast: internalUseToast } = require("@/components/ui/use-toast");
-    const { toast } = internalUseToast();
-    toast({
-      title: opts.title,
-      description: opts.description,
-      variant: "default",
-    });
+    if (toastInstance) {
+      toastInstance.toast({
+        title: opts.title,
+        description: opts.description,
+        variant: "default",
+      });
+    } else {
+      console.warn("Toast instance not initialized. Make sure the Toaster component is mounted.");
+    }
   },
   error: (opts: { title?: string; description?: string }) => {
-    const { useToast: internalUseToast } = require("@/components/ui/use-toast");
-    const { toast } = internalUseToast();
-    toast({
-      title: opts.title,
-      description: opts.description,
-      variant: "destructive",
-    });
+    if (toastInstance) {
+      toastInstance.toast({
+        title: opts.title,
+        description: opts.description,
+        variant: "destructive",
+      });
+    } else {
+      console.warn("Toast instance not initialized. Make sure the Toaster component is mounted.");
+    }
   }
 };
