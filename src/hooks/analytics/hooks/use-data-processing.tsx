@@ -1,21 +1,11 @@
+
 import { useCallback } from 'react';
-import { calculateAverageTimeOnSite } from '../utils/date-utils';
-import { processLocationData } from '../utils/location-utils';
 import { 
-  determineMostPopularPage,
-  calculateCompletionRate,
-  processDailyVisitorsData,
-  processConversionFunnelData,
-  processPopularPagesData,
-  processPageVisitDetails,
-  processHourlyActivityData,
-  processMonthlyTrendData,
-  processDetailedVisitData,
-  processWeeklyHeatMapData,
-  countSubmissionsByStatus,
-  processMonthlySubmissionData,
-  processDetailedSubmissionData
-} from '../utils/processors';
+  useSummaryProcessing,
+  useVisitorProcessing,
+  useConversionProcessing,
+  useLocationProcessing
+} from './data-processing';
 
 type UseDataProcessingProps = {
   timeRange: string;
@@ -59,6 +49,35 @@ export const useDataProcessing = ({
   setDetailedZipCodeData,
   setWeeklyHeatMapData
 }: UseDataProcessingProps) => {
+  // Use individual processing hooks
+  const { processSummaryData } = useSummaryProcessing({ timeRange, setSummary });
+  
+  const { 
+    processVisitorData, 
+    processVisitorDataFromSubmissions 
+  } = useVisitorProcessing({
+    timeRange,
+    setDailyVisitorsData,
+    setPopularPagesData,
+    setPageVisitDetails,
+    setHourlyActivityData,
+    setWeeklyHeatMapData
+  });
+  
+  const { processConversionData } = useConversionProcessing({
+    timeRange,
+    setConversionFunnelData,
+    setMonthlyTrendData,
+    setDetailedVisitData
+  });
+  
+  const { processLocationDataHook } = useLocationProcessing({
+    setLocationData,
+    setZipCodeData,
+    setDetailedLocationData,
+    setDetailedZipCodeData
+  });
+
   const processAnalyticsData = useCallback((visits: any[], submissions: any[]) => {
     const hasVisits = visits && visits.length > 0;
     const hasSubmissions = submissions && submissions.length > 0;
@@ -77,112 +96,25 @@ export const useDataProcessing = ({
       return;
     }
 
-    const { complete, partial } = countSubmissionsByStatus(submissions);
+    // Process analytics data by categories
+    processSummaryData(visits, submissions);
     
-    // Use actual visit data or fallback to submissions if no visitor data available
-    const totalVisitors = hasVisits ? visits.length : Math.max(complete + partial, 0);
-    const conversionRate = totalVisitors > 0 ? (complete / totalVisitors) * 100 : 0;
-    const totalSubmissions = complete + partial;
-    
-    const avgTimeOnSite = hasVisits ? calculateAverageTimeOnSite(visits, timeRange) : 0;
-    
-    // Determine popular pages from visits or fallback
-    let mostPopularStep = 'No data';
     if (hasVisits) {
-      mostPopularStep = determineMostPopularPage(visits);
+      processVisitorData(visits);
+      processConversionData(visits, submissions);
+      processLocationDataHook(visits, submissions);
     } else if (hasSubmissions) {
-      mostPopularStep = 'Contact Information'; // Fallback to most common submission step
+      // Use submission data when no visit data is available
+      processVisitorDataFromSubmissions(submissions);
+      processConversionData([], submissions);
     }
-    
-    setSummary({
-      totalVisitors,
-      completeSubmissions: complete,
-      partialSubmissions: partial,
-      conversionRate: parseFloat(conversionRate.toFixed(1)),
-      avgTimeOnSite,
-      mostPopularStep,
-      completionRate: hasVisits && hasSubmissions ? calculateCompletionRate(submissions, visits) : 0,
-      formSubmissions: totalSubmissions
-    });
-
-    if (hasVisits) {
-      setDailyVisitorsData(processDailyVisitorsData(visits, timeRange));
-      setPopularPagesData(processPopularPagesData(visits));
-      setPageVisitDetails(processPageVisitDetails(visits));
-      setHourlyActivityData(processHourlyActivityData(visits));
-      setWeeklyHeatMapData(processWeeklyHeatMapData(visits));
-      
-      setConversionFunnelData(processConversionFunnelData(visits, submissions));
-      setMonthlyTrendData(processMonthlyTrendData(visits, submissions, timeRange));
-      setDetailedVisitData(processDetailedVisitData(visits, submissions, timeRange));
-      
-      processLocationData(
-        visits, 
-        submissions, 
-        setLocationData, 
-        setZipCodeData, 
-        setDetailedLocationData, 
-        setDetailedZipCodeData
-      );
-    } else {
-      // Fallback data when no visits but we have submissions
-      const emptyVisitorData = hasSubmissions ? 
-        submissions.map(sub => ({
-          visit_date: sub.created_at ? sub.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
-          visit_time: sub.created_at ? sub.created_at.split('T')[1].substring(0, 8) : new Date().toTimeString().split(' ')[0],
-          city: sub.city || 'Unknown',
-          region: sub.state || 'Unknown',
-          country: 'United States',
-          page_visited: 'contact'
-        })) : [];
-      
-      if (hasSubmissions && emptyVisitorData.length > 0) {
-        // Use submission data to generate visitor data
-        setDailyVisitorsData(processDailyVisitorsData(emptyVisitorData, timeRange));
-        setPopularPagesData([{ name: 'Contact Information', visits: submissions.length }]);
-        setPageVisitDetails([{
-          page: 'Contact Information',
-          visits: submissions.length,
-          percentage: '100%',
-          avgTimeOnPage: '2:30',
-          firstVisit: emptyVisitorData[0].visit_date,
-          lastVisit: emptyVisitorData[emptyVisitorData.length - 1].visit_date
-        }]);
-        setHourlyActivityData(processHourlyActivityData(emptyVisitorData));
-        setWeeklyHeatMapData(processWeeklyHeatMapData(emptyVisitorData));
-      } else {
-        // No data at all
-        setDailyVisitorsData([]);
-        setPopularPagesData([{ name: 'No visit data available', visits: 0 }]);
-        setPageVisitDetails([]);
-        setHourlyActivityData([]);
-        setWeeklyHeatMapData([]);
-      }
-      
-      setConversionFunnelData([
-        { name: 'Visitors', value: totalVisitors },
-        { name: 'Started Quote', value: partial + complete },
-        { name: 'Completed Form', value: complete },
-        { name: 'Submissions', value: totalSubmissions }
-      ]);
-      
-      if (hasSubmissions) {
-        const monthlyData = processMonthlySubmissionData(submissions, timeRange);
-        setMonthlyTrendData(monthlyData);
-        setDetailedVisitData(processDetailedSubmissionData(submissions, timeRange));
-      } else {
-        setMonthlyTrendData([]);
-        setDetailedVisitData([]);
-      }
-      
-      setLocationData([]);
-      setZipCodeData([]);
-      setDetailedLocationData([]);
-      setDetailedZipCodeData([]);
-    }
-  }, [timeRange, setSummary, setDailyVisitorsData, setConversionFunnelData, setPopularPagesData, 
-      setPageVisitDetails, setHourlyActivityData, setMonthlyTrendData, setDetailedVisitData,
-      setLocationData, setZipCodeData, setDetailedLocationData, setDetailedZipCodeData, setWeeklyHeatMapData]);
+  }, [
+    processSummaryData, 
+    processVisitorData, 
+    processVisitorDataFromSubmissions,
+    processConversionData, 
+    processLocationDataHook
+  ]);
 
   const resetDataStates = useCallback(() => {
     setSummary({
