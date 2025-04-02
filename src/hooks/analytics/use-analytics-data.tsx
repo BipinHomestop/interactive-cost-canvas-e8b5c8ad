@@ -246,7 +246,7 @@ export const useAnalyticsData = (timeRange: string) => {
     const uniqueVisitorCount = uniqueVisitors.size;
     
     // Count pages visited per IP hash
-    const pagesVisitedByIP = {};
+    const pagesVisitedByIP: Record<string, Set<string>> = {};
     visits.forEach(visit => {
       if (visit.ip_hash && visit.page_visited) {
         if (!pagesVisitedByIP[visit.ip_hash]) {
@@ -258,7 +258,7 @@ export const useAnalyticsData = (timeRange: string) => {
     
     // Count IPs that started the form (visited at least 2 pages)
     let startedCount = 0;
-    Object.values(pagesVisitedByIP).forEach((pageSet: any) => {
+    Object.values(pagesVisitedByIP).forEach((pageSet) => {
       if (pageSet.size >= 2) {
         startedCount++;
       }
