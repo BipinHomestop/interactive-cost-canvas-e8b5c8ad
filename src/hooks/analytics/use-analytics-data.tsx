@@ -1,10 +1,9 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Import utility functions
-import { getStartDateFromRange, calculateAverageTimeOnSite } from './utils/date-utils';
+import { getStartDateFromRange, getEndDateFromRange, calculateAverageTimeOnSite } from './utils/date-utils';
 import { downloadDetailedVisitCSV, downloadPageVisitCSV } from './utils/csv-export';
 import { processLocationData } from './utils/location-utils';
 import { 
@@ -48,16 +47,27 @@ export const useAnalyticsData = (timeRange: string) => {
     try {
       console.log('Fetching analytics data for time range:', timeRange);
       setIsLoading(true);
+      
       const startDate = getStartDateFromRange(timeRange);
+      const endDate = getEndDateFromRange(timeRange);
+      
       const startDateString = startDate.toISOString().split('T')[0];
+      const endDateString = endDate.toISOString().split('T')[0];
       
-      console.log('Start date for query:', startDateString);
+      console.log(`Date range for query: ${startDateString} to ${endDateString}`);
       
-      // Fetch location visits
-      const { data: locationVisits, error: locationError } = await supabase
+      // Fetch location visits with date range filter
+      let query = supabase
         .from('analytics_location_visits')
         .select('*')
         .gte('visit_date', startDateString);
+      
+      // Only add less than filter for custom range
+      if (timeRange.includes(':')) {
+        query = query.lte('visit_date', endDateString);
+      }
+      
+      const { data: locationVisits, error: locationError } = await query;
       
       if (locationError) {
         console.error('Error fetching location data:', locationError);
@@ -67,11 +77,20 @@ export const useAnalyticsData = (timeRange: string) => {
 
       console.log('Retrieved location visits:', locationVisits?.length || 0);
 
-      // Fetch form submissions
-      const { data: submissions, error: submissionsError } = await supabase
+      // Fetch form submissions with date range filter
+      let submissionsQuery = supabase
         .from('cost_calculator_submissions')
         .select('*')
         .gte('created_at', startDate.toISOString());
+      
+      // Only add less than filter for custom range
+      if (timeRange.includes(':')) {
+        const nextDay = new Date(endDate);
+        nextDay.setDate(nextDay.getDate() + 1); // Add a day to include the end date
+        submissionsQuery = submissionsQuery.lt('created_at', nextDay.toISOString());
+      }
+      
+      const { data: submissions, error: submissionsError } = await submissionsQuery;
 
       if (submissionsError) {
         console.error('Error fetching submissions data:', submissionsError);

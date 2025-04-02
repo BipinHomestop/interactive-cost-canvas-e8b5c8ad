@@ -1,166 +1,172 @@
 
-import { 
-  startOfDay, 
-  differenceInDays, 
-  subDays,
-  format,
-  isBefore
-} from 'date-fns';
+import { format, subDays, subMonths } from 'date-fns';
 
 /**
- * Returns the start date based on the specified time range
+ * Calculate the start date based on time range
  */
-export const getStartDateFromRange = (range: string): Date => {
+export const getStartDateFromRange = (timeRange: string): Date => {
   const today = new Date();
-  let startDate = new Date();
   
-  if (range === '7d') {
-    startDate.setDate(today.getDate() - 7);
-  } else if (range === '30d') {
-    startDate.setDate(today.getDate() - 30);
-  } else if (range === '90d') {
-    startDate.setDate(today.getDate() - 90);
+  // Check if it's a custom date range
+  if (timeRange.includes(':')) {
+    const [startDateStr] = timeRange.split(':');
+    return new Date(startDateStr);
   }
   
-  return startOfDay(startDate);
+  // Standard ranges
+  switch (timeRange) {
+    case '7d':
+      return subDays(today, 7);
+    case '30d':
+      return subDays(today, 30);
+    case '90d':
+      return subDays(today, 90);
+    default:
+      return subDays(today, 30); // default to 30 days
+  }
 };
 
 /**
- * Calculates the average time spent for a group of visits
+ * Calculate the end date based on time range
+ * Only needed for custom ranges, otherwise it's today
+ */
+export const getEndDateFromRange = (timeRange: string): Date => {
+  // Check if it's a custom date range
+  if (timeRange.includes(':')) {
+    const [, endDateStr] = timeRange.split(':');
+    return new Date(endDateStr);
+  }
+  
+  // For standard ranges, end date is today
+  return new Date();
+};
+
+/**
+ * Calculate average time on site
  */
 export const calculateAverageTimeOnSite = (visits: any[], timeRange: string): number => {
-  // Group visits by IP hash to find sessions
-  const sessions: Record<string, Date[]> = {};
-  visits.forEach(visit => {
-    if (visit.ip_hash) {
-      if (!sessions[visit.ip_hash]) {
-        sessions[visit.ip_hash] = [];
-      }
-      
-      // Add visit date and time to the session
-      if (visit.visit_date && visit.visit_time) {
-        const visitDateTime = `${visit.visit_date}T${visit.visit_time}`;
-        sessions[visit.ip_hash].push(new Date(visitDateTime));
-      }
-    }
+  // Group by IP hash to find session duration
+  const sessionsByIP: Record<string, { visits: any[], totalTimeSeconds: number }> = {};
+  
+  // Sort visits by date and time
+  const sortedVisits = [...visits].sort((a, b) => {
+    const aDateTime = new Date(`${a.visit_date}T${a.visit_time || '00:00:00'}`);
+    const bDateTime = new Date(`${b.visit_date}T${b.visit_time || '00:00:00'}`);
+    return aDateTime.getTime() - bDateTime.getTime();
   });
   
-  // Calculate session durations
-  let totalDuration = 0;
+  // Group visits by IP hash
+  sortedVisits.forEach((visit) => {
+    if (!visit.ip_hash) return;
+    
+    if (!sessionsByIP[visit.ip_hash]) {
+      sessionsByIP[visit.ip_hash] = {
+        visits: [],
+        totalTimeSeconds: 0
+      };
+    }
+    
+    sessionsByIP[visit.ip_hash].visits.push(visit);
+  });
+  
+  // Calculate session times for each IP
+  let totalSessionTime = 0;
   let sessionCount = 0;
   
-  Object.values(sessions).forEach((sessionTimes: Date[]) => {
-    if (sessionTimes.length > 1) {
-      // Sort times chronologically
-      sessionTimes.sort((a, b) => a.getTime() - b.getTime());
-      
-      // Calculate duration in minutes
-      const sessionDuration = (sessionTimes[sessionTimes.length - 1].getTime() - sessionTimes[0].getTime()) / 60000;
-      
-      // Only count reasonable session durations (less than 2 hours)
-      if (sessionDuration > 0 && sessionDuration < 120) {
-        totalDuration += sessionDuration;
-        sessionCount++;
-      }
+  Object.values(sessionsByIP).forEach(({ visits }) => {
+    if (visits.length < 2) return; // Need at least 2 visits to calculate time
+    
+    const firstVisit = visits[0];
+    const lastVisit = visits[visits.length - 1];
+    
+    const firstDateTime = new Date(`${firstVisit.visit_date}T${firstVisit.visit_time || '00:00:00'}`);
+    const lastDateTime = new Date(`${lastVisit.visit_date}T${lastVisit.visit_time || '00:00:00'}`);
+    
+    const sessionDuration = (lastDateTime.getTime() - firstDateTime.getTime()) / 1000;
+    
+    // Only count sessions less than 1 hour to avoid skewing data
+    if (sessionDuration > 0 && sessionDuration < 3600) {
+      totalSessionTime += sessionDuration;
+      sessionCount++;
     }
   });
   
-  // If we have valid sessions, return the average duration, otherwise estimate
-  if (sessionCount > 0) {
-    return parseFloat((totalDuration / sessionCount).toFixed(1));
-  }
-  
-  // Fallback if we can't calculate directly
-  return timeRange === '7d' ? 2.2 : timeRange === '30d' ? 2.5 : 2.8;
+  // Calculate average in minutes
+  const avgSeconds = sessionCount > 0 ? totalSessionTime / sessionCount : 0;
+  return Math.round(avgSeconds / 60); // Return in minutes
 };
 
 /**
- * Calculates the average time spent on site for a specific day
+ * Calculate daily average time 
  */
-export const calculateDailyAvgTime = (dayVisits: any[]): string => {
-  // Group visits by IP hash for this day
-  const ipSessions: Record<string, Date[]> = {};
+export const calculateDailyAvgTime = (visits: any[]): string => {
+  // Group by IP hash to find session duration
+  const sessionsByIP: Record<string, { visits: any[], totalTimeSeconds: number }> = {};
   
-  dayVisits.forEach(visit => {
-    if (visit.ip_hash && visit.visit_time) {
-      if (!ipSessions[visit.ip_hash]) {
-        ipSessions[visit.ip_hash] = [];
-      }
-      
-      const visitDateTime = new Date(`${visit.visit_date}T${visit.visit_time}`);
-      ipSessions[visit.ip_hash].push(visitDateTime);
-    }
+  // Sort visits by time
+  const sortedVisits = [...visits].sort((a, b) => {
+    const aTime = a.visit_time || '00:00:00';
+    const bTime = b.visit_time || '00:00:00';
+    return aTime.localeCompare(bTime);
   });
   
-  // Calculate session durations
-  let totalMinutes = 0;
+  // Group visits by IP hash
+  sortedVisits.forEach((visit) => {
+    if (!visit.ip_hash) return;
+    
+    if (!sessionsByIP[visit.ip_hash]) {
+      sessionsByIP[visit.ip_hash] = {
+        visits: [],
+        totalTimeSeconds: 0
+      };
+    }
+    
+    sessionsByIP[visit.ip_hash].visits.push(visit);
+  });
+  
+  // Calculate session times for each IP
+  let totalSessionTime = 0;
   let sessionCount = 0;
   
-  Object.values(ipSessions).forEach((times: Date[]) => {
-    if (times.length > 1) {
-      times.sort((a, b) => a.getTime() - b.getTime());
-      const duration = (times[times.length - 1].getTime() - times[0].getTime()) / 60000;
-      
-      if (duration > 0 && duration < 120) {
-        totalMinutes += duration;
-        sessionCount++;
-      }
+  Object.values(sessionsByIP).forEach(({ visits }) => {
+    if (visits.length < 2) return; // Need at least 2 visits to calculate time
+    
+    const firstVisit = visits[0];
+    const lastVisit = visits[visits.length - 1];
+    
+    const firstTime = firstVisit.visit_time || '00:00:00';
+    const lastTime = lastVisit.visit_time || '00:00:00';
+    
+    const [firstHour, firstMin, firstSec] = firstTime.split(':').map(Number);
+    const [lastHour, lastMin, lastSec] = lastTime.split(':').map(Number);
+    
+    const firstTotalSecs = firstHour * 3600 + firstMin * 60 + firstSec;
+    const lastTotalSecs = lastHour * 3600 + lastMin * 60 + lastSec;
+    
+    let sessionDuration = lastTotalSecs - firstTotalSecs;
+    if (sessionDuration < 0) sessionDuration += 24 * 3600; // Handle midnight crossing
+    
+    // Only count sessions less than 1 hour to avoid skewing data
+    if (sessionDuration > 0 && sessionDuration < 3600) {
+      totalSessionTime += sessionDuration;
+      sessionCount++;
     }
   });
   
-  if (sessionCount > 0) {
-    const avgMinutes = Math.floor(totalMinutes / sessionCount);
-    const avgSeconds = Math.floor(((totalMinutes / sessionCount) % 1) * 60);
-    return `${avgMinutes}:${avgSeconds < 10 ? '0' + avgSeconds : avgSeconds}`;
-  }
+  // Format time
+  const avgSeconds = sessionCount > 0 ? totalSessionTime / sessionCount : 0;
+  const minutes = Math.floor(avgSeconds / 60);
+  const seconds = Math.floor(avgSeconds % 60);
   
-  // Fallback to reasonable estimation
-  const minutes = Math.floor(Math.random() * 2) + 2;
-  const seconds = Math.floor(Math.random() * 60);
   return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 };
 
 /**
- * Calculate time spent for a specific location group
+ * Calculate time for location group
  */
-export const calculateTimeForLocationGroup = (groupVisits: any[]): string => {
-  // Group by IP hash
-  const sessions: Record<string, Date[]> = {};
-  groupVisits.forEach(visit => {
-    if (visit.ip_hash && visit.visit_date && visit.visit_time) {
-      if (!sessions[visit.ip_hash]) {
-        sessions[visit.ip_hash] = [];
-      }
-      
-      const visitDateTime = new Date(`${visit.visit_date}T${visit.visit_time}`);
-      sessions[visit.ip_hash].push(visitDateTime);
-    }
-  });
+export const calculateTimeForLocationGroup = (visits: any[], locationKey: string, locationValue: string): string => {
+  // Filter visits for this location
+  const locationVisits = visits.filter(v => v[locationKey] === locationValue);
   
-  // Calculate durations
-  let totalDuration = 0;
-  let sessionCount = 0;
-  
-  Object.values(sessions).forEach((times: Date[]) => {
-    if (times.length > 1) {
-      times.sort((a, b) => a.getTime() - b.getTime());
-      const duration = (times[times.length - 1].getTime() - times[0].getTime()) / 60000;
-      
-      if (duration > 0 && duration < 120) {
-        totalDuration += duration;
-        sessionCount++;
-      }
-    }
-  });
-  
-  if (sessionCount > 0) {
-    const avgMinutes = Math.floor(totalDuration / sessionCount);
-    const avgSeconds = Math.floor(((totalDuration / sessionCount) % 1) * 60);
-    return `${avgMinutes}:${avgSeconds < 10 ? '0' + avgSeconds : avgSeconds}`;
-  }
-  
-  // Fallback estimate
-  const minutes = Math.floor(Math.random() * 2) + 2;
-  const seconds = Math.floor(Math.random() * 60);
-  return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+  return calculateDailyAvgTime(locationVisits);
 };

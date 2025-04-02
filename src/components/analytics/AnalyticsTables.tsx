@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Table,
   TableHeader,
@@ -12,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PageVisitFilter } from './PageVisitFilter';
 
 interface PageVisitDetail {
   page: string;
@@ -59,6 +59,53 @@ export const PageVisitTable: React.FC<PageVisitTableProps> = ({
   isLoading,
   downloadPageVisitCSV
 }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<string>('visits');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  const resetFilters = () => {
+    setSearchTerm('');
+    setSortBy('visits');
+    setSortOrder('desc');
+  };
+  
+  const filteredData = useMemo(() => {
+    const filtered = pageVisitDetails.filter(item => 
+      item.page.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    return [...filtered].sort((a, b) => {
+      let valueA, valueB;
+      
+      if (sortBy === 'visits' || sortBy === 'page') {
+        valueA = a[sortBy as keyof PageVisitDetail];
+        valueB = b[sortBy as keyof PageVisitDetail];
+      } 
+      else if (sortBy === 'percentage') {
+        valueA = parseFloat(a.percentage);
+        valueB = parseFloat(b.percentage);
+      } 
+      else if (sortBy === 'avgTimeOnPage') {
+        const getSeconds = (timeStr: string) => {
+          const [min, sec] = timeStr.split(':').map(Number);
+          return min * 60 + sec;
+        };
+        valueA = getSeconds(a.avgTimeOnPage);
+        valueB = getSeconds(b.avgTimeOnPage);
+      }
+      else if (sortBy === 'firstVisit' || sortBy === 'lastVisit') {
+        valueA = new Date(a[sortBy as 'firstVisit' | 'lastVisit']).getTime();
+        valueB = new Date(b[sortBy as 'firstVisit' | 'lastVisit']).getTime();
+      }
+      
+      if (sortOrder === 'asc') {
+        return valueA > valueB ? 1 : -1;
+      } else {
+        return valueA < valueB ? 1 : -1;
+      }
+    });
+  }, [pageVisitDetails, searchTerm, sortBy, sortOrder]);
+  
   return (
     <Card className="shadow-md mb-8">
       <CardHeader>
@@ -79,6 +126,16 @@ export const PageVisitTable: React.FC<PageVisitTableProps> = ({
         </div>
       </CardHeader>
       <CardContent>
+        <PageVisitFilter 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+          onReset={resetFilters}
+        />
+        
         {isLoading ? (
           <Skeleton className="h-[400px] w-full" />
         ) : (
@@ -94,8 +151,8 @@ export const PageVisitTable: React.FC<PageVisitTableProps> = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pageVisitDetails.length > 0 ? (
-                pageVisitDetails.map((row, index) => (
+              {filteredData.length > 0 ? (
+                filteredData.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium flex items-center">
                       <FileText className="h-4 w-4 mr-2 text-[#1A3174]" />
@@ -110,7 +167,11 @@ export const PageVisitTable: React.FC<PageVisitTableProps> = ({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4">No page visit data available</TableCell>
+                  <TableCell colSpan={6} className="text-center py-4">
+                    {searchTerm 
+                      ? "No matching pages found. Try adjusting your search." 
+                      : "No page visit data available"}
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>

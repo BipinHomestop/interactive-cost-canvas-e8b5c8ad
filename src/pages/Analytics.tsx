@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
@@ -17,6 +16,7 @@ import {
   LocationPerformanceTable,
   ZipCodePerformanceTable
 } from '@/components/analytics/AnalyticsTables';
+import { DateRangeFilter } from '@/components/analytics/DateRangeFilter';
 import { UserLocationCard } from '@/components/analytics/UserLocationCard';
 import { WeeklyHeatMapChart } from '@/components/analytics/WeeklyHeatMapChart';
 import { useAnalyticsData } from '@/hooks/analytics/use-analytics-data';
@@ -25,9 +25,32 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { format } from 'date-fns';
 
 export default function Analytics() {
   const [timeRange, setTimeRange] = useState('30d');
+  const [customStartDate, setCustomStartDate] = useState<Date>();
+  const [customEndDate, setCustomEndDate] = useState<Date>();
+  const [customRangeString, setCustomRangeString] = useState<string | null>(null);
+  
+  const applyCustomRange = () => {
+    if (customStartDate && customEndDate) {
+      const startStr = format(customStartDate, 'yyyy-MM-dd');
+      const endStr = format(customEndDate, 'yyyy-MM-dd');
+      setCustomRangeString(`${startStr}:${endStr}`);
+      toast.success('Custom date range applied');
+    }
+  };
+  
+  // Use the custom range or regular time range
+  const effectiveTimeRange = customRangeString || timeRange;
+  
+  // Reset custom range when switching to standard ranges
+  useEffect(() => {
+    if (timeRange !== 'custom') {
+      setCustomRangeString(null);
+    }
+  }, [timeRange]);
   
   const { 
     isLoading,
@@ -46,16 +69,16 @@ export default function Analytics() {
     downloadCSV,
     downloadPageVisitCSV,
     refetchData
-  } = useAnalyticsData(timeRange);
+  } = useAnalyticsData(effectiveTimeRange);
   
-  const { userLocationData, trackPageView } = useUserLocation(timeRange);
+  const { userLocationData, trackPageView } = useUserLocation(effectiveTimeRange);
   const hasVisitorData = summary.totalVisitors > 0;
 
   useEffect(() => {
     // Track analytics page view specifically for the analytics dashboard
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'view_analytics_dashboard', {
-        time_range: timeRange
+        time_range: effectiveTimeRange
       });
     }
     
@@ -73,7 +96,7 @@ export default function Analytics() {
     };
     
     logAnalyticsVisit();
-  }, [timeRange]);
+  }, [effectiveTimeRange]);
 
   // Get top location and zip code for summary cards
   const topLocation = locationData.length > 0 ? locationData[0].name : "No data";
@@ -94,6 +117,17 @@ export default function Analytics() {
       />
 
       <div className="flex-1 container mx-auto py-8 px-4">
+        {/* Date Range Filter */}
+        <DateRangeFilter
+          timeRange={timeRange}
+          setTimeRange={setTimeRange}
+          customStartDate={customStartDate}
+          setCustomStartDate={setCustomStartDate}
+          customEndDate={customEndDate}
+          setCustomEndDate={setCustomEndDate}
+          applyCustomRange={applyCustomRange}
+        />
+        
         {/* Realtime Visitors Card */}
         <RealtimeVisitorsCard />
         
