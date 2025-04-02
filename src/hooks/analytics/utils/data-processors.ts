@@ -256,7 +256,9 @@ export const processPageVisitDetails = (visits: any[]) => {
   // Create final data structure
   const pageDetails = Object.keys(pageVisits).map(page => {
     const totalVisits = pageVisits[page];
-    const visitPercentage = visits.length > 0 ? (totalVisits / visits.length * 100).toFixed(1) : '0.0';
+    const totalLength = visits.length;
+    // Fix the type issue by ensuring we're working with numbers throughout the calculation
+    const visitPercentage = totalLength > 0 ? ((totalVisits / totalLength) * 100).toFixed(1) : '0.0';
     
     return {
       page,
