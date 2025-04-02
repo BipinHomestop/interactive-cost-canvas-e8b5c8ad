@@ -22,7 +22,7 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
         setIsGaLoading(true);
         setError(null);
         
-        // Check if GA is available and properly initialized
+        // Check if running in browser environment
         if (typeof window === 'undefined') {
           console.log('Running in server environment, GA not available');
           setError('Google Analytics is not available in server environment');
@@ -30,7 +30,7 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
           return;
         }
 
-        // Check if Google Analytics is initialized
+        // Check if Google Analytics script is loaded
         if (!window.gtag) {
           console.log('Google Analytics not initialized');
           setError('Google Analytics is not properly configured');
@@ -38,7 +38,7 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
           return;
         }
 
-        // Mock data for demonstration - in a real implementation, you would fetch this from GA API
+        // Mock data for demonstration 
         const mockData: GoogleAnalyticsPageData[] = [
           {
             pagePath: '/',
@@ -77,9 +77,12 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
           }
         ];
 
-        // Check if we can get data through gtag
+        // Simulate GA connection check
+        const measurementId = 'G-773SG7LPWC';
+        
         try {
-          window.gtag('get', 'G-773SG7LPWC', (clientId: string) => {
+          // Attempt to get client ID to verify connection
+          window.gtag('get', measurementId, 'client_id', (clientId: string) => {
             if (clientId) {
               console.log('GA connected, client ID available:', clientId);
               setIsConnected(true);
