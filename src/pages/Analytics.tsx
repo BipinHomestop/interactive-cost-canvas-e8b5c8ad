@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { 
@@ -252,12 +251,10 @@ export default function Analytics() {
     let maxCount = 0;
     
     Object.entries(pageCount).forEach(([page, count]) => {
-      // Fix for line 250: Handle unknown type for count
       const countValue = typeof count === 'number' ? count : 0;
       
       if (countValue > maxCount) {
         mostPopular = page;
-        // Fix for line 252: Type assertion for maxCount
         maxCount = countValue;
       }
     });
@@ -389,10 +386,8 @@ export default function Analytics() {
       if (visit.page_visited) {
         const pageName = formatPageName(visit.page_visited);
         
-        // Count visits
         pageVisits[pageName] = (pageVisits[pageName] || 0) + 1;
         
-        // Track visit dates for first/last calculations
         const visitDate = visit.visit_date ? new Date(visit.visit_date) : null;
         if (visitDate) {
           if (!pageFirstVisits[pageName] || visitDate < new Date(pageFirstVisits[pageName])) {
@@ -404,7 +399,6 @@ export default function Analytics() {
           }
         }
         
-        // Randomly assign time on page between 1-5 minutes for demo data
         const timeOnPage = Math.floor(Math.random() * 240) + 60; // 1-5 minutes in seconds
         if (!pageDurations[pageName]) {
           pageDurations[pageName] = [];
@@ -413,7 +407,6 @@ export default function Analytics() {
       }
     });
     
-    // Calculate average time on page
     Object.keys(pageDurations).forEach(page => {
       const totalDuration = pageDurations[page].reduce((sum, time) => sum + time, 0);
       const avgDuration = totalDuration / pageDurations[page].length;
@@ -422,7 +415,6 @@ export default function Analytics() {
       pageAvgTimeOnPage[page] = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
     });
     
-    // Create detailed data for each page
     const pageDetails = Object.keys(pageVisits).map(page => {
       const totalVisits = pageVisits[page];
       const visitPercentage = visits.length > 0 ? (totalVisits / visits.length * 100).toFixed(1) : '0.0';
@@ -616,7 +608,6 @@ export default function Analytics() {
     });
 
     const zipData = Array.from(zipMap.entries()).map(([name, data]) => {
-      // Fix for line 364: Ensure numeric types for arithmetic operation
       const submissions = typeof data.submissions === 'number' ? data.submissions : 0;
       const visitors = typeof data.visitors === 'number' ? data.visitors : 0;
       
@@ -631,7 +622,7 @@ export default function Analytics() {
     const createDetailedLocationData = (cityData: any[], visits: any[]) => {
       return cityData.slice(0, 5).map(city => {
         const cityInfo = visits.find(v => v.city === city.name) || {};
-        // Ensure numeric types for city data
+        
         const cityVisitors = typeof city.visitors === 'number' ? city.visitors : 0;
         const citySubmissions = typeof city.submissions === 'number' ? city.submissions : 0;
         const convRate = cityVisitors > 0 ? ((citySubmissions / cityVisitors) * 100).toFixed(1) + '%' : '0.0%';
@@ -988,7 +979,6 @@ export default function Analytics() {
           </Card>
         </div>
 
-        {/* New Section: Page-by-Page Visitor Analytics */}
         <Card className="shadow-md mb-8">
           <CardHeader>
             <div className="flex justify-between items-center">
