@@ -64,6 +64,7 @@ export function useCheckout(
       sessionStorage.setItem('cachedTotalCost', totalCost.toString());
       sessionStorage.setItem('cachedDiscountPercentage', discountPercentage.toString());
       sessionStorage.setItem('cachedDiscountedTotal', discountedTotal.toString());
+      sessionStorage.setItem('cachedCouponCode', couponCode || '');
 
       // Prepare line items for Stripe based on price breakdown
       const lineItems = breakdownItems.map(item => ({
