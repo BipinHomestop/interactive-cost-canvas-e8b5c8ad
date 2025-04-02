@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const useUserLocation = (timeRange: string) => {
   const [userLocationData, setUserLocationData] = useState({
@@ -12,6 +13,22 @@ export const useUserLocation = (timeRange: string) => {
     country: 'Unknown',
     ip: 'Unknown'
   });
+  
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Track page views for Google Analytics
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'page_view', {
+        page_title: document.title,
+        page_location: window.location.href,
+        page_path: location.pathname,
+        send_to: 'G-773SG7LPWC'
+      });
+      console.log('Analytics page view tracked:', location.pathname);
+    }
+  }, [location.pathname]);
 
   const trackUserLocation = async () => {
     try {
@@ -29,7 +46,8 @@ export const useUserLocation = (timeRange: string) => {
         });
         
         if (data.city && data.postal) {
-          logLocationVisit(data.city, data.postal, data.region, data.country_name, data.ip);
+          await logLocationVisit(data.city, data.postal, data.region, data.country_name, data.ip);
+          console.log('Analytics location visit logged:', data.city, data.postal);
         }
       }
     } catch (error) {
@@ -48,6 +66,8 @@ export const useUserLocation = (timeRange: string) => {
       // Hash the IP address for privacy
       const ipHash = await createIPHash(ip);
       
+      const currentPage = location.pathname.split('/').pop() || 'home';
+      
       const { error } = await supabase
         .from('analytics_location_visits')
         .insert({
@@ -59,12 +79,18 @@ export const useUserLocation = (timeRange: string) => {
           visit_date: new Date().toISOString().split('T')[0],
           visit_time: new Date().toTimeString().split(' ')[0],
           time_range: timeRange,
-          page_visited: 'analytics'
+          page_visited: currentPage
         });
     
-      if (error) console.error('Error logging location visit:', error);
+      if (error) {
+        console.error('Error logging location visit:', error);
+        return false;
+      }
+      
+      return true;
     } catch (err) {
       console.error('Failed to log location visit:', err);
+      return false;
     }
   };
 
@@ -84,7 +110,14 @@ export const useUserLocation = (timeRange: string) => {
 
   useEffect(() => {
     trackUserLocation();
-  }, []);
+    
+    // Set up a timer to periodically refresh location data (every 5 minutes)
+    const locationTimer = setInterval(() => {
+      trackUserLocation();
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(locationTimer);
+  }, [location.pathname]);
 
   return { userLocationData };
 };

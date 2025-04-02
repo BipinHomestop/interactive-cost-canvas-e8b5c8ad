@@ -508,7 +508,13 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-773SG7LPWC');
+      gtag('config', 'G-773SG7LPWC', {
+        send_page_view: true,
+        page_location: window.location.href,
+        page_path: window.location.pathname,
+        page_title: document.title
+      });
+      console.log('Google Analytics initialized with ID: G-773SG7LPWC');
     </script>
   </head>
   <body>

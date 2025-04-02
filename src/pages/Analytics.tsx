@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
 import { AnalyticsSummaryCards } from '@/components/analytics/AnalyticsSummaryCards';
@@ -20,6 +20,8 @@ import { UserLocationCard } from '@/components/analytics/UserLocationCard';
 import { WeeklyHeatMapChart } from '@/components/analytics/WeeklyHeatMapChart';
 import { useAnalyticsData } from '@/hooks/analytics/use-analytics-data';
 import { useUserLocation } from '@/hooks/analytics/use-user-location';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export default function Analytics() {
   const [timeRange, setTimeRange] = useState('30d');
@@ -39,10 +41,63 @@ export default function Analytics() {
     detailedZipCodeData,
     weeklyHeatMapData,
     downloadCSV,
-    downloadPageVisitCSV
+    downloadPageVisitCSV,
+    refetchData
   } = useAnalyticsData(timeRange);
   
   const { userLocationData } = useUserLocation(timeRange);
+
+  useEffect(() => {
+    // Track analytics page view specifically for the analytics dashboard
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'view_analytics_dashboard', {
+        time_range: timeRange
+      });
+    }
+    
+    // Log an analytics visit for this page
+    const logAnalyticsVisit = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        if (response.ok) {
+          const data = await response.json();
+          // Create a hash of the IP for privacy
+          const encoder = new TextEncoder();
+          const textData = encoder.encode(data.ip + 'garagefloorcoating-salt');
+          const hashBuffer = await crypto.subtle.digest('SHA-256', textData);
+          const ipHash = Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0')).join('');
+          
+          // Insert analytics record
+          const { error } = await supabase
+            .from('analytics_location_visits')
+            .insert({
+              city: data.city || 'Unknown',
+              zipcode: data.postal || 'Unknown',
+              region: data.region || 'Unknown',
+              country: data.country_name || 'Unknown',
+              ip_hash: ipHash,
+              visit_date: new Date().toISOString().split('T')[0],
+              visit_time: new Date().toTimeString().split(' ')[0],
+              page_visited: 'analytics',
+              time_range: timeRange
+            });
+            
+          if (error) console.error('Error logging analytics visit:', error);
+          else console.log('Analytics visit logged successfully');
+          
+          // Refetch data after logging the visit
+          setTimeout(() => {
+            refetchData();
+          }, 1000);
+        }
+      } catch (err) {
+        console.error('Failed to log analytics visit:', err);
+      }
+    };
+    
+    logAnalyticsVisit();
+  }, [timeRange]);
 
   // Get top location and zip code for summary cards
   const topLocation = locationData.length > 0 ? locationData[0].name : "No data";

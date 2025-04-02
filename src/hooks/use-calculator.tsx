@@ -5,6 +5,7 @@ import { useSubmission } from "./calculator/use-submission";
 import { useStepNavigation } from "./calculator/use-step-navigation";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const useCalculator = () => {
   const {
@@ -46,8 +47,46 @@ export const useCalculator = () => {
         'current_total': totalCost,
         'has_submission_id': !!submissionId || !!sessionStorage.getItem('calculatorSubmissionId')
       });
+      
+      // Track event in our own database
+      logCalculatorStep(step, getStepName(step), totalCost);
     }
   }, [formValues, totalCost, step, submissionId]);
+  
+  // Helper function to log calculator steps to our database
+  const logCalculatorStep = async (stepNumber: number, stepName: string, currentTotal: number) => {
+    try {
+      // Create a basic IP hash for user identification
+      const ipResponse = await fetch('https://ipapi.co/json/');
+      if (!ipResponse.ok) return;
+      
+      const ipData = await ipResponse.json();
+      const encoder = new TextEncoder();
+      const data = encoder.encode(ipData.ip + 'garagefloorcoating-salt');
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const ipHash = Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      // Insert into analytics_location_visits
+      await supabase
+        .from('analytics_location_visits')
+        .insert({
+          city: ipData.city || 'Unknown',
+          zipcode: ipData.postal || 'Unknown',
+          region: ipData.region || 'Unknown',
+          country: ipData.country_name || 'Unknown',
+          ip_hash: ipHash,
+          visit_date: new Date().toISOString().split('T')[0],
+          visit_time: new Date().toTimeString().split(' ')[0],
+          page_visited: `calculator-step-${stepNumber}-${stepName}`,
+          time_range: '30d' // Default time range
+        });
+      
+      console.log(`Step ${stepNumber} (${stepName}) logged to analytics`);
+    } catch (error) {
+      console.error('Error logging calculator step:', error);
+    }
+  };
   
   // Helper function to get step name for analytics
   const getStepName = (stepNumber: number): string => {

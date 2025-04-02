@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -44,15 +44,14 @@ export const useAnalyticsData = (timeRange: string) => {
   const [detailedZipCodeData, setDetailedZipCodeData] = useState([]);
   const [weeklyHeatMapData, setWeeklyHeatMapData] = useState([]);
 
-  useEffect(() => {
-    fetchAnalyticsData();
-  }, [timeRange]);
-
-  const fetchAnalyticsData = async () => {
+  const fetchAnalyticsData = useCallback(async () => {
     try {
+      console.log('Fetching analytics data for time range:', timeRange);
       setIsLoading(true);
       const startDate = getStartDateFromRange(timeRange);
       const startDateString = startDate.toISOString().split('T')[0];
+      
+      console.log('Start date for query:', startDateString);
       
       // Fetch location visits
       const { data: locationVisits, error: locationError } = await supabase
@@ -66,6 +65,8 @@ export const useAnalyticsData = (timeRange: string) => {
         return;
       }
 
+      console.log('Retrieved location visits:', locationVisits?.length || 0);
+
       // Fetch form submissions
       const { data: submissions, error: submissionsError } = await supabase
         .from('cost_calculator_submissions')
@@ -77,6 +78,8 @@ export const useAnalyticsData = (timeRange: string) => {
         toast.error('Failed to load submissions data');
       }
 
+      console.log('Retrieved submissions:', submissions?.length || 0);
+      
       processAnalyticsData(locationVisits || [], submissions || []);
       
     } catch (err) {
@@ -85,14 +88,21 @@ export const useAnalyticsData = (timeRange: string) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [timeRange]);
+
+  useEffect(() => {
+    fetchAnalyticsData();
+  }, [fetchAnalyticsData]);
 
   const processAnalyticsData = (visits: any[], submissions: any[]) => {
     if (!visits || visits.length === 0) {
+      console.log('No analytics data available for the selected period');
       toast.warning('No analytics data available for the selected period');
       resetDataStates();
       return;
     }
+
+    console.log('Processing analytics data:', { visits: visits.length, submissions: submissions.length });
 
     const totalVisitors = visits.length;
     const totalSubmissions = submissions.length;
@@ -176,6 +186,7 @@ export const useAnalyticsData = (timeRange: string) => {
     detailedZipCodeData,
     weeklyHeatMapData,
     downloadCSV: handleDownloadCSV,
-    downloadPageVisitCSV: handleDownloadPageVisitCSV
+    downloadPageVisitCSV: handleDownloadPageVisitCSV,
+    refetchData: fetchAnalyticsData
   };
 };
