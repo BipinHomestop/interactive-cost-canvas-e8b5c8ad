@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, ExternalLink } from 'lucide-react';
+import { AlertCircle, ExternalLink, PlusCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -32,21 +32,12 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
   timeRange
 }) => {
   const [gaTimeRange, setGaTimeRange] = useState<string>('30d');
-  const { pageTrafficData, isGaLoading, totalUsers, error } = useGoogleAnalyticsData(gaTimeRange);
-  const [retryCount, setRetryCount] = useState(0);
+  const { pageTrafficData, isGaLoading, totalUsers, error, isConnected } = useGoogleAnalyticsData(gaTimeRange);
   
-  // Automatically retry when there's an error
-  useEffect(() => {
-    if (error && retryCount < 3) {
-      const timer = setTimeout(() => {
-        setRetryCount(prev => prev + 1);
-        // This will trigger a re-fetch in the useGoogleAnalyticsData hook
-        setGaTimeRange(current => current);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [error, retryCount]);
+  const handleConnectGA = () => {
+    // In a real implementation, this would open a configuration modal or redirect to Google Analytics setup
+    window.open('https://analytics.google.com/', '_blank');
+  };
   
   return (
     <Card className="shadow-md mb-8">
@@ -71,16 +62,30 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
       </CardHeader>
       <CardContent>
         {error && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert variant={isConnected ? "default" : "destructive"} className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>No Google Analytics data available</AlertTitle>
+            <AlertTitle>{isConnected ? "Connect Google Analytics" : "Google Analytics Not Available"}</AlertTitle>
             <AlertDescription>
               <p className="mb-2">
-                {typeof error === 'string' ? error : 'Failed to connect to Google Analytics. This could be due to missing configuration or network issues.'}
+                {typeof error === 'string' ? error : 'Failed to retrieve Google Analytics data. Please check your connection.'}
               </p>
-              <Button variant="outline" size="sm" className="mt-2">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Connect Google Analytics
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2" 
+                onClick={handleConnectGA}
+              >
+                {isConnected ? (
+                  <>
+                    <PlusCircle className="h-4 w-4 mr-2" />
+                    Configure Data Access
+                  </>
+                ) : (
+                  <>
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Connect Google Analytics
+                  </>
+                )}
               </Button>
             </AlertDescription>
           </Alert>
@@ -90,7 +95,7 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
           <Skeleton className="h-[300px] w-full" />
         ) : pageTrafficData.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground">
-            No Google Analytics data available for the selected time period
+            {isConnected ? 'No Google Analytics data available for the selected time period' : 'Connect to Google Analytics to view traffic data'}
           </div>
         ) : (
           <>
