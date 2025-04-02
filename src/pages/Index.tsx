@@ -20,7 +20,7 @@ const Index = () => {
   
   function getStepTitle(step: number): string {
     const stepTitles = {
-      1: "Estimate Your Garage Concrete Coating Cost | American Concrete Coatings",
+      1: "Garage Floor Concrete Coating Cost Calculator | American Concrete Coatings",
       2: "Contact Information | American Concrete Coatings",
       3: "Select Garage Size | American Concrete Coatings",
       4: "Choose Finish Style | American Concrete Coatings",
