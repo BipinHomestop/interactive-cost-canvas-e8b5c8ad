@@ -16,14 +16,16 @@ import {
   processHourlyActivityData,
   processMonthlyTrendData,
   processDetailedVisitData,
-  processWeeklyHeatMapData
+  processWeeklyHeatMapData,
+  countSubmissionsByStatus
 } from './utils/data-processors';
 
 export const useAnalyticsData = (timeRange: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState({
     totalVisitors: 0,
-    formSubmissions: 0,
+    completeSubmissions: 0,
+    partialSubmissions: 0,
     conversionRate: 0,
     avgTimeOnSite: 0,
     mostPopularStep: '',
@@ -56,13 +58,11 @@ export const useAnalyticsData = (timeRange: string) => {
       
       console.log(`Date range for query: ${startDateString} to ${endDateString}`);
       
-      // Fetch location visits with date range filter
       let query = supabase
         .from('analytics_location_visits')
         .select('*')
         .gte('visit_date', startDateString);
       
-      // Only add less than filter for custom range
       if (timeRange.includes(':')) {
         query = query.lte('visit_date', endDateString);
       }
@@ -77,16 +77,14 @@ export const useAnalyticsData = (timeRange: string) => {
 
       console.log('Retrieved location visits:', locationVisits?.length || 0);
 
-      // Fetch form submissions with date range filter
       let submissionsQuery = supabase
         .from('cost_calculator_submissions')
         .select('*')
         .gte('created_at', startDate.toISOString());
       
-      // Only add less than filter for custom range
       if (timeRange.includes(':')) {
         const nextDay = new Date(endDate);
-        nextDay.setDate(nextDay.getDate() + 1); // Add a day to include the end date
+        nextDay.setDate(nextDay.getDate() + 1);
         submissionsQuery = submissionsQuery.lt('created_at', nextDay.toISOString());
       }
       
@@ -114,7 +112,6 @@ export const useAnalyticsData = (timeRange: string) => {
   }, [fetchAnalyticsData]);
 
   const processAnalyticsData = (visits: any[], submissions: any[]) => {
-    // Check if we have any data to process
     const hasVisits = visits && visits.length > 0;
     const hasSubmissions = submissions && submissions.length > 0;
     
@@ -127,23 +124,23 @@ export const useAnalyticsData = (timeRange: string) => {
 
     console.log('Processing analytics data:', { visits: visits.length, submissions: submissions.length });
 
-    const totalVisitors = hasVisits ? visits.length : 0;
-    const totalSubmissions = hasSubmissions ? submissions.length : 0;
-    const conversionRate = totalVisitors > 0 ? (totalSubmissions / totalVisitors) * 100 : 0;
+    const { complete, partial } = countSubmissionsByStatus(submissions);
     
-    // Calculate actual time on site from real data if we have visits
+    const totalVisitors = hasVisits ? visits.length : 0;
+    const conversionRate = totalVisitors > 0 ? (complete / totalVisitors) * 100 : 0;
+    
     const avgTimeOnSite = hasVisits ? calculateAverageTimeOnSite(visits, timeRange) : 0;
     
     setSummary({
       totalVisitors,
-      formSubmissions: totalSubmissions,
+      completeSubmissions: complete,
+      partialSubmissions: partial,
       conversionRate: parseFloat(conversionRate.toFixed(1)),
       avgTimeOnSite,
       mostPopularStep: hasVisits ? determineMostPopularPage(visits) : 'No data',
       completionRate: hasVisits && hasSubmissions ? calculateCompletionRate(submissions, visits) : 0
     });
 
-    // Process all the different data visualizations
     if (hasVisits) {
       setDailyVisitorsData(processDailyVisitorsData(visits, timeRange));
       setPopularPagesData(processPopularPagesData(visits));
@@ -151,12 +148,10 @@ export const useAnalyticsData = (timeRange: string) => {
       setHourlyActivityData(processHourlyActivityData(visits));
       setWeeklyHeatMapData(processWeeklyHeatMapData(visits));
       
-      // Process data that uses both visits and submissions
       setConversionFunnelData(processConversionFunnelData(visits, submissions));
       setMonthlyTrendData(processMonthlyTrendData(visits, submissions, timeRange));
       setDetailedVisitData(processDetailedVisitData(visits, submissions, timeRange));
       
-      // Process location data if we have visits
       processLocationData(
         visits, 
         submissions, 
@@ -166,7 +161,6 @@ export const useAnalyticsData = (timeRange: string) => {
         setDetailedZipCodeData
       );
     } else {
-      // Set default empty data for visit-dependent charts
       setDailyVisitorsData([]);
       setPopularPagesData([{ name: 'No visit data available', visits: 0 }]);
       setPageVisitDetails([]);
@@ -179,7 +173,6 @@ export const useAnalyticsData = (timeRange: string) => {
         { name: 'Submissions', value: totalSubmissions }
       ]);
       
-      // If we have submissions but no visits, at least show submission data in monthly trends
       if (hasSubmissions) {
         const monthlyData = processMonthlySubmissionData(submissions, timeRange);
         setMonthlyTrendData(monthlyData);
@@ -187,7 +180,6 @@ export const useAnalyticsData = (timeRange: string) => {
         setMonthlyTrendData([]);
       }
       
-      // Clear location data
       setLocationData([]);
       setZipCodeData([]);
       setDetailedLocationData([]);
@@ -195,7 +187,6 @@ export const useAnalyticsData = (timeRange: string) => {
     }
   };
 
-  // Process monthly data with submissions only
   const processMonthlySubmissionData = (submissions: any[], timeRange: string) => {
     const today = new Date();
     const startDate = getStartDateFromRange(timeRange);
@@ -214,7 +205,7 @@ export const useAnalyticsData = (timeRange: string) => {
       
       monthlyData.unshift({
         month: monthStr,
-        visitors: 0, // No visitors data
+        visitors: 0,
         submissions: monthSubmissions.length
       });
     }
@@ -225,7 +216,8 @@ export const useAnalyticsData = (timeRange: string) => {
   const resetDataStates = () => {
     setSummary({
       totalVisitors: 0,
-      formSubmissions: 0,
+      completeSubmissions: 0,
+      partialSubmissions: 0,
       conversionRate: 0,
       avgTimeOnSite: 0,
       mostPopularStep: 'No data',

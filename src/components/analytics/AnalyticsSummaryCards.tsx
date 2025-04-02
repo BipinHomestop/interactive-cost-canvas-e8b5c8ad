@@ -1,12 +1,13 @@
 
 import React from 'react';
-import { Users, Activity, TrendingUp, Clock, BarChart3, PieChart, MapPin, CheckCircle } from 'lucide-react';
+import { Users, Activity, TrendingUp, Clock, BarChart3, PieChart, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type SummaryDataProps = {
   totalVisitors: number;
-  formSubmissions: number;
+  completeSubmissions: number;
+  partialSubmissions: number;
   conversionRate: number;
   avgTimeOnSite: number;
   mostPopularStep: string;
@@ -18,7 +19,8 @@ type SummaryDataProps = {
 
 export const AnalyticsSummaryCards: React.FC<SummaryDataProps> = ({
   totalVisitors,
-  formSubmissions,
+  completeSubmissions,
+  partialSubmissions,
   conversionRate,
   avgTimeOnSite,
   mostPopularStep,
@@ -47,16 +49,31 @@ export const AnalyticsSummaryCards: React.FC<SummaryDataProps> = ({
       <Card className="p-6 shadow-md">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-medium text-gray-700 mb-2">Form Submissions</h2>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Complete Submissions</h2>
             {isLoading ? (
               <Skeleton className="h-10 w-20" />
             ) : (
-              <p className="text-3xl font-bold text-[#1A3174]">{formSubmissions}</p>
+              <p className="text-3xl font-bold text-[#1A3174]">{completeSubmissions}</p>
             )}
           </div>
-          <Activity className="h-8 w-8 text-[#1A3174] opacity-80" />
+          <CheckCircle className="h-8 w-8 text-green-600 opacity-80" />
         </div>
-        <p className="text-sm text-gray-500 mt-2">Completed quotes</p>
+        <p className="text-sm text-gray-500 mt-2">Paid/completed quotes</p>
+      </Card>
+
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Partial Submissions</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-3xl font-bold text-amber-500">{partialSubmissions}</p>
+            )}
+          </div>
+          <AlertCircle className="h-8 w-8 text-amber-500 opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Incomplete quotes</p>
       </Card>
 
       <Card className="p-6 shadow-md">
@@ -71,7 +88,7 @@ export const AnalyticsSummaryCards: React.FC<SummaryDataProps> = ({
           </div>
           <TrendingUp className="h-8 w-8 text-[#1A3174] opacity-80" />
         </div>
-        <p className="text-sm text-gray-500 mt-2">Visitors to submissions</p>
+        <p className="text-sm text-gray-500 mt-2">Complete submissions/visitors</p>
       </Card>
 
       <Card className="p-6 shadow-md">
