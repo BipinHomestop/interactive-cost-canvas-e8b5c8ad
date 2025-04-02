@@ -1,33 +1,19 @@
 
 import React from 'react';
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
   ResponsiveContainer, 
-  LineChart as RechartsLineChart, 
-  Line, 
+  ComposedChart, 
+  Bar, 
+  Line,
   XAxis, 
-  YAxis
+  YAxis, 
+  CartesianGrid, 
+  Legend
 } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const CHART_CONFIG = {
-  visitors: { 
-    theme: { 
-      light: '#1A3174',
-      dark: '#1A3174'
-    }
-  },
-  submissions: { 
-    theme: { 
-      light: '#38BDF8',
-      dark: '#38BDF8'
-    }
-  }
-};
+import { CHART_COLORS, CHART_CONFIG } from './ChartConfig';
 
 interface MonthlyPerformanceChartProps {
   data: any[];
@@ -35,42 +21,53 @@ interface MonthlyPerformanceChartProps {
 }
 
 export const MonthlyPerformanceChart: React.FC<MonthlyPerformanceChartProps> = ({ data, isLoading }) => {
+  const hasData = data && data.length > 0 && data.some(item => item.visitors > 0 || item.submissions > 0);
+  const hasVisitorData = data && data.some(item => item.visitors > 0);
+  const hasSubmissionData = data && data.some(item => item.submissions > 0);
+
   return (
-    <Card className="shadow-md mb-8">
+    <Card className="shadow-md">
       <CardHeader>
         <CardTitle className="text-xl text-[#1A3174]">Monthly Performance</CardTitle>
-        <CardDescription>Visitors and submissions over time</CardDescription>
+        <CardDescription>Trends in visitors and form submissions over time</CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-[300px] w-full" />
+        ) : !hasData ? (
+          <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
+            No performance data available for the selected time period
+          </div>
         ) : (
           <div className="h-[300px]">
             <ChartContainer config={CHART_CONFIG}>
               <ResponsiveContainer width="100%" height="100%">
-                <RechartsLineChart data={data} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+                <ComposedChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  {hasVisitorData && (
+                    <Bar 
+                      dataKey="visitors" 
+                      fill="var(--color-visitors)" 
+                      name="Visitors" 
+                      barSize={30}
+                      radius={[4, 4, 0, 0]}
+                    />
+                  )}
+                  {hasSubmissionData && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="submissions" 
+                      stroke="var(--color-submissions)" 
+                      name="Submissions"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
+                    />
+                  )}
                   <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="visitors" 
-                    stroke="var(--color-visitors)" 
-                    strokeWidth={2} 
-                    dot={{ r: 4 }} 
-                    activeDot={{ r: 6 }} 
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="submissions" 
-                    stroke="var(--color-submissions)" 
-                    strokeWidth={2} 
-                    dot={{ r: 4 }} 
-                    activeDot={{ r: 6 }} 
-                  />
-                </RechartsLineChart>
+                </ComposedChart>
               </ResponsiveContainer>
             </ChartContainer>
           </div>

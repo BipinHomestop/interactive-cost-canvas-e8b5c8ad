@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
@@ -22,6 +23,8 @@ import { useAnalyticsData } from '@/hooks/analytics/use-analytics-data';
 import { useUserLocation } from '@/hooks/analytics/use-user-location';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Analytics() {
   const [timeRange, setTimeRange] = useState('30d');
@@ -46,6 +49,7 @@ export default function Analytics() {
   } = useAnalyticsData(timeRange);
   
   const { userLocationData, trackPageView } = useUserLocation(timeRange);
+  const hasVisitorData = summary.totalVisitors > 0;
 
   useEffect(() => {
     // Track analytics page view specifically for the analytics dashboard
@@ -90,8 +94,19 @@ export default function Analytics() {
       />
 
       <div className="flex-1 container mx-auto py-8 px-4">
-        {/* Realtime Visitors Card (New) */}
+        {/* Realtime Visitors Card */}
         <RealtimeVisitorsCard />
+        
+        {!hasVisitorData && summary.formSubmissions > 0 && !isLoading && (
+          <Alert className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Limited Data Available</AlertTitle>
+            <AlertDescription>
+              We found {summary.formSubmissions} form submissions but no visitor tracking data for the selected time period. 
+              Some charts may appear empty or show limited information.
+            </AlertDescription>
+          </Alert>
+        )}
         
         <AnalyticsSummaryCards 
           totalVisitors={summary.totalVisitors}
@@ -105,16 +120,22 @@ export default function Analytics() {
           isLoading={isLoading}
         />
         
-        <WeeklyHeatMapChart 
-          data={weeklyHeatMapData || []} 
-          isLoading={isLoading} 
-        />
+        {/* Weekly Heatmap Chart */}
+        {hasVisitorData && (
+          <WeeklyHeatMapChart 
+            data={weeklyHeatMapData || []} 
+            isLoading={isLoading} 
+          />
+        )}
         
-        <PageVisitTable
-          pageVisitDetails={pageVisitDetails}
-          isLoading={isLoading}
-          downloadPageVisitCSV={downloadPageVisitCSV}
-        />
+        {/* Only show page visits table if we have visitor data */}
+        {hasVisitorData && (
+          <PageVisitTable
+            pageVisitDetails={pageVisitDetails}
+            isLoading={isLoading}
+            downloadPageVisitCSV={downloadPageVisitCSV}
+          />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           <DailyVisitorsChart 
@@ -140,30 +161,40 @@ export default function Analytics() {
           />
         </div>
 
-        <HourlyActivityChart 
-          data={hourlyActivityData} 
-          isLoading={isLoading} 
-        />
-
-        <DailyPerformanceTable 
-          data={detailedVisitData} 
-          isLoading={isLoading} 
-        />
-
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <LocationPerformanceTable 
-            data={detailedLocationData} 
-            isLoading={isLoading}
-            title="Location Performance"
-            description="Performance metrics by city"
-          />
-          
-          <ZipCodePerformanceTable 
-            data={detailedZipCodeData} 
+        {/* Only show hourly activity if we have visitor data */}
+        {hasVisitorData && (
+          <HourlyActivityChart 
+            data={hourlyActivityData} 
             isLoading={isLoading} 
           />
-        </div>
+        )}
 
+        {/* Show daily performance if we have any data */}
+        {(hasVisitorData || summary.formSubmissions > 0) && (
+          <DailyPerformanceTable 
+            data={detailedVisitData} 
+            isLoading={isLoading} 
+          />
+        )}
+
+        {/* Only show location data if we have visitor data */}
+        {hasVisitorData && (
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <LocationPerformanceTable 
+              data={detailedLocationData} 
+              isLoading={isLoading}
+              title="Location Performance"
+              description="Performance metrics by city"
+            />
+            
+            <ZipCodePerformanceTable 
+              data={detailedZipCodeData} 
+              isLoading={isLoading} 
+            />
+          </div>
+        )}
+
+        {/* User location card */}
         <UserLocationCard 
           userLocationData={userLocationData} 
           isLoading={isLoading} 

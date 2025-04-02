@@ -95,7 +95,11 @@ export const useAnalyticsData = (timeRange: string) => {
   }, [fetchAnalyticsData]);
 
   const processAnalyticsData = (visits: any[], submissions: any[]) => {
-    if (!visits || visits.length === 0) {
+    // Check if we have any data to process
+    const hasVisits = visits && visits.length > 0;
+    const hasSubmissions = submissions && submissions.length > 0;
+    
+    if (!hasVisits && !hasSubmissions) {
       console.log('No analytics data available for the selected period');
       toast.warning('No analytics data available for the selected period');
       resetDataStates();
@@ -104,39 +108,99 @@ export const useAnalyticsData = (timeRange: string) => {
 
     console.log('Processing analytics data:', { visits: visits.length, submissions: submissions.length });
 
-    const totalVisitors = visits.length;
-    const totalSubmissions = submissions.length;
+    const totalVisitors = hasVisits ? visits.length : 0;
+    const totalSubmissions = hasSubmissions ? submissions.length : 0;
     const conversionRate = totalVisitors > 0 ? (totalSubmissions / totalVisitors) * 100 : 0;
     
-    // Calculate actual time on site from real data
-    const avgTimeOnSite = calculateAverageTimeOnSite(visits, timeRange);
+    // Calculate actual time on site from real data if we have visits
+    const avgTimeOnSite = hasVisits ? calculateAverageTimeOnSite(visits, timeRange) : 0;
     
     setSummary({
       totalVisitors,
       formSubmissions: totalSubmissions,
       conversionRate: parseFloat(conversionRate.toFixed(1)),
       avgTimeOnSite,
-      mostPopularStep: determineMostPopularPage(visits),
-      completionRate: calculateCompletionRate(submissions, visits)
+      mostPopularStep: hasVisits ? determineMostPopularPage(visits) : 'No data',
+      completionRate: hasVisits && hasSubmissions ? calculateCompletionRate(submissions, visits) : 0
     });
 
-    setDailyVisitorsData(processDailyVisitorsData(visits, timeRange));
-    setConversionFunnelData(processConversionFunnelData(visits, submissions));
-    setPopularPagesData(processPopularPagesData(visits));
-    setPageVisitDetails(processPageVisitDetails(visits));
-    setHourlyActivityData(processHourlyActivityData(visits));
-    setMonthlyTrendData(processMonthlyTrendData(visits, submissions, timeRange));
-    setDetailedVisitData(processDetailedVisitData(visits, submissions, timeRange));
-    setWeeklyHeatMapData(processWeeklyHeatMapData(visits));
+    // Process all the different data visualizations
+    if (hasVisits) {
+      setDailyVisitorsData(processDailyVisitorsData(visits, timeRange));
+      setPopularPagesData(processPopularPagesData(visits));
+      setPageVisitDetails(processPageVisitDetails(visits));
+      setHourlyActivityData(processHourlyActivityData(visits));
+      setWeeklyHeatMapData(processWeeklyHeatMapData(visits));
+      
+      // Process data that uses both visits and submissions
+      setConversionFunnelData(processConversionFunnelData(visits, submissions));
+      setMonthlyTrendData(processMonthlyTrendData(visits, submissions, timeRange));
+      setDetailedVisitData(processDetailedVisitData(visits, submissions, timeRange));
+      
+      // Process location data if we have visits
+      processLocationData(
+        visits, 
+        submissions, 
+        setLocationData, 
+        setZipCodeData, 
+        setDetailedLocationData, 
+        setDetailedZipCodeData
+      );
+    } else {
+      // Set default empty data for visit-dependent charts
+      setDailyVisitorsData([]);
+      setPopularPagesData([{ name: 'No visit data available', visits: 0 }]);
+      setPageVisitDetails([]);
+      setHourlyActivityData([]);
+      setWeeklyHeatMapData([]);
+      setConversionFunnelData([
+        { name: 'Visitors', value: 0 },
+        { name: 'Started Quote', value: 0 },
+        { name: 'Completed Form', value: 0 },
+        { name: 'Submissions', value: totalSubmissions }
+      ]);
+      
+      // If we have submissions but no visits, at least show submission data in monthly trends
+      if (hasSubmissions) {
+        const monthlyData = processMonthlySubmissionData(submissions, timeRange);
+        setMonthlyTrendData(monthlyData);
+      } else {
+        setMonthlyTrendData([]);
+      }
+      
+      // Clear location data
+      setLocationData([]);
+      setZipCodeData([]);
+      setDetailedLocationData([]);
+      setDetailedZipCodeData([]);
+    }
+  };
+
+  // Process monthly data with submissions only
+  const processMonthlySubmissionData = (submissions: any[], timeRange: string) => {
+    const today = new Date();
+    const startDate = getStartDateFromRange(timeRange);
+    const months = timeRange === '7d' ? 3 : timeRange === '30d' ? 6 : 12;
     
-    processLocationData(
-      visits, 
-      submissions, 
-      setLocationData, 
-      setZipCodeData, 
-      setDetailedLocationData, 
-      setDetailedZipCodeData
-    );
+    const monthlyData = [];
+    for (let i = 0; i < months; i++) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const monthStr = date.toLocaleString('default', { month: 'short' });
+      const yearMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      const monthSubmissions = submissions.filter(s => {
+        if (!s.created_at) return false;
+        return s.created_at.startsWith(yearMonth);
+      });
+      
+      monthlyData.unshift({
+        month: monthStr,
+        visitors: 0, // No visitors data
+        submissions: monthSubmissions.length
+      });
+    }
+    
+    return monthlyData;
   };
 
   const resetDataStates = () => {

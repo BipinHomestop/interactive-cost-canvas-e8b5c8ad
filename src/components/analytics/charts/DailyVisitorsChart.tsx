@@ -12,15 +12,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const CHART_CONFIG = {
-  visitors: { 
-    theme: { 
-      light: '#1A3174',
-      dark: '#1A3174'
-    }
-  }
-};
+import { CHART_COLORS, CHART_CONFIG } from './ChartConfig';
 
 interface DailyVisitorsChartProps {
   data: any[];
@@ -28,6 +20,8 @@ interface DailyVisitorsChartProps {
 }
 
 export const DailyVisitorsChart: React.FC<DailyVisitorsChartProps> = ({ data, isLoading }) => {
+  const hasData = data && data.length > 0 && data.some(item => item.visitors > 0);
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -37,6 +31,10 @@ export const DailyVisitorsChart: React.FC<DailyVisitorsChartProps> = ({ data, is
       <CardContent>
         {isLoading ? (
           <Skeleton className="h-[300px] w-full" />
+        ) : !hasData ? (
+          <div className="h-[300px] w-full flex items-center justify-center text-muted-foreground">
+            No visitor data available for the selected time period
+          </div>
         ) : (
           <div className="h-[300px]">
             <ChartContainer config={CHART_CONFIG}>
