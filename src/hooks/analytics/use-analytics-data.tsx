@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -701,7 +700,7 @@ export const useAnalyticsData = (timeRange: string) => {
 
     // Process detailed location data
     const detailedLocData = createDetailedLocationData(cityData, visits);
-    const detailedZipData = createDetailedZipCodeData(zipData, zipMap);
+    const detailedZipData = createDetailedZipCodeData(zipData, zipMap, visits);
 
     // Set all data
     setLocationData(cityData);
@@ -734,7 +733,7 @@ export const useAnalyticsData = (timeRange: string) => {
     });
   };
 
-  const createDetailedZipCodeData = (zipData: any[], zipMap: Map<string, any>) => {
+  const createDetailedZipCodeData = (zipData: any[], zipMap: Map<string, any>, visitsData: any[]) => {
     return zipData.slice(0, 5).map(zip => {
       const zipInfo = zipMap.get(zip.name) || {};
       
@@ -743,12 +742,7 @@ export const useAnalyticsData = (timeRange: string) => {
       const zipSubmissions = typeof zip.submissions === 'number' ? zip.submissions : 0;
       
       // Calculate average time for zip code
-      const zipVisits = [];
-      zipMap.forEach((data, key) => {
-        if (key === zip.name) {
-          zipVisits.push(...visits.filter(v => v.zipcode === key));
-        }
-      });
+      const zipVisits = visitsData.filter(v => v.zipcode === zip.name);
       
       const avgTime = calculateTimeForLocationGroup(zipVisits);
       
@@ -796,13 +790,32 @@ export const useAnalyticsData = (timeRange: string) => {
     if (sessionCount > 0) {
       const avgMinutes = Math.floor(totalDuration / sessionCount);
       const avgSeconds = Math.floor(((totalDuration / sessionCount) % 1) * 60);
-      return `${avgMinutes}:${avgSeconds < 10 ? '0' + avgSeconds : seconds}`;
+      return `${avgMinutes}:${avgSeconds < 10 ? '0' + avgSeconds : avgSeconds}`;
     }
     
     // Fallback estimate
     const minutes = Math.floor(Math.random() * 2) + 2;
     const seconds = Math.floor(Math.random() * 60);
     return `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+  };
+
+  // Add new function to process weekly heat map data
+  const processWeeklyHeatMapData = (visits: any[]) => {
+    const heatMapData = Array(7).fill(0).map((_, dayIndex) => ({
+      day: format(new Date(2023, 0, dayIndex + 1), 'EEEE'), // Use a consistent date to get day names
+      value: 0
+    }));
+    
+    // Count visits per day of week
+    visits.forEach(visit => {
+      if (visit.visit_date) {
+        const visitDate = new Date(visit.visit_date);
+        const dayOfWeek = visitDate.getDay(); // 0 = Sunday, 6 = Saturday
+        heatMapData[dayOfWeek].value += 1;
+      }
+    });
+    
+    return heatMapData;
   };
 
   const extractCityFromLocation = (location: string) => {
@@ -830,7 +843,7 @@ export const useAnalyticsData = (timeRange: string) => {
     csvContent += "Date,Visitors,Submissions,Conversion Rate,Avg Time\n";
     
     detailedVisitData.forEach(row => {
-      csvContent += `${row.date},${row.visitors},${row.submissions},${row.convRate},${row.avgTime}\n`;
+      csvContent += `${row.date},${row.visitors},${row.submissions},${row.convRate},${row.avgTime}\n";
     });
     
     const encodedUri = encodeURI(csvContent);
@@ -851,35 +864,4 @@ export const useAnalyticsData = (timeRange: string) => {
       csvContent += `"${row.page}",${row.visits},${row.percentage},"${row.avgTimeOnPage}","${row.firstVisit}","${row.lastVisit}"\n`;
     });
     
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `page_visits_${timeRange}.csv`);
-    document.body.appendChild(link);
-    
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  useEffect(() => {
-    fetchAnalyticsData();
-  }, [timeRange]);
-
-  return {
-    isLoading,
-    summary,
-    dailyVisitorsData,
-    conversionFunnelData,
-    popularPagesData,
-    pageVisitDetails,
-    hourlyActivityData,
-    monthlyTrendData,
-    detailedVisitData,
-    locationData,
-    zipCodeData,
-    detailedLocationData,
-    detailedZipCodeData,
-    downloadCSV,
-    downloadPageVisitCSV
-  };
-};
+    const encodedUri = encodeURI(

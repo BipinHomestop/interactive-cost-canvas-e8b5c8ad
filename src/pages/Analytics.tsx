@@ -17,6 +17,7 @@ import {
   ZipCodePerformanceTable
 } from '@/components/analytics/AnalyticsTables';
 import { UserLocationCard } from '@/components/analytics/UserLocationCard';
+import { WeeklyHeatMapChart } from '@/components/analytics/WeeklyHeatMapChart';
 import { useAnalyticsData } from '@/hooks/analytics/use-analytics-data';
 import { useUserLocation } from '@/hooks/analytics/use-user-location';
 
@@ -36,6 +37,7 @@ export default function Analytics() {
     locationData,
     detailedLocationData,
     detailedZipCodeData,
+    weeklyHeatMapData,
     downloadCSV,
     downloadPageVisitCSV
   } = useAnalyticsData(timeRange);
@@ -71,6 +73,11 @@ export default function Analytics() {
           topLocation={topLocation}
           topZipCode={topZipCode}
           isLoading={isLoading}
+        />
+        
+        <WeeklyHeatMapChart 
+          data={weeklyHeatMapData || []} 
+          isLoading={isLoading} 
         />
         
         <PageVisitTable
