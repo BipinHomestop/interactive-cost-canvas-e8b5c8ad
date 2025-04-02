@@ -3,6 +3,16 @@ import { useState, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+// Define interface for discount code data
+interface DiscountCode {
+  id: string;
+  code: string;
+  discount_percentage: number;
+  active: boolean;
+  created_at: string;
+  expires_at: string | null;
+}
+
 export function useDiscountCode(totalCost: number) {
   const [couponCode, setCouponCode] = useState<string>("");
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
@@ -55,16 +65,18 @@ export function useDiscountCode(totalCost: number) {
         return;
       }
       
+      const discountCode = data as DiscountCode;
+      
       // Apply the discount
-      setDiscountPercentage(data.discount_percentage);
+      setDiscountPercentage(discountCode.discount_percentage);
       
       // Save to session storage
-      sessionStorage.setItem('cachedDiscountPercentage', data.discount_percentage.toString());
+      sessionStorage.setItem('cachedDiscountPercentage', discountCode.discount_percentage.toString());
       sessionStorage.setItem('cachedCouponCode', couponCode);
       
       toast({
         title: "Coupon Applied",
-        description: `${data.discount_percentage}% discount applied to your order`,
+        description: `${discountCode.discount_percentage}% discount applied to your order`,
         className: "bg-green-500 text-white border-none",
       });
       
