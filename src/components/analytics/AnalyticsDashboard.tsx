@@ -1,24 +1,10 @@
 
 import React from 'react';
-import { RealtimeVisitorsCard } from '@/components/analytics/RealtimeVisitorsCard';
-import { AnalyticsSummaryCards } from '@/components/analytics/AnalyticsSummaryCards';
-import { WeeklyHeatMapChart } from '@/components/analytics/WeeklyHeatMapChart';
-import { UserLocationCard } from '@/components/analytics/UserLocationCard';
-import { GoogleAnalyticsSection } from '@/components/analytics/GoogleAnalyticsSection';
-import { 
-  PageVisitTable, 
-  DailyPerformanceTable,
-  LocationPerformanceTable,
-  ZipCodePerformanceTable
-} from '@/components/analytics/AnalyticsTables';
-import { 
-  DailyVisitorsChart, 
-  ConversionFunnelChart, 
-  PopularPagesChart, 
-  MonthlyPerformanceChart,
-  HourlyActivityChart
-} from '@/components/analytics/charts';
 import { useUserLocation } from '@/hooks/analytics/use-user-location';
+import { DashboardHeader } from './dashboard/DashboardHeader';
+import { ChartSection } from './dashboard/ChartSection';
+import { DataTablesSection } from './dashboard/DataTablesSection';
+import { VisitorInsights } from './dashboard/VisitorInsights';
 
 interface AnalyticsDashboardProps {
   isLoading: boolean;
@@ -74,41 +60,22 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
   return (
     <>
-      <RealtimeVisitorsCard />
-      
-      <AnalyticsSummaryCards 
-        totalVisitors={summary.totalVisitors}
-        completeSubmissions={summary.completeSubmissions}
-        partialSubmissions={summary.partialSubmissions}
-        conversionRate={summary.conversionRate}
-        avgTimeOnSite={summary.avgTimeOnSite}
-        mostPopularStep={summary.mostPopularStep}
-        completionRate={summary.completionRate}
-        topLocation={topLocation}
-        topZipCode={topZipCode}
-        isLoading={isLoading}
-      />
-      
-      {/* Add Google Analytics Section */}
-      <GoogleAnalyticsSection 
+      <DashboardHeader 
         isLoading={isLoading}
         timeRange={timeRange}
+        summary={summary}
+        topLocation={topLocation}
+        topZipCode={topZipCode}
       />
-      
-      {hasVisitorData && (
-        <WeeklyHeatMapChart 
-          data={weeklyHeatMapData || []} 
-          isLoading={isLoading} 
-        />
-      )}
-      
-      {hasVisitorData && (
-        <PageVisitTable
-          pageVisitDetails={pageVisitDetails}
-          isLoading={isLoading}
-          downloadPageVisitCSV={downloadPageVisitCSV}
-        />
-      )}
+
+      <VisitorInsights 
+        hasVisitorData={hasVisitorData}
+        pageVisitDetails={pageVisitDetails}
+        weeklyHeatMapData={weeklyHeatMapData}
+        userLocationData={userLocationData}
+        isLoading={isLoading}
+        downloadPageVisitCSV={downloadPageVisitCSV}
+      />
 
       <ChartSection 
         dailyVisitorsData={dailyVisitorsData}
@@ -128,116 +95,6 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         detailedZipCodeData={detailedZipCodeData}
         isLoading={isLoading}
       />
-
-      <UserLocationCard 
-        userLocationData={userLocationData} 
-        isLoading={isLoading} 
-      />
-    </>
-  );
-};
-
-const ChartSection: React.FC<{
-  dailyVisitorsData: any[];
-  conversionFunnelData: any[];
-  popularPagesData: any[];
-  monthlyTrendData: any[];
-  hourlyActivityData: any[];
-  isLoading: boolean;
-  hasVisitorData: boolean;
-}> = ({
-  dailyVisitorsData,
-  conversionFunnelData,
-  popularPagesData,
-  monthlyTrendData,
-  hourlyActivityData,
-  isLoading,
-  hasVisitorData
-}) => {
-  return (
-    <>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <DailyVisitorsChart 
-          data={dailyVisitorsData} 
-          isLoading={isLoading} 
-        />
-        
-        <ConversionFunnelChart 
-          data={conversionFunnelData} 
-          isLoading={isLoading} 
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <PopularPagesChart 
-          data={popularPagesData} 
-          isLoading={isLoading} 
-        />
-        
-        <MonthlyPerformanceChart 
-          data={monthlyTrendData} 
-          isLoading={isLoading} 
-        />
-      </div>
-
-      {hasVisitorData && (
-        <HourlyActivityChart 
-          data={hourlyActivityData} 
-          isLoading={isLoading} 
-        />
-      )}
-    </>
-  );
-};
-
-const DataTablesSection: React.FC<{
-  hasVisitorData: boolean;
-  summary: {
-    totalVisitors: number;
-    completeSubmissions: number;
-    partialSubmissions: number;
-    conversionRate: number;
-    avgTimeOnSite: number;
-    mostPopularStep: string;
-    completionRate: number;
-    formSubmissions: number;
-  };
-  detailedVisitData: any[];
-  detailedLocationData: any[];
-  detailedZipCodeData: any[];
-  isLoading: boolean;
-}> = ({
-  hasVisitorData,
-  summary,
-  detailedVisitData,
-  detailedLocationData,
-  detailedZipCodeData,
-  isLoading
-}) => {
-  return (
-    <>
-      {(hasVisitorData || summary.formSubmissions > 0) && (
-        <DailyPerformanceTable 
-          data={detailedVisitData} 
-          isLoading={isLoading} 
-        />
-      )}
-
-      {hasVisitorData && (
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <LocationPerformanceTable 
-            data={detailedLocationData} 
-            isLoading={isLoading}
-            title="Location Performance"
-            description="Performance metrics by city"
-          />
-          
-          <ZipCodePerformanceTable 
-            data={detailedZipCodeData} 
-            isLoading={isLoading} 
-          />
-        </div>
-      )}
     </>
   );
 };
