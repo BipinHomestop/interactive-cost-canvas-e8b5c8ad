@@ -303,8 +303,11 @@ export default function Analytics() {
     });
     
     // If we have submissions but very few page types, assume higher completion
-    if (submissions.length > 0 && pagesVisited.size <= 2) {
-      return Math.min(90, (submissions.length / Math.max(visits.length, 1)) * 100);
+    const submissionsLength = submissions.length || 0;
+    const visitsLength = visits.length || 0;
+    
+    if (submissionsLength > 0 && pagesVisited.size <= 2) {
+      return Math.min(90, (submissionsLength / Math.max(visitsLength, 1)) * 100);
     }
     
     // Otherwise estimate based on what we have
@@ -314,7 +317,7 @@ export default function Analytics() {
     ).length;
     
     if (startedEstimate === 0) return 0;
-    return parseFloat(((submissions.length / startedEstimate) * 100).toFixed(1));
+    return parseFloat(((submissionsLength / startedEstimate) * 100).toFixed(1));
   };
 
   const processDailyVisitorsData = (visits) => {
@@ -481,7 +484,12 @@ export default function Analytics() {
       
       const visitors = dayVisits.length;
       const submissionsCount = daySubmissions.length;
-      const convRate = visitors > 0 ? ((submissionsCount / visitors) * 100).toFixed(1) + '%' : '0.0%';
+      
+      // Ensure we have number values before doing arithmetic operations
+      let convRate = '0.0%';
+      if (visitors > 0 && typeof submissionsCount === 'number') {
+        convRate = ((submissionsCount / visitors) * 100).toFixed(1) + '%';
+      }
       
       // Estimate average time based on time range
       const minutes = Math.floor(Math.random() * 3) + 2;
