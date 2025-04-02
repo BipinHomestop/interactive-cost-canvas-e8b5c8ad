@@ -650,7 +650,6 @@ export default function Analytics() {
         const seconds = Math.floor(Math.random() * 60);
         const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
         
-        // Ensure numeric types for zip data
         const zipVisitors = typeof zip.visitors === 'number' ? zip.visitors : 0;
         const zipSubmissions = typeof zip.submissions === 'number' ? zip.submissions : 0;
         
