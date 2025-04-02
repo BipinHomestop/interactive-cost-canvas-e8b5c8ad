@@ -22,7 +22,6 @@ import { UserLocationCard } from '@/components/analytics/UserLocationCard';
 import { WeeklyHeatMapChart } from '@/components/analytics/WeeklyHeatMapChart';
 import { useAnalyticsData } from '@/hooks/analytics/use-analytics-data';
 import { useUserLocation } from '@/hooks/analytics/use-user-location';
-import { GoogleAnalyticsCard } from '@/components/analytics/GoogleAnalyticsCard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AlertCircle } from 'lucide-react';
@@ -68,7 +67,6 @@ export default function Analytics() {
     detailedLocationData,
     detailedZipCodeData,
     weeklyHeatMapData,
-    googleAnalyticsData,
     downloadCSV,
     downloadPageVisitCSV,
     refetchData
@@ -134,21 +132,18 @@ export default function Analytics() {
         {/* Realtime Visitors Card */}
         <RealtimeVisitorsCard />
         
-        {!hasVisitorData && summary.completeSubmissions > 0 && !isLoading && (
+        {!hasVisitorData && (summary.completeSubmissions > 0 || summary.partialSubmissions > 0) && !isLoading && (
           <Alert className="mb-6">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Limited Data Available</AlertTitle>
             <AlertDescription>
-              We found {summary.completeSubmissions} complete form submissions but no visitor tracking data for the selected time period. 
+              We found {summary.completeSubmissions} complete and {summary.partialSubmissions} partial form submissions 
+              but no visitor tracking data for the selected time period. 
               Some charts may appear empty or show limited information.
             </AlertDescription>
           </Alert>
         )}
         
-        {/* Google Analytics card */}
-        <GoogleAnalyticsCard data={googleAnalyticsData} isLoading={isLoading} />
-        
-        {/* Standard analytics cards */}
         <AnalyticsSummaryCards 
           totalVisitors={summary.totalVisitors}
           completeSubmissions={summary.completeSubmissions}
@@ -212,7 +207,7 @@ export default function Analytics() {
         )}
 
         {/* Show daily performance if we have any data */}
-        {(hasVisitorData || summary.completeSubmissions > 0 || summary.partialSubmissions > 0) && (
+        {(hasVisitorData || summary.formSubmissions > 0) && (
           <DailyPerformanceTable 
             data={detailedVisitData} 
             isLoading={isLoading} 

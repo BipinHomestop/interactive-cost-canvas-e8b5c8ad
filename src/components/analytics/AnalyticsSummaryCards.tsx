@@ -1,18 +1,10 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, Activity, TrendingUp, Clock, BarChart3, PieChart, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Users,
-  FileCheck,
-  Percent,
-  Clock,
-  Building2,
-  MapPin,
-  FileText
-} from 'lucide-react';
 
-interface AnalyticsSummaryCardsProps {
+type SummaryDataProps = {
   totalVisitors: number;
   completeSubmissions: number;
   partialSubmissions: number;
@@ -23,9 +15,9 @@ interface AnalyticsSummaryCardsProps {
   topLocation: string;
   topZipCode: string;
   isLoading: boolean;
-}
+};
 
-export const AnalyticsSummaryCards: React.FC<AnalyticsSummaryCardsProps> = ({
+export const AnalyticsSummaryCards: React.FC<SummaryDataProps> = ({
   totalVisitors,
   completeSubmissions,
   partialSubmissions,
@@ -37,139 +29,141 @@ export const AnalyticsSummaryCards: React.FC<AnalyticsSummaryCardsProps> = ({
   topZipCode,
   isLoading
 }) => {
-  const formatTimeOnSite = (seconds: number) => {
-    if (seconds === 0) return '0:00';
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
-  };
-
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Visitors</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <div className="text-2xl font-bold">{totalVisitors}</div>
-          )}
-        </CardContent>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Total Visitors</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-3xl font-bold text-[#1A3174]">{totalVisitors}</p>
+            )}
+          </div>
+          <Users className="h-8 w-8 text-[#1A3174] opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Real visitor count</p>
       </Card>
 
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Complete Submissions</CardTitle>
-          <FileCheck className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <div className="text-2xl font-bold">{completeSubmissions}</div>
-          )}
-        </CardContent>
-      </Card>
-      
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Partial Submissions</CardTitle>
-          <FileText className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <div className="text-2xl font-bold">{partialSubmissions}</div>
-          )}
-        </CardContent>
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Complete Submissions</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-3xl font-bold text-[#1A3174]">{completeSubmissions}</p>
+            )}
+          </div>
+          <CheckCircle className="h-8 w-8 text-green-600 opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Paid/completed quotes</p>
       </Card>
 
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-          <Percent className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <div className="text-2xl font-bold">{conversionRate}%</div>
-          )}
-        </CardContent>
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Partial Submissions</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-3xl font-bold text-amber-500">{partialSubmissions}</p>
+            )}
+          </div>
+          <AlertCircle className="h-8 w-8 text-amber-500 opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Incomplete quotes</p>
       </Card>
 
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Avg Time on Site</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <div className="text-2xl font-bold">{formatTimeOnSite(avgTimeOnSite)}</div>
-          )}
-        </CardContent>
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Conversion Rate</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-3xl font-bold text-[#1A3174]">{conversionRate}%</p>
+            )}
+          </div>
+          <TrendingUp className="h-8 w-8 text-[#1A3174] opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Complete submissions/visitors</p>
       </Card>
 
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Most Popular Step</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-full" />
-          ) : (
-            <div className="text-xl font-bold line-clamp-1">{mostPopularStep}</div>
-          )}
-        </CardContent>
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Avg Time on Site</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-3xl font-bold text-[#1A3174]">{avgTimeOnSite} min</p>
+            )}
+          </div>
+          <Clock className="h-8 w-8 text-[#1A3174] opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Average session duration</p>
       </Card>
 
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
-          <Percent className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <div className="text-2xl font-bold">{completionRate}%</div>
-          )}
-        </CardContent>
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Most Popular Step</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-40" />
+            ) : (
+              <p className="text-xl font-bold text-[#1A3174]">{mostPopularStep}</p>
+            )}
+          </div>
+          <BarChart3 className="h-8 w-8 text-[#1A3174] opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Highest engagement</p>
       </Card>
 
-      <Card className="shadow-sm bg-white">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Top Location</CardTitle>
-          <Building2 className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-full" />
-          ) : (
-            <div className="text-xl font-bold truncate">{topLocation}</div>
-          )}
-        </CardContent>
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Completion Rate</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-3xl font-bold text-[#1A3174]">{completionRate}%</p>
+            )}
+          </div>
+          <PieChart className="h-8 w-8 text-[#1A3174] opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Started to completed</p>
       </Card>
 
-      <Card className="shadow-sm bg-white col-span-1">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Top ZIP Code</CardTitle>
-          <MapPin className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-8 w-20" />
-          ) : (
-            <div className="text-2xl font-bold">{topZipCode}</div>
-          )}
-        </CardContent>
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Top Location</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-40" />
+            ) : (
+              <p className="text-xl font-bold text-[#1A3174]">{topLocation}</p>
+            )}
+          </div>
+          <MapPin className="h-8 w-8 text-[#1A3174] opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Most active location</p>
+      </Card>
+
+      <Card className="p-6 shadow-md">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Top Zip Code</h2>
+            {isLoading ? (
+              <Skeleton className="h-10 w-20" />
+            ) : (
+              <p className="text-xl font-bold text-[#1A3174]">{topZipCode}</p>
+            )}
+          </div>
+          <CheckCircle className="h-8 w-8 text-[#1A3174] opacity-80" />
+        </div>
+        <p className="text-sm text-gray-500 mt-2">Highest conversion zip</p>
       </Card>
     </div>
   );

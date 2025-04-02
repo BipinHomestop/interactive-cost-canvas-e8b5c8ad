@@ -23,13 +23,22 @@ interface MonthlyPerformanceChartProps {
 export const MonthlyPerformanceChart: React.FC<MonthlyPerformanceChartProps> = ({ data, isLoading }) => {
   const hasData = data && data.length > 0 && data.some(item => 
     item.visitors > 0 || 
-    item.completeSubmissions > 0 || 
-    item.partialSubmissions > 0
+    (item.completeSubmissions !== undefined && item.completeSubmissions > 0) || 
+    (item.partialSubmissions !== undefined && item.partialSubmissions > 0) ||
+    (item.submissions !== undefined && item.submissions > 0)
   );
   
   const hasVisitorData = data && data.some(item => item.visitors > 0);
-  const hasCompleteSubmissionData = data && data.some(item => item.completeSubmissions > 0);
-  const hasPartialSubmissionData = data && data.some(item => item.partialSubmissions > 0);
+  const hasCompleteSubmissionData = data && data.some(item => 
+    item.completeSubmissions !== undefined && item.completeSubmissions > 0
+  );
+  const hasPartialSubmissionData = data && data.some(item => 
+    item.partialSubmissions !== undefined && item.partialSubmissions > 0
+  );
+  // For backwards compatibility with old data format
+  const hasLegacySubmissionData = data && data.some(item => 
+    item.submissions !== undefined && item.submissions > 0
+  );
 
   return (
     <Card className="shadow-md">
@@ -46,7 +55,11 @@ export const MonthlyPerformanceChart: React.FC<MonthlyPerformanceChartProps> = (
           </div>
         ) : (
           <div className="h-[300px]">
-            <ChartContainer config={CHART_CONFIG}>
+            <ChartContainer config={{
+              ...CHART_CONFIG,
+              completeSubmissions: { color: 'rgb(34, 197, 94)' },  // Green
+              partialSubmissions: { color: 'rgb(245, 158, 11)' }   // Amber
+            }}>
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -66,7 +79,7 @@ export const MonthlyPerformanceChart: React.FC<MonthlyPerformanceChartProps> = (
                     <Line 
                       type="monotone" 
                       dataKey="completeSubmissions" 
-                      stroke="var(--color-submissions)" 
+                      stroke="var(--color-completeSubmissions)" 
                       name="Complete Submissions"
                       strokeWidth={2}
                       dot={{ r: 4 }}
@@ -76,11 +89,21 @@ export const MonthlyPerformanceChart: React.FC<MonthlyPerformanceChartProps> = (
                     <Line 
                       type="monotone" 
                       dataKey="partialSubmissions" 
-                      stroke="#FDA4AF" 
+                      stroke="var(--color-partialSubmissions)" 
                       name="Partial Submissions"
                       strokeWidth={2}
-                      dot={{ r: 4, fill: "#FDA4AF" }}
-                      strokeDasharray="5 5"
+                      dot={{ r: 4 }}
+                    />
+                  )}
+                  {/* For backwards compatibility with old data format */}
+                  {hasLegacySubmissionData && !hasCompleteSubmissionData && !hasPartialSubmissionData && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="submissions" 
+                      stroke="var(--color-submissions)" 
+                      name="Submissions"
+                      strokeWidth={2}
+                      dot={{ r: 4 }}
                     />
                   )}
                   <Legend />

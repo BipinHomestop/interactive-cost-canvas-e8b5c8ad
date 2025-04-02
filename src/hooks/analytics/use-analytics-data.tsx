@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -45,12 +44,6 @@ export const useAnalyticsData = (timeRange: string) => {
   const [detailedLocationData, setDetailedLocationData] = useState([]);
   const [detailedZipCodeData, setDetailedZipCodeData] = useState([]);
   const [weeklyHeatMapData, setWeeklyHeatMapData] = useState([]);
-  const [googleAnalyticsData, setGoogleAnalyticsData] = useState({
-    pageViews: 0,
-    uniqueVisitors: 0,
-    avgSessionDuration: '0:00',
-    bounceRate: '0%'
-  });
 
   const fetchAnalyticsData = useCallback(async () => {
     try {
@@ -65,13 +58,11 @@ export const useAnalyticsData = (timeRange: string) => {
       
       console.log(`Date range for query: ${startDateString} to ${endDateString}`);
       
-      // Fetch location visits with date range filter
       let query = supabase
         .from('analytics_location_visits')
         .select('*')
         .gte('visit_date', startDateString);
       
-      // Only add less than filter for custom range
       if (timeRange.includes(':')) {
         query = query.lte('visit_date', endDateString);
       }
@@ -86,16 +77,14 @@ export const useAnalyticsData = (timeRange: string) => {
 
       console.log('Retrieved location visits:', locationVisits?.length || 0);
 
-      // Fetch form submissions with date range filter
       let submissionsQuery = supabase
         .from('cost_calculator_submissions')
         .select('*')
         .gte('created_at', startDate.toISOString());
       
-      // Only add less than filter for custom range
       if (timeRange.includes(':')) {
         const nextDay = new Date(endDate);
-        nextDay.setDate(nextDay.getDate() + 1); // Add a day to include the end date
+        nextDay.setDate(nextDay.getDate() + 1);
         submissionsQuery = submissionsQuery.lt('created_at', nextDay.toISOString());
       }
       
@@ -107,17 +96,6 @@ export const useAnalyticsData = (timeRange: string) => {
       }
 
       console.log('Retrieved submissions:', submissions?.length || 0);
-      
-      // Simulate fetching Google Analytics data
-      // This would normally come from the Google Analytics API
-      const fakeGoogleAnalyticsData = {
-        pageViews: Math.floor(Math.random() * 500) + 100,
-        uniqueVisitors: Math.floor(Math.random() * 300) + 50,
-        avgSessionDuration: `${Math.floor(Math.random() * 3)}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`,
-        bounceRate: `${(Math.random() * 60 + 20).toFixed(1)}%`
-      };
-      
-      setGoogleAnalyticsData(fakeGoogleAnalyticsData);
       
       processAnalyticsData(locationVisits || [], submissions || []);
       
@@ -134,7 +112,6 @@ export const useAnalyticsData = (timeRange: string) => {
   }, [fetchAnalyticsData]);
 
   const processAnalyticsData = (visits: any[], submissions: any[]) => {
-    // Check if we have any data to process
     const hasVisits = visits && visits.length > 0;
     const hasSubmissions = submissions && submissions.length > 0;
     
@@ -147,26 +124,23 @@ export const useAnalyticsData = (timeRange: string) => {
 
     console.log('Processing analytics data:', { visits: visits.length, submissions: submissions.length });
 
+    const { complete, partial } = countSubmissionsByStatus(submissions);
+    
     const totalVisitors = hasVisits ? visits.length : 0;
+    const conversionRate = totalVisitors > 0 ? (complete / totalVisitors) * 100 : 0;
     
-    // Count complete and partial submissions
-    const submissionCounts = hasSubmissions ? countSubmissionsByStatus(submissions) : { complete: 0, partial: 0 };
-    const conversionRate = totalVisitors > 0 ? (submissionCounts.complete / totalVisitors) * 100 : 0;
-    
-    // Calculate actual time on site from real data if we have visits
     const avgTimeOnSite = hasVisits ? calculateAverageTimeOnSite(visits, timeRange) : 0;
     
     setSummary({
       totalVisitors,
-      completeSubmissions: submissionCounts.complete,
-      partialSubmissions: submissionCounts.partial,
+      completeSubmissions: complete,
+      partialSubmissions: partial,
       conversionRate: parseFloat(conversionRate.toFixed(1)),
       avgTimeOnSite,
       mostPopularStep: hasVisits ? determineMostPopularPage(visits) : 'No data',
       completionRate: hasVisits && hasSubmissions ? calculateCompletionRate(submissions, visits) : 0
     });
 
-    // Process all the different data visualizations
     if (hasVisits) {
       setDailyVisitorsData(processDailyVisitorsData(visits, timeRange));
       setPopularPagesData(processPopularPagesData(visits));
@@ -174,12 +148,10 @@ export const useAnalyticsData = (timeRange: string) => {
       setHourlyActivityData(processHourlyActivityData(visits));
       setWeeklyHeatMapData(processWeeklyHeatMapData(visits));
       
-      // Process data that uses both visits and submissions
       setConversionFunnelData(processConversionFunnelData(visits, submissions));
       setMonthlyTrendData(processMonthlyTrendData(visits, submissions, timeRange));
       setDetailedVisitData(processDetailedVisitData(visits, submissions, timeRange));
       
-      // Process location data if we have visits
       processLocationData(
         visits, 
         submissions, 
@@ -189,31 +161,25 @@ export const useAnalyticsData = (timeRange: string) => {
         setDetailedZipCodeData
       );
     } else {
-      // Set default empty data for visit-dependent charts
       setDailyVisitorsData([]);
       setPopularPagesData([{ name: 'No visit data available', visits: 0 }]);
       setPageVisitDetails([]);
       setHourlyActivityData([]);
       setWeeklyHeatMapData([]);
+      setConversionFunnelData([
+        { name: 'Visitors', value: 0 },
+        { name: 'Started Quote', value: 0 },
+        { name: 'Completed Form', value: 0 },
+        { name: 'Submissions', value: totalSubmissions }
+      ]);
       
-      // If we have submissions but no visits, at least show submission data in monthly trends
       if (hasSubmissions) {
         const monthlyData = processMonthlySubmissionData(submissions, timeRange);
         setMonthlyTrendData(monthlyData);
-        
-        setConversionFunnelData([
-          { name: 'Visitors', value: 0 },
-          { name: 'Started Quote', value: 0 },
-          { name: 'Completed Form', value: 0 },
-          { name: 'Partial Submissions', value: submissionCounts.partial },
-          { name: 'Complete Submissions', value: submissionCounts.complete }
-        ]);
       } else {
         setMonthlyTrendData([]);
-        setConversionFunnelData([]);
       }
       
-      // Clear location data
       setLocationData([]);
       setZipCodeData([]);
       setDetailedLocationData([]);
@@ -221,7 +187,6 @@ export const useAnalyticsData = (timeRange: string) => {
     }
   };
 
-  // Process monthly data with submissions only
   const processMonthlySubmissionData = (submissions: any[], timeRange: string) => {
     const today = new Date();
     const startDate = getStartDateFromRange(timeRange);
@@ -238,13 +203,10 @@ export const useAnalyticsData = (timeRange: string) => {
         return s.created_at.startsWith(yearMonth);
       });
       
-      const { complete, partial } = countSubmissionsByStatus(monthSubmissions);
-      
       monthlyData.unshift({
         month: monthStr,
-        visitors: 0, // No visitors data
-        completeSubmissions: complete,
-        partialSubmissions: partial
+        visitors: 0,
+        submissions: monthSubmissions.length
       });
     }
     
@@ -274,13 +236,6 @@ export const useAnalyticsData = (timeRange: string) => {
     setDetailedLocationData([]);
     setDetailedZipCodeData([]);
     setWeeklyHeatMapData([]);
-    
-    setGoogleAnalyticsData({
-      pageViews: 0,
-      uniqueVisitors: 0,
-      avgSessionDuration: '0:00',
-      bounceRate: '0%'
-    });
   };
 
   const handleDownloadCSV = () => {
@@ -305,7 +260,6 @@ export const useAnalyticsData = (timeRange: string) => {
     detailedLocationData,
     detailedZipCodeData,
     weeklyHeatMapData,
-    googleAnalyticsData,
     downloadCSV: handleDownloadCSV,
     downloadPageVisitCSV: handleDownloadPageVisitCSV,
     refetchData: fetchAnalyticsData

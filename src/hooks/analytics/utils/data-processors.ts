@@ -1,4 +1,3 @@
-
 import { formatPageName } from './format-utils';
 import { 
   calculateDailyAvgTime, 
@@ -249,7 +248,7 @@ export const processPageVisitDetails = (visits: any[]) => {
   });
   
   // Calculate time on page from consecutive views
-  Object.values(ipPageTimes).forEach((visits: Array<{page: string, time: Date}>) => {
+  Object.values(ipPageTimes).forEach((visits: Array<{page: string, time: Date}>>) => {
     if (visits.length > 1) {
       for (let i = 0; i < visits.length - 1; i++) {
         const pageName = visits[i].page;
