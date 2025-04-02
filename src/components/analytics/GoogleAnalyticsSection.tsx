@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -18,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface GoogleAnalyticsSectionProps {
   isLoading: boolean;
@@ -29,7 +31,21 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
   timeRange
 }) => {
   const [gaTimeRange, setGaTimeRange] = useState<string>('30d');
-  const { pageTrafficData, isGaLoading, totalUsers } = useGoogleAnalyticsData(gaTimeRange);
+  const { pageTrafficData, isGaLoading, totalUsers, error } = useGoogleAnalyticsData(gaTimeRange);
+  const [retryCount, setRetryCount] = useState(0);
+  
+  // Automatically retry when there's an error
+  useEffect(() => {
+    if (error && retryCount < 3) {
+      const timer = setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        // This will trigger a re-fetch in the useGoogleAnalyticsData hook
+        setGaTimeRange(current => current);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [error, retryCount]);
   
   return (
     <Card className="shadow-md mb-8">
@@ -53,6 +69,16 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
         </div>
       </CardHeader>
       <CardContent>
+        {error && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error loading Google Analytics data</AlertTitle>
+            <AlertDescription>
+              {typeof error === 'string' ? error : 'Failed to connect to Google Analytics. This could be due to missing configuration or network issues.'}
+            </AlertDescription>
+          </Alert>
+        )}
+      
         {isLoading || isGaLoading ? (
           <Skeleton className="h-[300px] w-full" />
         ) : pageTrafficData.length === 0 ? (

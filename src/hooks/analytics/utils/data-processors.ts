@@ -66,7 +66,7 @@ export const calculateCompletionRate = (submissions: any[], visits: any[]): numb
   let startedCount = 0;
   Object.values(pagesVisitedByIP).forEach((pageSet) => {
     const pages = Array.from(pageSet);
-    // Consider it started if they visited contact info page or went beyond
+    // Consider it started if they visited contact info page
     if (pages.some(page => 
       page.toLowerCase().includes('contact') || 
       page.toLowerCase().includes('step/2')
@@ -99,6 +99,13 @@ export const countSubmissionsByStatus = (submissions: any[]) => {
     sub.payment_status !== 'paid' &&
     sub.name && sub.email && sub.phone // Has contact information
   );
+  
+  console.log('Submissions breakdown:', {
+    total: submissions.length,
+    complete: completeSubmissions.length,
+    partial: partialSubmissions.length,
+    withContact: submissions.filter(sub => sub.name && sub.email && sub.phone).length
+  });
   
   return {
     complete: completeSubmissions.length,
@@ -156,7 +163,7 @@ export const processConversionFunnelData = (visits: any[], submissions: any[]) =
           visitorsByIP[visit.ip_hash].startedQuote = true;
         }
         
-        // Check if completed form
+        // Check if completed form - now only checks for contact page
         if (visit.page_visited.toLowerCase().includes('contact')) {
           visitorsByIP[visit.ip_hash].completedForm = true;
         }
