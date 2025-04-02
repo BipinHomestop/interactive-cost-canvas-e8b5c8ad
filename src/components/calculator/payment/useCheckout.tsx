@@ -58,8 +58,14 @@ export function useCheckout(
 
       console.log('Successfully updated installation date, proceeding to checkout');
 
-      // Prepare line items for Stripe based on price breakdown
+      // Cache the breakdown items before sending to ensure consistency if user returns
       const breakdownItems = getBreakdownItems();
+      sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(breakdownItems));
+      sessionStorage.setItem('cachedTotalCost', totalCost.toString());
+      sessionStorage.setItem('cachedDiscountPercentage', discountPercentage.toString());
+      sessionStorage.setItem('cachedDiscountedTotal', discountedTotal.toString());
+
+      // Prepare line items for Stripe based on price breakdown
       const lineItems = breakdownItems.map(item => ({
         price_data: {
           currency: 'usd',

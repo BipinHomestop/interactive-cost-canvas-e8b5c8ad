@@ -1,5 +1,6 @@
 
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
+import { useEffect, useState } from "react";
 
 // Helper function to format finish labels
 const formatFinishLabel = (finish: string): string => {
@@ -29,6 +30,7 @@ export function PriceBreakdown({
   discountedTotal 
 }: PriceBreakdownProps) {
   const { getPrice, getFinishMultiplier } = usePricingConfig();
+  const [breakdownItems, setBreakdownItems] = useState<BreakdownItem[]>([]);
   
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -40,7 +42,27 @@ export function PriceBreakdown({
   const DEFAULT_STEM_WALL_LARGE_PRICE = 1000;
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
-
+  
+  useEffect(() => {
+    // Check for cached breakdown items
+    const cachedItemsStr = sessionStorage.getItem('cachedBreakdownItems');
+    if (cachedItemsStr) {
+      try {
+        const items = JSON.parse(cachedItemsStr);
+        if (Array.isArray(items) && items.length > 0) {
+          console.log('PriceBreakdown using cached items');
+          setBreakdownItems(items);
+          return;
+        }
+      } catch (e) {
+        console.error('Error parsing cached breakdown items:', e);
+      }
+    }
+    
+    // If no cache or error, generate the breakdown
+    setBreakdownItems(renderPriceBreakdown());
+  }, [formData, totalCost, discountPercentage]);
+  
   const renderPriceBreakdown = (): BreakdownItem[] => {
     const breakdown = [];
     
@@ -134,10 +156,17 @@ export function PriceBreakdown({
       });
     }
 
+    // Add discount if applicable
+    if (discountPercentage > 0) {
+      const discountAmount = (totalCost * discountPercentage / 100) * -1;
+      breakdown.push({
+        label: `Discount (${discountPercentage}%)`,
+        price: discountAmount
+      });
+    }
+
     return breakdown;
   };
-
-  const breakdownItems = renderPriceBreakdown();
 
   return (
     <div className="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-sm">
@@ -149,13 +178,6 @@ export function PriceBreakdown({
             <span className="font-medium">${item.price.toFixed(2)}</span>
           </div>
         ))}
-        
-        {discountPercentage > 0 && (
-          <div className="flex justify-between text-sm text-red-600">
-            <span>Discount ({discountPercentage}%)</span>
-            <span>-${(totalCost * discountPercentage / 100).toFixed(2)}</span>
-          </div>
-        )}
         
         <div className="border-t pt-3 mt-3 flex justify-between font-semibold text-lg">
           <span>Total</span>

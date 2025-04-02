@@ -1,69 +1,92 @@
 
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
-
-// Valid coupon codes for testing
-const VALID_COUPONS: Record<string, number> = {
-  "TEST99": 99.5, // 99.5% discount for testing
-};
+import { supabase } from "@/integrations/supabase/client";
 
 export function useDiscountCode(totalCost: number) {
   const [couponCode, setCouponCode] = useState<string>("");
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
-  const [discountedTotal, setDiscountedTotal] = useState<number>(totalCost);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
-
-  // Update discounted total when total cost changes
-  useEffect(() => {
-    if (discountPercentage > 0) {
-      const discountAmount = totalCost * (discountPercentage / 100);
-      setDiscountedTotal(totalCost - discountAmount);
-    } else {
-      setDiscountedTotal(totalCost);
-    }
-  }, [totalCost, discountPercentage]);
-
-  const handleApplyCoupon = () => {
+  
+  // Calculate discounted total
+  const discountedTotal = Math.round(totalCost * (1 - discountPercentage / 100));
+  
+  // Function to initialize discount state (used when restoring from cache)
+  const setInitialDiscount = useCallback((percentage: number, code: string) => {
+    setDiscountPercentage(percentage);
+    setCouponCode(code);
+    
+    // Store in session storage for persistence
+    sessionStorage.setItem('cachedDiscountPercentage', percentage.toString());
+    sessionStorage.setItem('cachedCouponCode', code);
+  }, []);
+  
+  const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       toast({
-        title: "No coupon code entered",
-        description: "Please enter a coupon code to apply",
+        title: "Enter a coupon code",
+        description: "Please enter a valid coupon code",
         variant: "destructive",
       });
       return;
     }
     
-    const upperCaseCode = couponCode.trim().toUpperCase();
+    setIsLoading(true);
     
-    if (VALID_COUPONS[upperCaseCode]) {
-      const discount = VALID_COUPONS[upperCaseCode];
-      setDiscountPercentage(discount);
+    try {
+      const { data, error } = await supabase
+        .from('discount_codes')
+        .select('*')
+        .eq('code', couponCode.trim().toUpperCase())
+        .eq('active', true)
+        .single();
       
-      // Calculate new total with discount
-      const discountAmount = totalCost * (discount / 100);
-      const newTotal = totalCost - discountAmount;
-      setDiscountedTotal(newTotal);
+      if (error || !data) {
+        console.error('Error fetching coupon:', error);
+        toast({
+          title: "Invalid Coupon",
+          description: "This coupon code is invalid or expired",
+          variant: "destructive",
+        });
+        setDiscountPercentage(0);
+        sessionStorage.removeItem('cachedDiscountPercentage');
+        sessionStorage.removeItem('cachedCouponCode');
+        return;
+      }
+      
+      // Apply the discount
+      setDiscountPercentage(data.discount_percentage);
+      
+      // Save to session storage
+      sessionStorage.setItem('cachedDiscountPercentage', data.discount_percentage.toString());
+      sessionStorage.setItem('cachedCouponCode', couponCode);
       
       toast({
         title: "Coupon Applied",
-        description: `${discount}% discount has been applied`,
+        description: `${data.discount_percentage}% discount applied to your order`,
+        className: "bg-green-500 text-white border-none",
       });
-    } else {
+      
+    } catch (error) {
+      console.error('Error applying coupon:', error);
       toast({
-        title: "Invalid Coupon",
-        description: "This coupon code is not valid",
+        title: "Error",
+        description: "Failed to apply coupon. Please try again.",
         variant: "destructive",
       });
-      setDiscountPercentage(0);
-      setDiscountedTotal(totalCost);
+    } finally {
+      setIsLoading(false);
     }
   };
-
+  
   return {
     couponCode,
     setCouponCode,
     discountPercentage,
     discountedTotal,
-    handleApplyCoupon
+    isLoading,
+    handleApplyCoupon,
+    setInitialDiscount
   };
 }

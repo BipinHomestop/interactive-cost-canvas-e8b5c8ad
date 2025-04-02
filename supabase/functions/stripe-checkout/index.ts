@@ -48,6 +48,7 @@ serve(async (req) => {
       throw new Error("Stripe configuration is incomplete. Please contact support.");
     }
 
+    // Create a new Stripe instance for each request to avoid global state issues
     console.log("Using Stripe API key to create session");
     const stripe = new Stripe(stripeApiKey, {
       apiVersion: "2022-11-15",
@@ -61,17 +62,51 @@ serve(async (req) => {
       metadata: { ...metadata, submission_id: metadata.submission_id }
     });
     
-    // Create a checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: lineItems,
-      mode: "payment",
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      metadata: metadata,
-    });
-    
-    console.log("Checkout session created:", session.id);
+    // Check if we've already created a session for this submission
+    const { data: existingSubmissions, error: submissionError } = await supabaseClient
+      .from('cost_calculator_submissions')
+      .select('checkout_session_id')
+      .eq('id', metadata.submission_id)
+      .single();
+
+    if (submissionError) {
+      console.error("Error checking for existing session:", submissionError);
+    }
+
+    // If there's an existing session ID, try to retrieve it first
+    let session;
+    if (existingSubmissions?.checkout_session_id) {
+      try {
+        console.log("Found existing session ID:", existingSubmissions.checkout_session_id);
+        session = await stripe.checkout.sessions.retrieve(existingSubmissions.checkout_session_id);
+        
+        // If session is expired or completed, create a new one
+        if (session.status === 'expired' || session.status === 'complete') {
+          console.log("Existing session is", session.status, ", creating a new one");
+          session = null;
+        } else {
+          console.log("Reusing existing session");
+        }
+      } catch (err) {
+        console.error("Error retrieving existing session:", err);
+        session = null;
+      }
+    }
+
+    // Create a new session if needed
+    if (!session) {
+      // Create a checkout session
+      session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: lineItems,
+        mode: "payment",
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        metadata: metadata,
+      });
+      
+      console.log("Checkout session created:", session.id);
+    }
     
     // If we have a submission_id in the metadata, update the record
     if (metadata && metadata.submission_id) {
