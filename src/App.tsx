@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import Index from "./pages/Index";
 import Success from "./pages/Success";
 import Analytics from "./pages/Analytics";
+import { useUserLocation } from "./hooks/analytics/use-user-location";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -22,9 +23,13 @@ const queryClient = new QueryClient({
 // Analytics tracker component
 const AnalyticsTracker = () => {
   const location = useLocation();
+  const { trackPageView } = useUserLocation();
 
-  React.useEffect(() => {
-    // Track page view on route change
+  useEffect(() => {
+    // Track page view on route change using our custom hook
+    trackPageView(location.pathname);
+    
+    // Also track in Google Analytics if available
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'page_view', {
         page_title: document.title,
@@ -34,7 +39,7 @@ const AnalyticsTracker = () => {
       });
       console.log('Page view tracked:', location.pathname);
     }
-  }, [location]);
+  }, [location, trackPageView]);
 
   return null;
 };

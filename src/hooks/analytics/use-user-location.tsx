@@ -83,6 +83,7 @@ export const useUserLocation = (timeRange: string = '30d') => {
           zipcode: data.postal || 'Unknown'
         };
         
+        console.log('Location data retrieved:', locationData);
         return locationData;
       }
       throw new Error('Failed to fetch location data');
@@ -111,7 +112,7 @@ export const useUserLocation = (timeRange: string = '30d') => {
       
       const currentPage = pagePath.split('/').pop() || 'home';
       
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('analytics_location_visits')
         .insert({
           city: locationData.city,
@@ -125,14 +126,15 @@ export const useUserLocation = (timeRange: string = '30d') => {
           visit_time: new Date().toTimeString().split(' ')[0],
           time_range: timeRange,
           page_visited: currentPage
-        });
+        })
+        .select();
     
       if (error) {
         console.error('Error logging location visit:', error);
         return false;
       }
       
-      console.log('Analytics visit logged successfully for:', currentPage);
+      console.log('Analytics visit logged successfully for:', currentPage, data);
       return true;
     } catch (err) {
       console.error('Failed to log location visit:', err);
@@ -181,7 +183,7 @@ export const useUserLocation = (timeRange: string = '30d') => {
     }, 30 * 60 * 1000); // Every 30 minutes
     
     return () => clearInterval(locationTimer);
-  }, []);
+  }, [timeRange]);
 
   return { 
     userLocationData,

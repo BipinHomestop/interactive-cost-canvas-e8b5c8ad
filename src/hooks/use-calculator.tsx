@@ -68,7 +68,7 @@ export const useCalculator = () => {
         .map(b => b.toString(16).padStart(2, '0')).join('');
       
       // Insert into analytics_location_visits
-      await supabase
+      const { error, data: insertData } = await supabase
         .from('analytics_location_visits')
         .insert({
           city: ipData.city || 'Unknown',
@@ -80,9 +80,10 @@ export const useCalculator = () => {
           visit_time: new Date().toTimeString().split(' ')[0],
           page_visited: `calculator-step-${stepNumber}-${stepName}`,
           time_range: '30d' // Default time range
-        });
+        })
+        .select();
       
-      console.log(`Step ${stepNumber} (${stepName}) logged to analytics`);
+      console.log(`Step ${stepNumber} (${stepName}) logged to analytics`, insertData);
     } catch (error) {
       console.error('Error logging calculator step:', error);
     }
