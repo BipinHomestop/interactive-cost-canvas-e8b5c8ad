@@ -45,6 +45,7 @@ export function useDiscountCode(totalCost: number) {
     setIsLoading(true);
     
     try {
+      // Use a more generic approach to query the discount_codes table
       const { data, error } = await supabase
         .from('discount_codes')
         .select('*')
@@ -65,7 +66,8 @@ export function useDiscountCode(totalCost: number) {
         return;
       }
       
-      const discountCode = data as DiscountCode;
+      // Safely cast data to DiscountCode using a type assertion with unknown as intermediate step
+      const discountCode = data as unknown as DiscountCode;
       
       // Apply the discount
       setDiscountPercentage(discountCode.discount_percentage);
