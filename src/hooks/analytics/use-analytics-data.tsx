@@ -33,13 +33,6 @@ export const useAnalyticsData = (timeRange: string) => {
   const [detailedZipCodeData, setDetailedZipCodeData] = useState([]);
   const [weeklyHeatMapData, setWeeklyHeatMapData] = useState([]);
 
-  // Fetch data using the sub-hook
-  const { fetchAnalyticsData } = useFetchAnalyticsData({
-    timeRange,
-    setIsLoading,
-    processAnalyticsData
-  });
-
   // Process data using the sub-hook
   const { processAnalyticsData } = useDataProcessing({
     timeRange,
@@ -56,6 +49,13 @@ export const useAnalyticsData = (timeRange: string) => {
     setDetailedLocationData,
     setDetailedZipCodeData,
     setWeeklyHeatMapData
+  });
+
+  // Fetch data using the sub-hook
+  const { fetchAnalyticsData } = useFetchAnalyticsData({
+    timeRange,
+    setIsLoading,
+    processAnalyticsData
   });
 
   // Handle CSV export
