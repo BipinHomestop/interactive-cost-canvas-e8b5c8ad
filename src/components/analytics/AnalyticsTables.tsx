@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { 
   Table,
@@ -25,7 +26,8 @@ interface PageVisitDetail {
 interface DailyPerformance {
   date: string;
   visitors: number;
-  submissions: number;
+  completeSubmissions: number;
+  partialSubmissions: number;
   convRate: string;
   avgTime: string;
 }
@@ -34,7 +36,8 @@ interface LocationDetail {
   city: string;
   region: string;
   visitors: number;
-  submissions: number;
+  completeSubmissions: number;
+  partialSubmissions: number;
   convRate: string;
   avgTime: string;
 }
@@ -43,7 +46,8 @@ interface ZipCodeDetail {
   zipcode: string;
   city: string;
   visitors: number;
-  submissions: number;
+  completeSubmissions: number;
+  partialSubmissions: number;
   convRate: string;
   avgTime: string;
 }
@@ -203,8 +207,9 @@ export const DailyPerformanceTable: React.FC<DailyPerformanceTableProps> = ({ da
               <TableRow>
                 <TableHead>Date</TableHead>
                 <TableHead>Visitors</TableHead>
-                <TableHead>Submissions</TableHead>
-                <TableHead>Conversion Rate</TableHead>
+                <TableHead>Complete</TableHead>
+                <TableHead>Partial</TableHead>
+                <TableHead>Conv. Rate</TableHead>
                 <TableHead>Avg Time</TableHead>
               </TableRow>
             </TableHeader>
@@ -213,7 +218,8 @@ export const DailyPerformanceTable: React.FC<DailyPerformanceTableProps> = ({ da
                 <TableRow key={index}>
                   <TableCell>{new Date(row.date).toLocaleDateString()}</TableCell>
                   <TableCell>{row.visitors}</TableCell>
-                  <TableCell>{row.submissions}</TableCell>
+                  <TableCell>{row.completeSubmissions}</TableCell>
+                  <TableCell>{row.partialSubmissions}</TableCell>
                   <TableCell>{row.convRate}</TableCell>
                   <TableCell>{row.avgTime}</TableCell>
                 </TableRow>
@@ -255,7 +261,7 @@ export const LocationPerformanceTable: React.FC<LocationTableProps> = ({
                 <TableHead>City</TableHead>
                 <TableHead>Region</TableHead>
                 <TableHead>Visitors</TableHead>
-                <TableHead>Submissions</TableHead>
+                <TableHead>Complete</TableHead>
                 <TableHead>Conv. Rate</TableHead>
                 <TableHead>Avg Time</TableHead>
               </TableRow>
@@ -267,7 +273,7 @@ export const LocationPerformanceTable: React.FC<LocationTableProps> = ({
                     <TableCell>{row.city}</TableCell>
                     <TableCell>{row.region}</TableCell>
                     <TableCell>{row.visitors}</TableCell>
-                    <TableCell>{row.submissions}</TableCell>
+                    <TableCell>{row.completeSubmissions}</TableCell>
                     <TableCell>{row.convRate}</TableCell>
                     <TableCell>{row.avgTime}</TableCell>
                   </TableRow>
@@ -307,7 +313,7 @@ export const ZipCodePerformanceTable: React.FC<ZipCodeTableProps> = ({ data, isL
                 <TableHead>ZIP Code</TableHead>
                 <TableHead>City</TableHead>
                 <TableHead>Visitors</TableHead>
-                <TableHead>Submissions</TableHead>
+                <TableHead>Complete</TableHead>
                 <TableHead>Conv. Rate</TableHead>
                 <TableHead>Avg Time</TableHead>
               </TableRow>
@@ -319,7 +325,7 @@ export const ZipCodePerformanceTable: React.FC<ZipCodeTableProps> = ({ data, isL
                     <TableCell>{row.zipcode}</TableCell>
                     <TableCell>{row.city}</TableCell>
                     <TableCell>{row.visitors}</TableCell>
-                    <TableCell>{row.submissions}</TableCell>
+                    <TableCell>{row.completeSubmissions}</TableCell>
                     <TableCell>{row.convRate}</TableCell>
                     <TableCell>{row.avgTime}</TableCell>
                   </TableRow>

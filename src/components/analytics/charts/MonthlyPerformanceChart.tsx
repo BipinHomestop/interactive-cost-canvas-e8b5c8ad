@@ -21,9 +21,15 @@ interface MonthlyPerformanceChartProps {
 }
 
 export const MonthlyPerformanceChart: React.FC<MonthlyPerformanceChartProps> = ({ data, isLoading }) => {
-  const hasData = data && data.length > 0 && data.some(item => item.visitors > 0 || item.submissions > 0);
+  const hasData = data && data.length > 0 && data.some(item => 
+    item.visitors > 0 || 
+    item.completeSubmissions > 0 || 
+    item.partialSubmissions > 0
+  );
+  
   const hasVisitorData = data && data.some(item => item.visitors > 0);
-  const hasSubmissionData = data && data.some(item => item.submissions > 0);
+  const hasCompleteSubmissionData = data && data.some(item => item.completeSubmissions > 0);
+  const hasPartialSubmissionData = data && data.some(item => item.partialSubmissions > 0);
 
   return (
     <Card className="shadow-md">
@@ -56,14 +62,25 @@ export const MonthlyPerformanceChart: React.FC<MonthlyPerformanceChartProps> = (
                       radius={[4, 4, 0, 0]}
                     />
                   )}
-                  {hasSubmissionData && (
+                  {hasCompleteSubmissionData && (
                     <Line 
                       type="monotone" 
-                      dataKey="submissions" 
+                      dataKey="completeSubmissions" 
                       stroke="var(--color-submissions)" 
-                      name="Submissions"
+                      name="Complete Submissions"
                       strokeWidth={2}
                       dot={{ r: 4 }}
+                    />
+                  )}
+                  {hasPartialSubmissionData && (
+                    <Line 
+                      type="monotone" 
+                      dataKey="partialSubmissions" 
+                      stroke="#FDA4AF" 
+                      name="Partial Submissions"
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: "#FDA4AF" }}
+                      strokeDasharray="5 5"
                     />
                   )}
                   <Legend />

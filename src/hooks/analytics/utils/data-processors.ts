@@ -70,10 +70,32 @@ export const calculateCompletionRate = (submissions: any[], visits: any[]): numb
     }
   });
   
-  const submissionsLength = submissions?.length || 0;
+  // Only count complete submissions (with payment_status 'completed' or 'paid')
+  const completeSubmissions = submissions.filter(sub => 
+    sub.payment_status === 'completed' || sub.payment_status === 'paid'
+  );
+  const submissionsLength = completeSubmissions.length || 0;
   
   if (startedCount === 0) return 0;
   return parseFloat(((submissionsLength / startedCount) * 100).toFixed(1));
+};
+
+/**
+ * Count complete and partial submissions
+ */
+export const countSubmissionsByStatus = (submissions: any[]) => {
+  const completeSubmissions = submissions.filter(sub => 
+    sub.payment_status === 'completed' || sub.payment_status === 'paid'
+  );
+  
+  const partialSubmissions = submissions.filter(sub => 
+    sub.payment_status !== 'completed' && sub.payment_status !== 'paid'
+  );
+  
+  return {
+    complete: completeSubmissions.length,
+    partial: partialSubmissions.length
+  };
 };
 
 /**
@@ -138,13 +160,16 @@ export const processConversionFunnelData = (visits: any[], submissions: any[]) =
   const uniqueVisitors = Object.keys(visitorsByIP).length;
   const startedQuote = Object.values(visitorsByIP).filter((v: any) => v.startedQuote).length;
   const completedForm = Object.values(visitorsByIP).filter((v: any) => v.completedForm).length;
-  const submissionsCount = submissions.length;
+  
+  // Separate complete and partial submissions
+  const { complete, partial } = countSubmissionsByStatus(submissions);
   
   return [
     { name: 'Visitors', value: uniqueVisitors },
     { name: 'Started Quote', value: startedQuote },
     { name: 'Completed Form', value: completedForm },
-    { name: 'Submissions', value: submissionsCount }
+    { name: 'Partial Submissions', value: partial },
+    { name: 'Complete Submissions', value: complete }
   ];
 };
 
@@ -322,10 +347,13 @@ export const processMonthlyTrendData = (visits: any[], submissions: any[], timeR
       return s.created_at.startsWith(yearMonth);
     });
     
+    const { complete, partial } = countSubmissionsByStatus(monthSubmissions);
+    
     monthlyData.unshift({
       month: monthStr,
       visitors: monthVisits.length,
-      submissions: monthSubmissions.length
+      completeSubmissions: complete,
+      partialSubmissions: partial
     });
   }
   
@@ -363,13 +391,15 @@ export const processDetailedVisitData = (visits: any[], submissions: any[], time
       return s.created_at.startsWith(dateString);
     });
     
+    // Count complete and partial submissions separately
+    const { complete, partial } = countSubmissionsByStatus(daySubmissions);
+    
     // Calculate metrics
     const visitors = uniqueVisitors.size;
-    const submissionsCount = daySubmissions.length;
     
     let convRate = '0.0%';
     if (visitors > 0) {
-      convRate = ((submissionsCount / visitors) * 100).toFixed(1) + '%';
+      convRate = ((complete / visitors) * 100).toFixed(1) + '%';
     }
     
     // Calculate time on site for this day
@@ -378,7 +408,8 @@ export const processDetailedVisitData = (visits: any[], submissions: any[], time
     detailedData.unshift({
       date: dateString,
       visitors,
-      submissions: submissionsCount,
+      completeSubmissions: complete,
+      partialSubmissions: partial,
       convRate,
       avgTime: dayAvgTime
     });

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -16,14 +17,16 @@ import {
   processHourlyActivityData,
   processMonthlyTrendData,
   processDetailedVisitData,
-  processWeeklyHeatMapData
+  processWeeklyHeatMapData,
+  countSubmissionsByStatus
 } from './utils/data-processors';
 
 export const useAnalyticsData = (timeRange: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState({
     totalVisitors: 0,
-    formSubmissions: 0,
+    completeSubmissions: 0,
+    partialSubmissions: 0,
     conversionRate: 0,
     avgTimeOnSite: 0,
     mostPopularStep: '',
@@ -42,6 +45,12 @@ export const useAnalyticsData = (timeRange: string) => {
   const [detailedLocationData, setDetailedLocationData] = useState([]);
   const [detailedZipCodeData, setDetailedZipCodeData] = useState([]);
   const [weeklyHeatMapData, setWeeklyHeatMapData] = useState([]);
+  const [googleAnalyticsData, setGoogleAnalyticsData] = useState({
+    pageViews: 0,
+    uniqueVisitors: 0,
+    avgSessionDuration: '0:00',
+    bounceRate: '0%'
+  });
 
   const fetchAnalyticsData = useCallback(async () => {
     try {
@@ -99,6 +108,17 @@ export const useAnalyticsData = (timeRange: string) => {
 
       console.log('Retrieved submissions:', submissions?.length || 0);
       
+      // Simulate fetching Google Analytics data
+      // This would normally come from the Google Analytics API
+      const fakeGoogleAnalyticsData = {
+        pageViews: Math.floor(Math.random() * 500) + 100,
+        uniqueVisitors: Math.floor(Math.random() * 300) + 50,
+        avgSessionDuration: `${Math.floor(Math.random() * 3)}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}`,
+        bounceRate: `${(Math.random() * 60 + 20).toFixed(1)}%`
+      };
+      
+      setGoogleAnalyticsData(fakeGoogleAnalyticsData);
+      
       processAnalyticsData(locationVisits || [], submissions || []);
       
     } catch (err) {
@@ -128,15 +148,18 @@ export const useAnalyticsData = (timeRange: string) => {
     console.log('Processing analytics data:', { visits: visits.length, submissions: submissions.length });
 
     const totalVisitors = hasVisits ? visits.length : 0;
-    const totalSubmissions = hasSubmissions ? submissions.length : 0;
-    const conversionRate = totalVisitors > 0 ? (totalSubmissions / totalVisitors) * 100 : 0;
+    
+    // Count complete and partial submissions
+    const submissionCounts = hasSubmissions ? countSubmissionsByStatus(submissions) : { complete: 0, partial: 0 };
+    const conversionRate = totalVisitors > 0 ? (submissionCounts.complete / totalVisitors) * 100 : 0;
     
     // Calculate actual time on site from real data if we have visits
     const avgTimeOnSite = hasVisits ? calculateAverageTimeOnSite(visits, timeRange) : 0;
     
     setSummary({
       totalVisitors,
-      formSubmissions: totalSubmissions,
+      completeSubmissions: submissionCounts.complete,
+      partialSubmissions: submissionCounts.partial,
       conversionRate: parseFloat(conversionRate.toFixed(1)),
       avgTimeOnSite,
       mostPopularStep: hasVisits ? determineMostPopularPage(visits) : 'No data',
@@ -172,19 +195,22 @@ export const useAnalyticsData = (timeRange: string) => {
       setPageVisitDetails([]);
       setHourlyActivityData([]);
       setWeeklyHeatMapData([]);
-      setConversionFunnelData([
-        { name: 'Visitors', value: 0 },
-        { name: 'Started Quote', value: 0 },
-        { name: 'Completed Form', value: 0 },
-        { name: 'Submissions', value: totalSubmissions }
-      ]);
       
       // If we have submissions but no visits, at least show submission data in monthly trends
       if (hasSubmissions) {
         const monthlyData = processMonthlySubmissionData(submissions, timeRange);
         setMonthlyTrendData(monthlyData);
+        
+        setConversionFunnelData([
+          { name: 'Visitors', value: 0 },
+          { name: 'Started Quote', value: 0 },
+          { name: 'Completed Form', value: 0 },
+          { name: 'Partial Submissions', value: submissionCounts.partial },
+          { name: 'Complete Submissions', value: submissionCounts.complete }
+        ]);
       } else {
         setMonthlyTrendData([]);
+        setConversionFunnelData([]);
       }
       
       // Clear location data
@@ -212,10 +238,13 @@ export const useAnalyticsData = (timeRange: string) => {
         return s.created_at.startsWith(yearMonth);
       });
       
+      const { complete, partial } = countSubmissionsByStatus(monthSubmissions);
+      
       monthlyData.unshift({
         month: monthStr,
         visitors: 0, // No visitors data
-        submissions: monthSubmissions.length
+        completeSubmissions: complete,
+        partialSubmissions: partial
       });
     }
     
@@ -225,7 +254,8 @@ export const useAnalyticsData = (timeRange: string) => {
   const resetDataStates = () => {
     setSummary({
       totalVisitors: 0,
-      formSubmissions: 0,
+      completeSubmissions: 0,
+      partialSubmissions: 0,
       conversionRate: 0,
       avgTimeOnSite: 0,
       mostPopularStep: 'No data',
@@ -244,6 +274,13 @@ export const useAnalyticsData = (timeRange: string) => {
     setDetailedLocationData([]);
     setDetailedZipCodeData([]);
     setWeeklyHeatMapData([]);
+    
+    setGoogleAnalyticsData({
+      pageViews: 0,
+      uniqueVisitors: 0,
+      avgSessionDuration: '0:00',
+      bounceRate: '0%'
+    });
   };
 
   const handleDownloadCSV = () => {
@@ -268,6 +305,7 @@ export const useAnalyticsData = (timeRange: string) => {
     detailedLocationData,
     detailedZipCodeData,
     weeklyHeatMapData,
+    googleAnalyticsData,
     downloadCSV: handleDownloadCSV,
     downloadPageVisitCSV: handleDownloadPageVisitCSV,
     refetchData: fetchAnalyticsData
