@@ -1,3 +1,4 @@
+
 import { formatPageName } from './format-utils';
 import { 
   calculateDailyAvgTime, 
@@ -61,10 +62,15 @@ export const calculateCompletionRate = (submissions: any[], visits: any[]): numb
     }
   });
   
-  // Count IPs that started the form (visited at least 2 pages)
+  // Count IPs that started the form (visited contact information page)
   let startedCount = 0;
   Object.values(pagesVisitedByIP).forEach((pageSet) => {
-    if (pageSet.size >= 2) {
+    const pages = Array.from(pageSet);
+    // Consider it started if they visited contact info page or went beyond
+    if (pages.some(page => 
+      page.toLowerCase().includes('contact') || 
+      page.toLowerCase().includes('step/2')
+    )) {
       startedCount++;
     }
   });
@@ -87,8 +93,11 @@ export const countSubmissionsByStatus = (submissions: any[]) => {
     sub.payment_status === 'completed' || sub.payment_status === 'paid'
   );
   
+  // Consider partial if they at least provided contact information
   const partialSubmissions = submissions.filter(sub => 
-    sub.payment_status !== 'completed' && sub.payment_status !== 'paid'
+    sub.payment_status !== 'completed' && 
+    sub.payment_status !== 'paid' &&
+    sub.name && sub.email && sub.phone // Has contact information
   );
   
   return {

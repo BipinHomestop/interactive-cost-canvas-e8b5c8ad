@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { AlertCircle } from 'lucide-react';
@@ -106,6 +105,7 @@ export const AnalyticsContainer: React.FC = () => {
         
         <AnalyticsDashboard 
           isLoading={isLoading}
+          timeRange={effectiveTimeRange}
           summary={summary}
           dailyVisitorsData={dailyVisitorsData}
           conversionFunnelData={conversionFunnelData}

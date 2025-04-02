@@ -4,7 +4,7 @@ import { RealtimeVisitorsCard } from '@/components/analytics/RealtimeVisitorsCar
 import { AnalyticsSummaryCards } from '@/components/analytics/AnalyticsSummaryCards';
 import { WeeklyHeatMapChart } from '@/components/analytics/WeeklyHeatMapChart';
 import { UserLocationCard } from '@/components/analytics/UserLocationCard';
-import { useUserLocation } from '@/hooks/analytics/use-user-location';
+import { GoogleAnalyticsSection } from '@/components/analytics/GoogleAnalyticsSection';
 import { 
   PageVisitTable, 
   DailyPerformanceTable,
@@ -18,9 +18,11 @@ import {
   MonthlyPerformanceChart,
   HourlyActivityChart
 } from '@/components/analytics/charts';
+import { useUserLocation } from '@/hooks/analytics/use-user-location';
 
 interface AnalyticsDashboardProps {
   isLoading: boolean;
+  timeRange: string;
   summary: {
     totalVisitors: number;
     completeSubmissions: number;
@@ -50,6 +52,7 @@ interface AnalyticsDashboardProps {
 
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ 
   isLoading,
+  timeRange,
   summary,
   dailyVisitorsData,
   conversionFunnelData,
@@ -84,6 +87,12 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         topLocation={topLocation}
         topZipCode={topZipCode}
         isLoading={isLoading}
+      />
+      
+      {/* Add Google Analytics Section */}
+      <GoogleAnalyticsSection 
+        isLoading={isLoading}
+        timeRange={timeRange}
       />
       
       {hasVisitorData && (
