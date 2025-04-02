@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
 import { AnalyticsSummaryCards } from '@/components/analytics/AnalyticsSummaryCards';
+import { RealtimeVisitorsCard } from '@/components/analytics/RealtimeVisitorsCard';
 import { 
   DailyVisitorsChart, 
   ConversionFunnelChart, 
@@ -45,7 +46,7 @@ export default function Analytics() {
     refetchData
   } = useAnalyticsData(timeRange);
   
-  const { userLocationData } = useUserLocation(timeRange);
+  const { userLocationData, trackPageView } = useUserLocation(timeRange);
 
   useEffect(() => {
     // Track analytics page view specifically for the analytics dashboard
@@ -57,43 +58,15 @@ export default function Analytics() {
     
     // Log an analytics visit for this page
     const logAnalyticsVisit = async () => {
-      try {
-        const response = await fetch('https://ipapi.co/json/');
-        if (response.ok) {
-          const data = await response.json();
-          // Create a hash of the IP for privacy
-          const encoder = new TextEncoder();
-          const textData = encoder.encode(data.ip + 'garagefloorcoating-salt');
-          const hashBuffer = await crypto.subtle.digest('SHA-256', textData);
-          const ipHash = Array.from(new Uint8Array(hashBuffer))
-            .map(b => b.toString(16).padStart(2, '0')).join('');
-          
-          // Insert analytics record
-          const { error } = await supabase
-            .from('analytics_location_visits')
-            .insert({
-              city: data.city || 'Unknown',
-              zipcode: data.postal || 'Unknown',
-              region: data.region || 'Unknown',
-              country: data.country_name || 'Unknown',
-              ip_hash: ipHash,
-              visit_date: new Date().toISOString().split('T')[0],
-              visit_time: new Date().toTimeString().split(' ')[0],
-              page_visited: 'analytics',
-              time_range: timeRange
-            });
-            
-          if (error) console.error('Error logging analytics visit:', error);
-          else console.log('Analytics visit logged successfully');
-          
-          // Refetch data after logging the visit
-          setTimeout(() => {
-            refetchData();
-          }, 1000);
-        }
-      } catch (err) {
-        console.error('Failed to log analytics visit:', err);
-      }
+      // The visit is already logged by useUserLocation hook
+      // Just refetch data after a short delay
+      setTimeout(() => {
+        refetchData();
+        toast.success('Analytics data refreshed', {
+          position: 'bottom-right',
+          duration: 2000,
+        });
+      }, 1000);
     };
     
     logAnalyticsVisit();
@@ -118,6 +91,9 @@ export default function Analytics() {
       />
 
       <div className="flex-1 container mx-auto py-8 px-4">
+        {/* Realtime Visitors Card (New) */}
+        <RealtimeVisitorsCard />
+        
         <AnalyticsSummaryCards 
           totalVisitors={summary.totalVisitors}
           formSubmissions={summary.formSubmissions}

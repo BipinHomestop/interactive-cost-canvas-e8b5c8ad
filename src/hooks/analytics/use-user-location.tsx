@@ -4,21 +4,37 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-export const useUserLocation = (timeRange: string) => {
-  const [userLocationData, setUserLocationData] = useState({
+interface UserLocationData {
+  latitude: number | null;
+  longitude: number | null;
+  city: string;
+  region: string;
+  country: string;
+  ip: string;
+  zipcode: string;
+}
+
+export const useUserLocation = (timeRange: string = '30d') => {
+  const [userLocationData, setUserLocationData] = useState<UserLocationData>({
     latitude: null,
     longitude: null,
     city: 'Unknown',
     region: 'Unknown',
     country: 'Unknown',
-    ip: 'Unknown'
+    ip: 'Unknown',
+    zipcode: 'Unknown'
   });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Track page views for Google Analytics
+  // Track page views
   useEffect(() => {
+    // Track page view in our own analytics system
+    trackPageView(location.pathname);
+    
+    // Additionally track in Google Analytics if available
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'page_view', {
         page_title: document.title,
@@ -30,51 +46,80 @@ export const useUserLocation = (timeRange: string) => {
     }
   }, [location.pathname]);
 
-  const trackUserLocation = async () => {
+  const trackPageView = async (pagePath: string) => {
+    // Check if we already have location data
+    let locationData = userLocationData;
+    
+    if (locationData.city === 'Unknown') {
+      try {
+        // Try to get location data
+        setIsLoading(true);
+        locationData = await fetchUserLocation();
+        setUserLocationData(locationData);
+      } catch (error) {
+        console.error('Error fetching location for page view:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    // Log the page visit with the location data we have
+    await logPageVisit(pagePath, locationData, timeRange);
+  };
+
+  const fetchUserLocation = async (): Promise<UserLocationData> => {
     try {
       const response = await fetch('https://ipapi.co/json/');
       if (response.ok) {
         const data = await response.json();
         
-        setUserLocationData({
-          latitude: data.latitude,
-          longitude: data.longitude,
+        const locationData = {
+          latitude: data.latitude || null,
+          longitude: data.longitude || null,
           city: data.city || 'Unknown',
           region: data.region || 'Unknown',
           country: data.country_name || 'Unknown',
-          ip: data.ip || 'Unknown'
-        });
+          ip: data.ip || 'Unknown',
+          zipcode: data.postal || 'Unknown'
+        };
         
-        if (data.city && data.postal) {
-          await logLocationVisit(data.city, data.postal, data.region, data.country_name, data.ip);
-          console.log('Analytics location visit logged:', data.city, data.postal);
-        }
+        return locationData;
       }
+      throw new Error('Failed to fetch location data');
     } catch (error) {
       console.error('Error fetching location data:', error);
+      return {
+        latitude: null,
+        longitude: null,
+        city: 'Unknown',
+        region: 'Unknown',
+        country: 'Unknown',
+        ip: 'Unknown',
+        zipcode: 'Unknown'
+      };
     }
   };
 
-  const logLocationVisit = async (
-    city: string, 
-    zipCode: string, 
-    region: string, 
-    country: string,
-    ip: string
+  const logPageVisit = async (
+    pagePath: string,
+    locationData: UserLocationData,
+    timeRange: string
   ) => {
     try {
       // Hash the IP address for privacy
-      const ipHash = await createIPHash(ip);
+      const ipHash = await createIPHash(locationData.ip);
       
-      const currentPage = location.pathname.split('/').pop() || 'home';
+      const currentPage = pagePath.split('/').pop() || 'home';
       
       const { error } = await supabase
         .from('analytics_location_visits')
         .insert({
-          city: city,
-          zipcode: zipCode,
-          region: region,
-          country: country,
+          city: locationData.city,
+          zipcode: locationData.zipcode,
+          region: locationData.region,
+          country: locationData.country,
+          latitude: locationData.latitude,
+          longitude: locationData.longitude,
           ip_hash: ipHash,
           visit_date: new Date().toISOString().split('T')[0],
           visit_time: new Date().toTimeString().split(' ')[0],
@@ -87,6 +132,7 @@ export const useUserLocation = (timeRange: string) => {
         return false;
       }
       
+      console.log('Analytics visit logged successfully for:', currentPage);
       return true;
     } catch (err) {
       console.error('Failed to log location visit:', err);
@@ -108,16 +154,38 @@ export const useUserLocation = (timeRange: string) => {
     }
   };
 
+  // Initially fetch user location on mount
   useEffect(() => {
-    trackUserLocation();
+    const initializeLocationTracking = async () => {
+      try {
+        setIsLoading(true);
+        const locationData = await fetchUserLocation();
+        setUserLocationData(locationData);
+        
+        // Log the initial visit
+        await logPageVisit(location.pathname, locationData, timeRange);
+      } catch (error) {
+        console.error('Error initializing location tracking:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    // Set up a timer to periodically refresh location data (every 5 minutes)
+    initializeLocationTracking();
+    
+    // Refresh location data periodically
     const locationTimer = setInterval(() => {
-      trackUserLocation();
-    }, 5 * 60 * 1000);
+      fetchUserLocation().then(locationData => {
+        setUserLocationData(locationData);
+      });
+    }, 30 * 60 * 1000); // Every 30 minutes
     
     return () => clearInterval(locationTimer);
-  }, [location.pathname]);
+  }, []);
 
-  return { userLocationData };
+  return { 
+    userLocationData,
+    isLoading,
+    trackPageView
+  };
 };
