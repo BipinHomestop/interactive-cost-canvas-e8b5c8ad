@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
@@ -43,10 +42,8 @@ export default function Analytics() {
     }
   };
   
-  // Use the custom range or regular time range
   const effectiveTimeRange = customRangeString || timeRange;
   
-  // Reset custom range when switching to standard ranges
   useEffect(() => {
     if (timeRange !== 'custom') {
       setCustomRangeString(null);
@@ -76,30 +73,21 @@ export default function Analytics() {
   const hasVisitorData = summary.totalVisitors > 0;
 
   useEffect(() => {
-    // Track analytics page view specifically for the analytics dashboard
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('event', 'view_analytics_dashboard', {
         time_range: effectiveTimeRange
       });
     }
     
-    // Log an analytics visit for this page
-    const logAnalyticsVisit = async () => {
-      // The visit is already logged by useUserLocation hook
-      // Just refetch data after a short delay
-      setTimeout(() => {
-        refetchData();
-        toast.success('Analytics data refreshed', {
-          position: 'bottom-right',
-          duration: 2000,
-        });
-      }, 1000);
-    };
-    
-    logAnalyticsVisit();
+    setTimeout(() => {
+      refetchData();
+      toast.success('Analytics data refreshed', {
+        position: 'bottom-right',
+        duration: 2000,
+      });
+    }, 1000);
   }, [effectiveTimeRange]);
 
-  // Get top location and zip code for summary cards
   const topLocation = locationData.length > 0 ? locationData[0].name : "No data";
   const topZipCode = detailedZipCodeData.length > 0 ? detailedZipCodeData[0].zipcode : "No data";
   
@@ -118,7 +106,6 @@ export default function Analytics() {
       />
 
       <div className="flex-1 container mx-auto py-8 px-4">
-        {/* Date Range Filter */}
         <DateRangeFilter
           timeRange={timeRange}
           setTimeRange={setTimeRange}
@@ -129,7 +116,6 @@ export default function Analytics() {
           applyCustomRange={applyCustomRange}
         />
         
-        {/* Realtime Visitors Card */}
         <RealtimeVisitorsCard />
         
         {!hasVisitorData && (summary.completeSubmissions > 0 || summary.partialSubmissions > 0) && !isLoading && (
@@ -157,7 +143,6 @@ export default function Analytics() {
           isLoading={isLoading}
         />
         
-        {/* Weekly Heatmap Chart */}
         {hasVisitorData && (
           <WeeklyHeatMapChart 
             data={weeklyHeatMapData || []} 
@@ -165,7 +150,6 @@ export default function Analytics() {
           />
         )}
         
-        {/* Only show page visits table if we have visitor data */}
         {hasVisitorData && (
           <PageVisitTable
             pageVisitDetails={pageVisitDetails}
@@ -198,7 +182,6 @@ export default function Analytics() {
           />
         </div>
 
-        {/* Only show hourly activity if we have visitor data */}
         {hasVisitorData && (
           <HourlyActivityChart 
             data={hourlyActivityData} 
@@ -206,7 +189,6 @@ export default function Analytics() {
           />
         )}
 
-        {/* Show daily performance if we have any data */}
         {(hasVisitorData || summary.formSubmissions > 0) && (
           <DailyPerformanceTable 
             data={detailedVisitData} 
@@ -214,7 +196,6 @@ export default function Analytics() {
           />
         )}
 
-        {/* Only show location data if we have visitor data */}
         {hasVisitorData && (
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <LocationPerformanceTable 
@@ -231,7 +212,6 @@ export default function Analytics() {
           </div>
         )}
 
-        {/* User location card */}
         <UserLocationCard 
           userLocationData={userLocationData} 
           isLoading={isLoading} 

@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -29,7 +30,8 @@ export const useAnalyticsData = (timeRange: string) => {
     conversionRate: 0,
     avgTimeOnSite: 0,
     mostPopularStep: '',
-    completionRate: 0
+    completionRate: 0,
+    formSubmissions: 0  // Adding this property to fix the error in Analytics.tsx
   });
   
   const [dailyVisitorsData, setDailyVisitorsData] = useState([]);
@@ -128,6 +130,7 @@ export const useAnalyticsData = (timeRange: string) => {
     
     const totalVisitors = hasVisits ? visits.length : 0;
     const conversionRate = totalVisitors > 0 ? (complete / totalVisitors) * 100 : 0;
+    const totalSubmissions = complete + partial; // Fix for the first error
     
     const avgTimeOnSite = hasVisits ? calculateAverageTimeOnSite(visits, timeRange) : 0;
     
@@ -138,7 +141,8 @@ export const useAnalyticsData = (timeRange: string) => {
       conversionRate: parseFloat(conversionRate.toFixed(1)),
       avgTimeOnSite,
       mostPopularStep: hasVisits ? determineMostPopularPage(visits) : 'No data',
-      completionRate: hasVisits && hasSubmissions ? calculateCompletionRate(submissions, visits) : 0
+      completionRate: hasVisits && hasSubmissions ? calculateCompletionRate(submissions, visits) : 0,
+      formSubmissions: totalSubmissions // Add this property to match what's expected in Analytics.tsx
     });
 
     if (hasVisits) {
