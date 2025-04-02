@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
@@ -132,13 +131,12 @@ export default function Analytics() {
         {/* Realtime Visitors Card */}
         <RealtimeVisitorsCard />
         
-        {!hasVisitorData && (summary.completeSubmissions > 0 || summary.partialSubmissions > 0) && !isLoading && (
+        {!hasVisitorData && summary.formSubmissions > 0 && !isLoading && (
           <Alert className="mb-6">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Limited Data Available</AlertTitle>
             <AlertDescription>
-              We found {summary.completeSubmissions} complete and {summary.partialSubmissions} partial form submissions 
-              but no visitor tracking data for the selected time period. 
+              We found {summary.formSubmissions} form submissions but no visitor tracking data for the selected time period. 
               Some charts may appear empty or show limited information.
             </AlertDescription>
           </Alert>
@@ -146,8 +144,7 @@ export default function Analytics() {
         
         <AnalyticsSummaryCards 
           totalVisitors={summary.totalVisitors}
-          completeSubmissions={summary.completeSubmissions}
-          partialSubmissions={summary.partialSubmissions}
+          formSubmissions={summary.formSubmissions}
           conversionRate={summary.conversionRate}
           avgTimeOnSite={summary.avgTimeOnSite}
           mostPopularStep={summary.mostPopularStep}
