@@ -81,21 +81,24 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
         const measurementId = 'G-773SG7LPWC';
         
         try {
-          // Attempt to get client ID to verify connection
-          window.gtag('get', measurementId, 'client_id', (clientId: string) => {
-            if (clientId) {
-              console.log('GA connected, client ID available:', clientId);
-              setIsConnected(true);
-              
-              // Use mock data for demonstration
-              setPageTrafficData(mockData);
-              setTotalUsers(2845);
-              setIsGaLoading(false);
-            } else {
-              console.log('GA connected but no client ID');
-              setIsConnected(false);
-              setError('Google Analytics is connected but not returning data.');
-              setIsGaLoading(false);
+          // Fixed: Using the correct format for gtag call with 3 arguments
+          // The third argument is an object containing the callback
+          window.gtag('get', measurementId, {
+            callback: (clientId: string) => {
+              if (clientId) {
+                console.log('GA connected, client ID available:', clientId);
+                setIsConnected(true);
+                
+                // Use mock data for demonstration
+                setPageTrafficData(mockData);
+                setTotalUsers(2845);
+                setIsGaLoading(false);
+              } else {
+                console.log('GA connected but no client ID');
+                setIsConnected(false);
+                setError('Google Analytics is connected but not returning data.');
+                setIsGaLoading(false);
+              }
             }
           });
         } catch (err) {
