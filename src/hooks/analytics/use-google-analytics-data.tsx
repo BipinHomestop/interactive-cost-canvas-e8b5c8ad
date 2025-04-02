@@ -41,9 +41,10 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
         try {
           // In a real app, we would make an API call to Google Analytics Data API
           // For now, we check if we can get any data through gtag
-          window.gtag('get', 'G-773SG7LPWC', 'client_id', (clientId: string) => {
+          // Fix: The gtag 'get' command only accepts 3 arguments, not 4
+          window.gtag('get', 'G-773SG7LPWC', (clientId: string) => {
             if (clientId) {
-              console.log('GA connected, client ID available');
+              console.log('GA connected, client ID available:', clientId);
               setIsConnected(true);
               
               // In a real implementation, we would fetch page data here
