@@ -18,8 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 interface GoogleAnalyticsSectionProps {
   isLoading: boolean;
@@ -72,9 +73,15 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error loading Google Analytics data</AlertTitle>
+            <AlertTitle>No Google Analytics data available</AlertTitle>
             <AlertDescription>
-              {typeof error === 'string' ? error : 'Failed to connect to Google Analytics. This could be due to missing configuration or network issues.'}
+              <p className="mb-2">
+                {typeof error === 'string' ? error : 'Failed to connect to Google Analytics. This could be due to missing configuration or network issues.'}
+              </p>
+              <Button variant="outline" size="sm" className="mt-2">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Connect Google Analytics
+              </Button>
             </AlertDescription>
           </Alert>
         )}
@@ -97,30 +104,32 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
                  gaTimeRange === '30d' ? 'Last 30 days' : 'Last 90 days'}
               </div>
             </div>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[300px]">Page Path</TableHead>
-                    <TableHead className="text-right">Page Views</TableHead>
-                    <TableHead className="text-right">Unique Views</TableHead>
-                    <TableHead className="text-right">Avg. Time on Page</TableHead>
-                    <TableHead className="text-right">Bounce Rate</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pageTrafficData.map((page, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{page.pagePath}</TableCell>
-                      <TableCell className="text-right">{page.pageViews}</TableCell>
-                      <TableCell className="text-right">{page.uniqueViews}</TableCell>
-                      <TableCell className="text-right">{page.avgTimeOnPage}</TableCell>
-                      <TableCell className="text-right">{page.bounceRate}%</TableCell>
+            {pageTrafficData.length > 0 && (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[300px]">Page Path</TableHead>
+                      <TableHead className="text-right">Page Views</TableHead>
+                      <TableHead className="text-right">Unique Views</TableHead>
+                      <TableHead className="text-right">Avg. Time on Page</TableHead>
+                      <TableHead className="text-right">Bounce Rate</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {pageTrafficData.map((page, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">{page.pagePath}</TableCell>
+                        <TableCell className="text-right">{page.pageViews}</TableCell>
+                        <TableCell className="text-right">{page.uniqueViews}</TableCell>
+                        <TableCell className="text-right">{page.avgTimeOnPage}</TableCell>
+                        <TableCell className="text-right">{page.bounceRate}%</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </>
         )}
       </CardContent>
