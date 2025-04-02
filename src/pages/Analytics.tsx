@@ -128,7 +128,6 @@ export default function Analytics() {
       const startDate = getStartDateFromRange(timeRange);
       const startDateString = startDate.toISOString().split('T')[0];
       
-      // Fetch location visits data
       const { data: locationVisits, error: locationError } = await supabase
         .from('analytics_location_visits')
         .select('*')
@@ -140,7 +139,6 @@ export default function Analytics() {
         return;
       }
 
-      // Fetch submissions data for the same period
       const { data: submissions, error: submissionsError } = await supabase
         .from('cost_calculator_submissions')
         .select('*')
@@ -151,7 +149,6 @@ export default function Analytics() {
         toast.error('Failed to load submissions data');
       }
 
-      // Process the data
       processAnalyticsData(locationVisits || [], submissions || []);
       
     } catch (err) {
@@ -184,12 +181,10 @@ export default function Analytics() {
       return;
     }
 
-    // Calculate summary statistics
     const totalVisitors = visits.length;
     const totalSubmissions = submissions.length;
     const conversionRate = totalVisitors > 0 ? (totalSubmissions / totalVisitors) * 100 : 0;
     
-    // Set summary data
     setSummary({
       totalVisitors,
       formSubmissions: totalSubmissions,
@@ -199,7 +194,6 @@ export default function Analytics() {
       completionRate: calculateCompletionRate(submissions, visits)
     });
 
-    // Process all other data
     setDailyVisitorsData(processDailyVisitorsData(visits));
     setConversionFunnelData(processConversionFunnelData(visits, submissions));
     setPopularPagesData(processPopularPagesData(visits));
@@ -208,7 +202,6 @@ export default function Analytics() {
     setMonthlyTrendData(processMonthlyTrendData(visits, submissions));
     setDetailedVisitData(processDetailedVisitData(visits, submissions));
     
-    // Process location data
     processLocationData(visits, submissions);
   };
 
@@ -236,8 +229,6 @@ export default function Analytics() {
   };
 
   const calculateAverageTimeOnSite = (visits) => {
-    // This is an estimate since we don't track session duration directly
-    // For now, we'll use a placeholder value based on the time range
     return timeRange === '7d' ? 3.2 : timeRange === '30d' ? 3.5 : 3.8;
   };
 
@@ -262,14 +253,12 @@ export default function Analytics() {
       }
     });
     
-    // Format the most popular page name for display
     return formatPageName(mostPopular);
   };
 
   const formatPageName = (pageName) => {
     if (!pageName) return 'Unknown';
     
-    // Convert page paths to readable names
     switch (pageName.toLowerCase()) {
       case 'garagefinish':
         return 'Garage Finish Selection';
@@ -294,23 +283,19 @@ export default function Analytics() {
     }
   };
 
-  const calculateCompletionRate = (submissions, visits) => {
-    // Estimate how many visitors started the process vs. completed it
-    // We'll base this on submissions and page visits
+  const calculateCompletionRate = (submissions: any[], visits: any[]): number => {
     const pagesVisited = new Set();
     visits.forEach(visit => {
       if (visit.page_visited) pagesVisited.add(visit.page_visited);
     });
     
-    // If we have submissions but very few page types, assume higher completion
-    const submissionsLength = submissions.length || 0;
-    const visitsLength = visits.length || 0;
+    const submissionsLength = submissions?.length || 0;
+    const visitsLength = visits?.length || 0;
     
     if (submissionsLength > 0 && pagesVisited.size <= 2) {
       return Math.min(90, (submissionsLength / Math.max(visitsLength, 1)) * 100);
     }
     
-    // Otherwise estimate based on what we have
     const startedEstimate = visits.filter(v => 
       v.page_visited?.toLowerCase().includes('garage') || 
       v.page_visited?.toLowerCase().includes('stem')
@@ -325,13 +310,11 @@ export default function Analytics() {
     const startDate = getStartDateFromRange(timeRange);
     const days = Math.min(7, differenceInDays(today, startDate) + 1);
     
-    // Create an array of the last 7 days (or fewer if the time range is less)
     const dailyData = [];
     for (let i = 0; i < days; i++) {
       const date = subDays(today, i);
       const dateString = format(date, 'yyyy-MM-dd');
       
-      // Count visits for this day
       const dayVisits = visits.filter(v => v.visit_date === dateString);
       
       dailyData.unshift({
@@ -345,10 +328,8 @@ export default function Analytics() {
   };
 
   const processConversionFunnelData = (visits, submissions) => {
-    // Create a basic conversion funnel based on available data
     const visitorsCount = visits.length;
     
-    // Estimate steps based on page visits
     const startedQuote = visits.filter(v => 
       v.page_visited?.toLowerCase().includes('garage') || 
       v.page_visited?.toLowerCase().includes('capacity')
@@ -369,7 +350,6 @@ export default function Analytics() {
   };
 
   const processPopularPagesData = (visits) => {
-    // Count visits by page
     const pageVisits = {};
     
     visits.forEach(visit => {
@@ -379,7 +359,6 @@ export default function Analytics() {
       }
     });
     
-    // Convert to array and sort
     const popularPages = Object.entries(pageVisits)
       .map(([name, visits]) => ({ name, visits }))
       .sort((a, b) => b.visits - a.visits)
@@ -391,8 +370,6 @@ export default function Analytics() {
   };
 
   const processTrafficSourceData = (visits) => {
-    // Without actual traffic source data, we'll create placeholder proportions
-    // In a real implementation, this would come from referrer data or UTM parameters
     return [
       { name: 'Organic Search', value: 55 },
       { name: 'Direct', value: 24 },
@@ -402,13 +379,11 @@ export default function Analytics() {
   };
 
   const processHourlyActivityData = (visits) => {
-    // Create an array with hours of the day
     const hourlyData = Array.from({ length: 24 }, (_, i) => ({
       hour: i,
       visitors: 0
     }));
     
-    // Count visits by hour
     visits.forEach(visit => {
       if (visit.visit_time) {
         const hour = parseInt(visit.visit_time.split(':')[0], 10);
@@ -426,24 +401,20 @@ export default function Analytics() {
     const startDate = getStartDateFromRange(timeRange);
     const months = timeRange === '7d' ? 3 : timeRange === '30d' ? 6 : 12;
     
-    // Create monthly buckets going back from current month
     const monthlyData = [];
     for (let i = 0; i < months; i++) {
       const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
       
-      // Skip months before our start date
       if (isBefore(date, startDate) && i > 0) continue;
       
       const monthStr = format(date, 'MMM');
       const yearMonth = format(date, 'yyyy-MM');
       
-      // Count visits for this month
       const monthVisits = visits.filter(v => {
         if (!v.visit_date) return false;
         return v.visit_date.startsWith(yearMonth);
       });
       
-      // Count submissions for this month
       const monthSubmissions = submissions.filter(s => {
         if (!s.created_at) return false;
         return s.created_at.startsWith(yearMonth);
@@ -467,31 +438,26 @@ export default function Analytics() {
       differenceInDays(today, startDate) + 1
     );
     
-    // Create daily data
     const detailedData = [];
     for (let i = 0; i < days; i++) {
       const date = subDays(today, i);
       const dateString = format(date, 'yyyy-MM-dd');
       
-      // Count visits for this day
       const dayVisits = visits.filter(v => v.visit_date === dateString);
       
-      // Count submissions for this day
       const daySubmissions = submissions.filter(s => {
         if (!s.created_at) return false;
         return s.created_at.startsWith(dateString);
       });
       
-      const visitors = dayVisits.length;
-      const submissionsCount = daySubmissions.length;
+      const visitors = dayVisits.length || 0;
+      const submissionsCount = daySubmissions.length || 0;
       
-      // Ensure we have number values before doing arithmetic operations
       let convRate = '0.0%';
-      if (visitors > 0 && typeof submissionsCount === 'number') {
+      if (visitors > 0) {
         convRate = ((submissionsCount / visitors) * 100).toFixed(1) + '%';
       }
       
-      // Estimate average time based on time range
       const minutes = Math.floor(Math.random() * 3) + 2;
       const seconds = Math.floor(Math.random() * 60);
       const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
@@ -517,7 +483,6 @@ export default function Analytics() {
       return;
     }
 
-    // Process city data
     const cityMap = new Map();
     visits.forEach(visit => {
       if (visit.city) {
@@ -528,7 +493,6 @@ export default function Analytics() {
       }
     });
 
-    // Add submission counts to cities
     submissions.forEach(sub => {
       if (sub.location) {
         const city = extractCityFromLocation(sub.location);
@@ -538,14 +502,12 @@ export default function Analytics() {
       }
     });
 
-    // Create city data array
     const cityData = Array.from(cityMap.entries()).map(([name, data]) => ({
       name,
       visitors: data.visitors,
       submissions: data.submissions
     })).sort((a, b) => b.visitors - a.visitors);
 
-    // Combine smaller cities into "Other" category if we have more than 6
     if (cityData.length > 6) {
       const otherCities = cityData.slice(6);
       const otherVisitors = otherCities.reduce((sum, city) => sum + city.visitors, 0);
@@ -558,7 +520,6 @@ export default function Analytics() {
       });
     }
 
-    // Process ZIP code data
     const zipMap = new Map();
     visits.forEach(visit => {
       if (visit.zipcode) {
@@ -574,7 +535,6 @@ export default function Analytics() {
       }
     });
 
-    // Add submission counts to zip codes
     submissions.forEach(sub => {
       if (sub.location) {
         const zip = extractZipFromLocation(sub.location);
@@ -584,10 +544,9 @@ export default function Analytics() {
       }
     });
 
-    // Create ZIP data array
     const zipData = Array.from(zipMap.entries()).map(([name, data]) => {
-      const submissions = data.submissions;
-      const visitors = data.visitors;
+      const submissions = data.submissions || 0;
+      const visitors = data.visitors || 0;
       return {
         name,
         visitors,
@@ -596,56 +555,54 @@ export default function Analytics() {
       };
     }).sort((a, b) => b.visitors - a.visitors).slice(0, 10);
 
-    // Create detailed city data
-    const detailedCityData = cityData.slice(0, 5).map(city => {
-      const cityInfo = visits.find(v => v.city === city.name) || {};
-      const convRate = city.visitors > 0 ? ((city.submissions / city.visitors) * 100).toFixed(1) + '%' : '0.0%';
-      
-      // Estimate average time (in a real implementation, this would come from actual session data)
-      const minutes = Math.floor(Math.random() * 3) + 2;
-      const seconds = Math.floor(Math.random() * 60);
-      const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-      
-      return {
-        city: city.name,
-        region: cityInfo.region || 'Unknown',
-        visitors: city.visitors,
-        submissions: city.submissions,
-        convRate,
-        avgTime
-      };
-    });
+    const createDetailedLocationData = (cityData: any[], visits: any[]) => {
+      return cityData.slice(0, 5).map(city => {
+        const cityInfo = visits.find(v => v.city === city.name) || {};
+        const convRate = city.visitors > 0 ? ((city.submissions / city.visitors) * 100).toFixed(1) + '%' : '0.0%';
+        
+        const minutes = Math.floor(Math.random() * 3) + 2;
+        const seconds = Math.floor(Math.random() * 60);
+        const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        
+        return {
+          city: city.name,
+          region: cityInfo.region || 'Unknown',
+          visitors: city.visitors,
+          submissions: city.submissions,
+          convRate,
+          avgTime
+        };
+      });
+    };
 
-    // Create detailed ZIP data
-    const detailedZipData = zipData.slice(0, 5).map(zip => {
-      const zipInfo = zipMap.get(zip.name) || {};
-      
-      // Estimate average time
-      const minutes = Math.floor(Math.random() * 3) + 2;
-      const seconds = Math.floor(Math.random() * 60);
-      const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
-      
-      return {
-        zipcode: zip.name,
-        city: zipInfo.city || 'Unknown',
-        visitors: zip.visitors,
-        submissions: zip.submissions,
-        convRate: zip.convRate,
-        avgTime
-      };
-    });
+    const createDetailedZipCodeData = (zipData: any[], zipMap: Map<string, any>) => {
+      return zipData.slice(0, 5).map(zip => {
+        const zipInfo = zipMap.get(zip.name) || {};
+        
+        const minutes = Math.floor(Math.random() * 3) + 2;
+        const seconds = Math.floor(Math.random() * 60);
+        const avgTime = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        
+        return {
+          zipcode: zip.name,
+          city: zipInfo.city || 'Unknown',
+          visitors: zip.visitors,
+          submissions: zip.submissions,
+          convRate: zip.convRate,
+          avgTime
+        };
+      });
+    };
 
     setLocationData(cityData);
     setZipCodeData(zipData);
-    setDetailedLocationData(detailedCityData);
-    setDetailedZipCodeData(detailedZipData);
+    setDetailedLocationData(createDetailedLocationData(cityData, visits));
+    setDetailedZipCodeData(createDetailedZipCodeData(zipData, zipMap));
   };
 
   const extractCityFromLocation = (location) => {
     if (!location) return null;
     
-    // Try to extract city from location string
-    // Format could be like "Dallas, TX" or similar
     const parts = location.split(',');
     if (parts.length >= 1) {
       return parts[0].trim();
@@ -656,8 +613,6 @@ export default function Analytics() {
   const extractZipFromLocation = (location) => {
     if (!location) return null;
     
-    // Try to extract ZIP code from location string
-    // Format varies, but we'll look for 5-digit numbers
     const zipMatch = location.match(/\b\d{5}\b/);
     if (zipMatch) {
       return zipMatch[0];
