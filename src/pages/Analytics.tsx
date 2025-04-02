@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { 
@@ -247,9 +248,13 @@ export default function Analytics() {
     let maxCount = 0;
     
     Object.entries(pageCount).forEach(([page, count]) => {
-      if (count > maxCount) {
+      // Fix for line 250: Handle unknown type for count
+      const countValue = typeof count === 'number' ? count : 0;
+      
+      if (countValue > maxCount) {
         mostPopular = page;
-        maxCount = count;
+        // Fix for line 252: Type assertion for maxCount
+        maxCount = countValue;
       }
     });
     
@@ -545,8 +550,10 @@ export default function Analytics() {
     });
 
     const zipData = Array.from(zipMap.entries()).map(([name, data]) => {
-      const submissions = data.submissions || 0;
-      const visitors = data.visitors || 0;
+      // Fix for line 364: Ensure numeric types for arithmetic operation
+      const submissions = typeof data.submissions === 'number' ? data.submissions : 0;
+      const visitors = typeof data.visitors === 'number' ? data.visitors : 0;
+      
       return {
         name,
         visitors,
@@ -558,7 +565,10 @@ export default function Analytics() {
     const createDetailedLocationData = (cityData: any[], visits: any[]) => {
       return cityData.slice(0, 5).map(city => {
         const cityInfo = visits.find(v => v.city === city.name) || {};
-        const convRate = city.visitors > 0 ? ((city.submissions / city.visitors) * 100).toFixed(1) + '%' : '0.0%';
+        // Ensure numeric types for city data
+        const cityVisitors = typeof city.visitors === 'number' ? city.visitors : 0;
+        const citySubmissions = typeof city.submissions === 'number' ? city.submissions : 0;
+        const convRate = cityVisitors > 0 ? ((citySubmissions / cityVisitors) * 100).toFixed(1) + '%' : '0.0%';
         
         const minutes = Math.floor(Math.random() * 3) + 2;
         const seconds = Math.floor(Math.random() * 60);
@@ -567,8 +577,8 @@ export default function Analytics() {
         return {
           city: city.name,
           region: cityInfo.region || 'Unknown',
-          visitors: city.visitors,
-          submissions: city.submissions,
+          visitors: cityVisitors,
+          submissions: citySubmissions,
           convRate,
           avgTime
         };
