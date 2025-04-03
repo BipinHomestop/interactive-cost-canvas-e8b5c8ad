@@ -9,6 +9,9 @@ const corsHeaders = {
 
 // Initialize Resend with API key from environment variable
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+if (!RESEND_API_KEY) {
+  console.error("CRITICAL ERROR: RESEND_API_KEY environment variable is not set");
+}
 const resend = new Resend(RESEND_API_KEY);
 
 interface ContactData {
@@ -27,6 +30,9 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     // Log API key presence (not the actual key)
     console.log("RESEND_API_KEY available:", !!RESEND_API_KEY);
+    if (!RESEND_API_KEY) {
+      throw new Error("Missing RESEND_API_KEY environment variable");
+    }
     
     const contactData: ContactData = await req.json();
     console.log("Contact data received:", contactData);
@@ -58,7 +64,7 @@ const handler = async (req: Request): Promise<Response> => {
         reply_to: contactData.email,
       });
 
-      console.log("Email sending response:", emailResponse);
+      console.log("Email sending response:", JSON.stringify(emailResponse));
       
       if (emailResponse.error) {
         throw new Error(`Resend API error: ${JSON.stringify(emailResponse.error)}`);

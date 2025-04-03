@@ -7,7 +7,7 @@ import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/component
 import { useState, useEffect } from "react";
 import { Flag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -23,6 +23,7 @@ export function ContactStep({
   const isMobile = useIsMobile();
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState<boolean>(false);
+  const [isSending, setIsSending] = useState<boolean>(false);
   const { toast } = useToast();
   
   // Phone validation function
@@ -69,9 +70,11 @@ export function ContactStep({
         emailValue && 
         phoneValue && 
         validatePhoneNumber(phoneValue) &&
-        !emailSent
+        !emailSent &&
+        !isSending
       ) {
         try {
+          setIsSending(true);
           console.log("Sending contact email with data:", {
             name: nameValue,
             email: emailValue,
@@ -96,9 +99,11 @@ export function ContactStep({
               description: "There was an issue sending your information. We'll still save your data.",
               variant: "destructive",
             });
+            setIsSending(false);
           } else {
             console.log("Contact email sent successfully:", data);
             setEmailSent(true);
+            setIsSending(false);
             toast({
               title: "Success",
               description: "Your contact information has been sent to our team.",
@@ -112,17 +117,85 @@ export function ContactStep({
             description: "There was an issue sending your information. We'll still save your data.",
             variant: "destructive",
           });
+          setIsSending(false);
         }
       }
     };
 
-    // Debounce the email sending to avoid multiple calls while typing
-    const timer = setTimeout(() => {
+    // Manual trigger of email sending when all fields are complete
+    // This is more reliable than the debounce approach
+    if (
+      nameValue && 
+      emailValue && 
+      phoneValue && 
+      validatePhoneNumber(phoneValue) &&
+      !emailSent &&
+      !isSending
+    ) {
       sendContactEmail();
-    }, 1500);
+    }
+  }, [nameValue, emailValue, phoneValue, locationValue, emailSent, isSending, toast]);
+  
+  // Manual send function for debugging
+  const manualSend = async () => {
+    if (emailSent || isSending) return;
+    
+    if (!nameValue || !emailValue || !phoneValue) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!validatePhoneNumber(phoneValue)) {
+      toast({
+        title: "Invalid Phone",
+        description: "Please enter a valid 10-digit phone number.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: nameValue,
+          email: emailValue,
+          phone: phoneValue,
+          location: locationValue
+        }
+      });
 
-    return () => clearTimeout(timer);
-  }, [nameValue, emailValue, phoneValue, locationValue, emailSent, toast]);
+      if (error) {
+        console.error("Manual send error:", error);
+        toast({
+          title: "Error",
+          description: `Failed to send email: ${error.message}`,
+          variant: "destructive",
+        });
+      } else {
+        console.log("Manual send successful:", data);
+        setEmailSent(true);
+        toast({
+          title: "Success",
+          description: "Contact information sent successfully!",
+          className: "bg-green-500 text-white border-none",
+        });
+      }
+    } catch (err) {
+      console.error("Manual send exception:", err);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
   
   return (
     <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : 'px-4'}`}>
@@ -183,7 +256,20 @@ export function ContactStep({
             placeholder="Enter your email address" 
           />
         </div>
+
+        {emailSent && (
+          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm">
+            ✓ Your contact information has been sent to our team.
+          </div>
+        )}
+        
+        {isSending && (
+          <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm flex items-center">
+            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mr-2"></div>
+            Sending your information...
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
