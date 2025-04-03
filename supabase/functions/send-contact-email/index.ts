@@ -54,17 +54,15 @@ const handler = async (req: Request): Promise<Response> => {
       <p><em>This information was submitted on ${new Date().toLocaleString()}</em></p>
     `;
 
-    // Send the email using Resend
-    console.log("Attempting to send email to: nithin@homestop.us, bipin@homestop.us");
+    // IMPORTANT FIX: In testing mode, Resend only allows sending emails to your own verified address
+    // We need to handle this limitation by sending to bipin@homestop.us instead of multiple recipients
+    console.log("Sending email to: bipin@homestop.us (Resend test mode limitation)");
     
     try {
-      // Test the Resend API connection first
-      console.log("Testing Resend API connection...");
-      
       const emailResponse = await resend.emails.send({
-        from: "Floor Coating Calculator <onboarding@resend.dev>",
-        to: ["nithin@homestop.us", "bipin@homestop.us"],
-        subject: "Hey! New Lead from Garage App Calculator",
+        from: "Floor Coating Calculator <onboarding@resend.dev>", 
+        to: ["bipin@homestop.us"], // Only send to the verified email address
+        subject: `New Lead from Garage App: ${contactData.name}`,
         html: emailContent,
         reply_to: contactData.email,
       });
@@ -80,7 +78,8 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ 
           success: true, 
           message: "Contact information email sent",
-          emailId: emailResponse.id
+          emailId: emailResponse.id,
+          note: "Email sent to bipin@homestop.us (Resend test mode limitation)"
         }),
         {
           status: 200,
