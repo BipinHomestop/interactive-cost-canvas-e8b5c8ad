@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import { Flag, RefreshCw, AlertCircle, CheckCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -64,27 +63,17 @@ export function ContactStep({
     }
   }, [phoneValue, setError]);
   
-  // Manual send function 
+  // Function to send contact information
   const sendContactEmail = async () => {
     // Reset states
     setErrorDetails(null);
     setSuccessDetails(null);
     
     if (emailSent) {
-      toast({
-        title: "Email Already Sent",
-        description: "Your information has already been sent to our team.",
-        className: "bg-blue-500 text-white border-none",
-      });
       return;
     }
     
     if (isSending) {
-      toast({
-        title: "Please Wait",
-        description: "Your request is being processed...",
-        className: "bg-blue-500 text-white border-none",
-      });
       return;
     }
     
@@ -167,8 +156,7 @@ export function ContactStep({
     }
   };
 
-  // We'll only auto-trigger the send once when all fields are valid
-  // but we won't retry automatically if it fails
+  // We'll auto-trigger the send when all fields are valid
   useEffect(() => {
     const allFieldsComplete = 
       nameValue && 
@@ -177,12 +165,8 @@ export function ContactStep({
       validatePhoneNumber(phoneValue);
       
     if (allFieldsComplete && !emailSent && !isSending && !errorDetails) {
-      // Auto-send after a short delay when all fields are complete
-      const timer = setTimeout(() => {
-        sendContactEmail();
-      }, 500);
-      
-      return () => clearTimeout(timer);
+      // Auto-send when all fields are complete
+      sendContactEmail();
     }
   }, [nameValue, emailValue, phoneValue, emailSent, isSending, errorDetails]);
   
@@ -246,31 +230,15 @@ export function ContactStep({
           />
         </div>
 
-        <div className="mt-4">
-          <Button 
-            type="button"
-            onClick={sendContactEmail}
-            disabled={isSending || emailSent || !nameValue || !emailValue || !phoneValue || !validatePhoneNumber(phoneValue)}
-            className="w-full bg-[#1A3174] hover:bg-[#132559] text-white"
-          >
-            {isSending ? (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Sending...
-              </>
-            ) : emailSent ? (
-              <>
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Information Sent
-              </>
-            ) : (
-              "Send Contact Information"
-            )}
-          </Button>
-        </div>
+        {isSending && (
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm flex items-center">
+            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mr-2"></div>
+            Sending your information...
+          </div>
+        )}
 
         {emailSent && successDetails && (
-          <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm flex items-start">
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm flex items-start">
             <CheckCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-semibold">Success!</p>
@@ -279,33 +247,14 @@ export function ContactStep({
             </div>
           </div>
         )}
-        
-        {isSending && (
-          <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm flex items-center">
-            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mr-2"></div>
-            Sending your information...
-          </div>
-        )}
 
         {errorDetails && (
-          <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm flex items-start">
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm flex items-start">
             <AlertCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-semibold">Error Details:</p>
               <p className="mt-1 break-words">{errorDetails}</p>
               <p className="mt-1 text-xs">Please try again or contact support if this issue persists.</p>
-              <Button 
-                type="button"
-                onClick={() => {
-                  setErrorDetails(null);
-                  setEmailSent(false);
-                }}
-                variant="outline"
-                size="sm"
-                className="mt-2 h-8 text-xs border-red-200 text-red-700 hover:bg-red-50"
-              >
-                Try Again
-              </Button>
             </div>
           </div>
         )}
