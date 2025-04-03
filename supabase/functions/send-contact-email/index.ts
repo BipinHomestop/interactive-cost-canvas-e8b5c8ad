@@ -30,6 +30,8 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     // Log API key presence (not the actual key)
     console.log("RESEND_API_KEY available:", !!RESEND_API_KEY);
+    console.log("RESEND_API_KEY length:", RESEND_API_KEY ? RESEND_API_KEY.length : 0);
+    
     if (!RESEND_API_KEY) {
       throw new Error("Missing RESEND_API_KEY environment variable");
     }
@@ -53,9 +55,12 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     // Send the email using Resend
-    console.log("Sending email to: nithin@homestop.us, bipin@homestop.us");
+    console.log("Attempting to send email to: nithin@homestop.us, bipin@homestop.us");
     
     try {
+      // Test the Resend API connection first
+      console.log("Testing Resend API connection...");
+      
       const emailResponse = await resend.emails.send({
         from: "Floor Coating Calculator <onboarding@resend.dev>",
         to: ["nithin@homestop.us", "bipin@homestop.us"],
@@ -67,6 +72,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("Email sending response:", JSON.stringify(emailResponse));
       
       if (emailResponse.error) {
+        console.error("Resend API returned an error:", emailResponse.error);
         throw new Error(`Resend API error: ${JSON.stringify(emailResponse.error)}`);
       }
 
@@ -94,7 +100,8 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ 
         success: false, 
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
+        timestamp: new Date().toISOString()
       }),
       {
         status: 500,

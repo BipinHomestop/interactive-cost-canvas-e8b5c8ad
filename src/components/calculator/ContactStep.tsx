@@ -5,9 +5,10 @@ import { CalculatorInputs } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/components/ui/form";
 import { useState, useEffect } from "react";
-import { Flag } from "lucide-react";
+import { Flag, RefreshCw, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -24,6 +25,7 @@ export function ContactStep({
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
+  const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const { toast } = useToast();
   
   // Phone validation function
@@ -35,7 +37,7 @@ export function ContactStep({
     return cleanedPhone.length === 10;
   };
   
-  // Watch phone value if watch is provided
+  // Watch form values
   const phoneValue = watch ? watch("phone") : "";
   const nameValue = watch ? watch("name") : "";
   const emailValue = watch ? watch("email") : "";
@@ -61,84 +63,28 @@ export function ContactStep({
     }
   }, [phoneValue, setError]);
   
-  // Send contact information via email when all fields are filled
-  useEffect(() => {
-    const sendContactEmail = async () => {
-      // Only send if all contact information is available and valid
-      if (
-        nameValue && 
-        emailValue && 
-        phoneValue && 
-        validatePhoneNumber(phoneValue) &&
-        !emailSent &&
-        !isSending
-      ) {
-        try {
-          setIsSending(true);
-          console.log("Sending contact email with data:", {
-            name: nameValue,
-            email: emailValue,
-            phone: phoneValue,
-            location: locationValue
-          });
-          
-          // Call our Edge Function to send the email
-          const { data, error } = await supabase.functions.invoke('send-contact-email', {
-            body: {
-              name: nameValue,
-              email: emailValue,
-              phone: phoneValue,
-              location: locationValue
-            }
-          });
-
-          if (error) {
-            console.error("Error sending contact email:", error);
-            toast({
-              title: "Error",
-              description: "There was an issue sending your information. We'll still save your data.",
-              variant: "destructive",
-            });
-            setIsSending(false);
-          } else {
-            console.log("Contact email sent successfully:", data);
-            setEmailSent(true);
-            setIsSending(false);
-            toast({
-              title: "Success",
-              description: "Your contact information has been sent to our team.",
-              className: "bg-green-500 text-white border-none",
-            });
-          }
-        } catch (err) {
-          console.error("Exception sending contact email:", err);
-          toast({
-            title: "Error",
-            description: "There was an issue sending your information. We'll still save your data.",
-            variant: "destructive",
-          });
-          setIsSending(false);
-        }
-      }
-    };
-
-    // Manual trigger of email sending when all fields are complete
-    // This is more reliable than the debounce approach
-    if (
-      nameValue && 
-      emailValue && 
-      phoneValue && 
-      validatePhoneNumber(phoneValue) &&
-      !emailSent &&
-      !isSending
-    ) {
-      sendContactEmail();
+  // Manual send function 
+  const sendContactEmail = async () => {
+    // Reset states
+    setErrorDetails(null);
+    
+    if (emailSent) {
+      toast({
+        title: "Email Already Sent",
+        description: "Your information has already been sent to our team.",
+        className: "bg-blue-500 text-white border-none",
+      });
+      return;
     }
-  }, [nameValue, emailValue, phoneValue, locationValue, emailSent, isSending, toast]);
-  
-  // Manual send function for debugging
-  const manualSend = async () => {
-    if (emailSent || isSending) return;
+    
+    if (isSending) {
+      toast({
+        title: "Please Wait",
+        description: "Your request is being processed...",
+        className: "bg-blue-500 text-white border-none",
+      });
+      return;
+    }
     
     if (!nameValue || !emailValue || !phoneValue) {
       toast({
@@ -160,6 +106,13 @@ export function ContactStep({
     
     setIsSending(true);
     try {
+      console.log("Sending contact email with data:", {
+        name: nameValue,
+        email: emailValue,
+        phone: phoneValue,
+        location: locationValue
+      });
+      
       const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: {
           name: nameValue,
@@ -169,33 +122,65 @@ export function ContactStep({
         }
       });
 
+      console.log("Edge function response:", data, error);
+
       if (error) {
-        console.error("Manual send error:", error);
+        console.error("Error sending contact email:", error);
+        setErrorDetails(`Error: ${error.message}`);
         toast({
           title: "Error",
-          description: `Failed to send email: ${error.message}`,
+          description: "There was an issue sending your information. See details below.",
           variant: "destructive",
         });
-      } else {
-        console.log("Manual send successful:", data);
+        setIsSending(false);
+      } else if (data && data.success) {
+        console.log("Contact email sent successfully:", data);
         setEmailSent(true);
+        setIsSending(false);
         toast({
           title: "Success",
-          description: "Contact information sent successfully!",
+          description: "Your contact information has been sent to our team.",
           className: "bg-green-500 text-white border-none",
+        });
+      } else {
+        console.warn("Unexpected response:", data);
+        setErrorDetails(`Unexpected response: ${JSON.stringify(data)}`);
+        setIsSending(false);
+        toast({
+          title: "Warning",
+          description: "Received an unexpected response. Please try again.",
+          variant: "destructive",
         });
       }
     } catch (err) {
-      console.error("Manual send exception:", err);
+      console.error("Exception sending contact email:", err);
+      setErrorDetails(`Exception: ${err instanceof Error ? err.message : String(err)}`);
       toast({
         title: "Error",
-        description: "An unexpected error occurred.",
+        description: "An unexpected error occurred. Please try again later.",
         variant: "destructive",
       });
-    } finally {
       setIsSending(false);
     }
   };
+
+  // Auto-submit when all fields are complete
+  useEffect(() => {
+    const allFieldsComplete = 
+      nameValue && 
+      emailValue && 
+      phoneValue && 
+      validatePhoneNumber(phoneValue);
+      
+    if (allFieldsComplete && !emailSent && !isSending) {
+      // Auto-send after a short delay when all fields are complete
+      const timer = setTimeout(() => {
+        sendContactEmail();
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [nameValue, emailValue, phoneValue, emailSent, isSending]);
   
   return (
     <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : 'px-4'}`}>
@@ -257,6 +242,26 @@ export function ContactStep({
           />
         </div>
 
+        <div className="mt-4">
+          <Button 
+            type="button"
+            onClick={sendContactEmail}
+            disabled={isSending || emailSent || !nameValue || !emailValue || !phoneValue || !validatePhoneNumber(phoneValue)}
+            className="w-full bg-[#1A3174] hover:bg-[#132559] text-white"
+          >
+            {isSending ? (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                Sending...
+              </>
+            ) : emailSent ? (
+              "Information Sent ✓"
+            ) : (
+              "Send Contact Information"
+            )}
+          </Button>
+        </div>
+
         {emailSent && (
           <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm">
             ✓ Your contact information has been sent to our team.
@@ -267,6 +272,16 @@ export function ContactStep({
           <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm flex items-center">
             <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mr-2"></div>
             Sending your information...
+          </div>
+        )}
+
+        {errorDetails && (
+          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm flex items-start">
+            <AlertCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-semibold">Error Details:</p>
+              <p className="text-xs mt-1 break-words">{errorDetails}</p>
+            </div>
           </div>
         )}
       </div>
