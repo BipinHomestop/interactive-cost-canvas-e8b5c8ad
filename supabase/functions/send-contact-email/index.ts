@@ -8,7 +8,8 @@ const corsHeaders = {
 };
 
 // Initialize Resend with API key from environment variable
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const resend = new Resend(RESEND_API_KEY);
 
 interface ContactData {
   name: string;
@@ -24,6 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Log API key presence (not the actual key)
+    console.log("RESEND_API_KEY available:", !!RESEND_API_KEY);
+    
     const contactData: ContactData = await req.json();
     console.log("Contact data received:", contactData);
 
@@ -43,34 +47,49 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     // Send the email using Resend
-    const emailResponse = await resend.emails.send({
-      from: "Floor Coating Calculator <onboarding@resend.dev>",
-      to: ["nithin@homestop.us", "bipin@homestop.us"],
-      subject: "Hey! New Lead from Garage App Calculator",
-      html: emailContent,
-      reply_to: contactData.email,
-    });
+    console.log("Sending email to: nithin@homestop.us, bipin@homestop.us");
+    
+    try {
+      const emailResponse = await resend.emails.send({
+        from: "Floor Coating Calculator <onboarding@resend.dev>",
+        to: ["nithin@homestop.us", "bipin@homestop.us"],
+        subject: "Hey! New Lead from Garage App Calculator",
+        html: emailContent,
+        reply_to: contactData.email,
+      });
 
-    console.log("Email sending response:", emailResponse);
-
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: "Contact information email sent",
-        emailId: emailResponse.id
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
+      console.log("Email sending response:", emailResponse);
+      
+      if (emailResponse.error) {
+        throw new Error(`Resend API error: ${JSON.stringify(emailResponse.error)}`);
       }
-    );
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: "Contact information email sent",
+          emailId: emailResponse.id
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    } catch (emailError) {
+      console.error("Error from Resend API:", emailError);
+      throw emailError;
+    }
   } catch (error) {
     console.error("Error sending contact email:", error);
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ 
+        success: false, 
+        error: error.message,
+        stack: error.stack
+      }),
       {
         status: 500,
         headers: {

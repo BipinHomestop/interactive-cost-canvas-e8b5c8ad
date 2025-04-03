@@ -7,6 +7,7 @@ import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/component
 import { useState, useEffect } from "react";
 import { Flag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -21,6 +22,8 @@ export function ContactStep({
 }: ContactStepProps) {
   const isMobile = useIsMobile();
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState<boolean>(false);
+  const { toast } = useToast();
   
   // Phone validation function
   const validatePhoneNumber = (phone: string): boolean => {
@@ -65,9 +68,17 @@ export function ContactStep({
         nameValue && 
         emailValue && 
         phoneValue && 
-        validatePhoneNumber(phoneValue)
+        validatePhoneNumber(phoneValue) &&
+        !emailSent
       ) {
         try {
+          console.log("Sending contact email with data:", {
+            name: nameValue,
+            email: emailValue,
+            phone: phoneValue,
+            location: locationValue
+          });
+          
           // Call our Edge Function to send the email
           const { data, error } = await supabase.functions.invoke('send-contact-email', {
             body: {
@@ -80,11 +91,27 @@ export function ContactStep({
 
           if (error) {
             console.error("Error sending contact email:", error);
+            toast({
+              title: "Error",
+              description: "There was an issue sending your information. We'll still save your data.",
+              variant: "destructive",
+            });
           } else {
             console.log("Contact email sent successfully:", data);
+            setEmailSent(true);
+            toast({
+              title: "Success",
+              description: "Your contact information has been sent to our team.",
+              className: "bg-green-500 text-white border-none",
+            });
           }
         } catch (err) {
           console.error("Exception sending contact email:", err);
+          toast({
+            title: "Error",
+            description: "There was an issue sending your information. We'll still save your data.",
+            variant: "destructive",
+          });
         }
       }
     };
@@ -95,7 +122,7 @@ export function ContactStep({
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [nameValue, emailValue, phoneValue, locationValue]);
+  }, [nameValue, emailValue, phoneValue, locationValue, emailSent, toast]);
   
   return (
     <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : 'px-4'}`}>
