@@ -6,6 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/components/ui/form";
 import { useState, useEffect } from "react";
 import { Flag } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -32,6 +33,9 @@ export function ContactStep({
   
   // Watch phone value if watch is provided
   const phoneValue = watch ? watch("phone") : "";
+  const nameValue = watch ? watch("name") : "";
+  const emailValue = watch ? watch("email") : "";
+  const locationValue = watch ? watch("location") : "";
   
   // Validate phone number on change
   useEffect(() => {
@@ -52,6 +56,46 @@ export function ContactStep({
       setPhoneError(null);
     }
   }, [phoneValue, setError]);
+  
+  // Send contact information via email when all fields are filled
+  useEffect(() => {
+    const sendContactEmail = async () => {
+      // Only send if all contact information is available and valid
+      if (
+        nameValue && 
+        emailValue && 
+        phoneValue && 
+        validatePhoneNumber(phoneValue)
+      ) {
+        try {
+          // Call our Edge Function to send the email
+          const { data, error } = await supabase.functions.invoke('send-contact-email', {
+            body: {
+              name: nameValue,
+              email: emailValue,
+              phone: phoneValue,
+              location: locationValue
+            }
+          });
+
+          if (error) {
+            console.error("Error sending contact email:", error);
+          } else {
+            console.log("Contact email sent successfully:", data);
+          }
+        } catch (err) {
+          console.error("Exception sending contact email:", err);
+        }
+      }
+    };
+
+    // Debounce the email sending to avoid multiple calls while typing
+    const timer = setTimeout(() => {
+      sendContactEmail();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [nameValue, emailValue, phoneValue, locationValue]);
   
   return (
     <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : 'px-4'}`}>
