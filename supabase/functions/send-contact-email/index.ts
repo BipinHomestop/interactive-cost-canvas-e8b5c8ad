@@ -46,7 +46,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Floor Coating Calculator <onboarding@resend.dev>",
       to: ["nithin@homestop"],
-      subject: "New Floor Coating Calculator Contact",
+      subject: "Hey! New Lead from Garage App Calculator",
       html: emailContent,
       reply_to: contactData.email,
     });
