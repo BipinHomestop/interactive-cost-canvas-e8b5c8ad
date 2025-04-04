@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSubmission } from "@/hooks/calculator/use-submission";
@@ -31,25 +30,17 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     }
   }, [submissionId]);
   
-  // Check for cached values from a previous checkout attempt
-  const [cachedTotal, setCachedTotal] = useState<number | null>(null);
+  // We'll use the total cost passed from the calculator always
+  // This ensures we're using the latest calculated value
+  console.log('Payment step using totalCost:', totalCost);
   
+  // Store the current total cost for the checkout process
   useEffect(() => {
-    const cachedTotalStr = sessionStorage.getItem('cachedTotalCost');
-    if (cachedTotalStr) {
-      const parsedTotal = parseFloat(cachedTotalStr);
-      if (!isNaN(parsedTotal)) {
-        console.log('Found cached total cost:', parsedTotal);
-        setCachedTotal(parsedTotal);
-      }
-    } else {
-      // If no cached value exists, store the current total
+    if (totalCost > 0) {
       sessionStorage.setItem('cachedTotalCost', totalCost.toString());
+      console.log('Stored current total cost in session storage:', totalCost);
     }
   }, [totalCost]);
-  
-  // Use cached total if available, otherwise use the passed-in total
-  const effectiveTotalCost = cachedTotal !== null ? cachedTotal : totalCost;
   
   // Custom hooks for discount and checkout functionality
   const { 
@@ -59,7 +50,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     discountedTotal, 
     handleApplyCoupon,
     setInitialDiscount
-  } = useDiscountCode(effectiveTotalCost);
+  } = useDiscountCode(totalCost);
 
   // Check for cached discount percentage
   useEffect(() => {
@@ -158,7 +149,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     
     // Add discount if applicable
     if (discountPercentage > 0) {
-      const discountAmount = (effectiveTotalCost * (discountPercentage / 100)) * -1;
+      const discountAmount = (totalCost * (discountPercentage / 100)) * -1;
       items.push({
         label: `Discount (${discountPercentage}%)`,
         price: discountAmount,
@@ -173,7 +164,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     date,
     couponCode,
     discountPercentage,
-    effectiveTotalCost,
+    totalCost,
     discountedTotal,
     getBreakdownItems
   );
@@ -183,7 +174,7 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
       <div className={`${isMobile ? 'space-y-5' : 'space-y-6'} px-4 sm:px-6 pb-8`}>
         <PriceBreakdown 
           formData={formData} 
-          totalCost={effectiveTotalCost} 
+          totalCost={totalCost} 
           discountPercentage={discountPercentage} 
           discountedTotal={discountedTotal} 
         />

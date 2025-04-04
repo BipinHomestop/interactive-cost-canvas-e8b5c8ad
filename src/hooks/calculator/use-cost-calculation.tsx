@@ -18,6 +18,18 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
+  // Clear cached values when going back from payment screen
+  useEffect(() => {
+    if (step < 9) {
+      // If we're not on the payment step, clear any cached values to prevent stale data
+      sessionStorage.removeItem('cachedTotalCost');
+      sessionStorage.removeItem('cachedDiscountPercentage');
+      sessionStorage.removeItem('cachedCouponCode');
+      sessionStorage.removeItem('cachedBreakdownItems');
+      sessionStorage.removeItem('cachedDiscountedTotal');
+    }
+  }, [step]);
+
   // Calculate the cost whenever relevant data changes
   useEffect(() => {
     console.log("Data changed - recalculating cost for step:", step);

@@ -23,6 +23,22 @@ export function PriceOverlay({
   const marketMultiplier = getPrice('market_multiplier', 1.4);
   const marketPrice = Math.round(totalCost * marketMultiplier);
   
+  // Force using the live calculated value, not the cached one
+  useEffect(() => {
+    if (totalCost > 0) {
+      // If we're not on the payment page, ensure we use the live calculated cost
+      const pathSegments = window.location.pathname.split('/');
+      const currentStep = pathSegments.length > 1 && pathSegments[1] === 'step' ? 
+                         parseInt(pathSegments[2]) : 1;
+      
+      if (currentStep !== 9) {
+        console.log('Using live calculated cost instead of cached value');
+        // If we came back from payment page, clear any cached values
+        sessionStorage.removeItem('cachedTotalCost');
+      }
+    }
+  }, [totalCost]);
+  
   return (
     <div className={`absolute inset-0 bg-[#0A0B3B] text-white flex flex-col items-center justify-center ${isMobile ? 'p-1' : 'p-4'}`}>
       <div className={`${isMobile ? 'text-2xl font-extrabold mb-1' : 'text-3xl font-bold'} text-[#30EE00]`}>

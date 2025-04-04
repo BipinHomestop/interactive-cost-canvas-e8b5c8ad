@@ -7,7 +7,6 @@ import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/component
 import { useState, useEffect } from "react";
 import { Flag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -24,7 +23,6 @@ export function ContactStep({
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
-  const { toast } = useToast();
   
   // Phone validation function
   const validatePhoneNumber = (phone: string): boolean => {
