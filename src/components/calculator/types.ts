@@ -47,3 +47,9 @@ export interface ImageCollection {
   steps_yes_image: string;
   steps_no_image: string;
 }
+
+// Type for price breakdown items
+export interface BreakdownItem {
+  label: string;
+  price: number;
+}

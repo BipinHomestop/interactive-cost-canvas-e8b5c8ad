@@ -1,6 +1,7 @@
 
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { useEffect, useState } from "react";
+import { BreakdownItem } from "@/components/calculator/types";
 
 // Helper function to format finish labels
 const formatFinishLabel = (finish: string): string => {
@@ -8,12 +9,6 @@ const formatFinishLabel = (finish: string): string => {
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-};
-
-// Type for breakdown items
-export type BreakdownItem = {
-  label: string;
-  price: number;
 };
 
 interface PriceBreakdownProps {
@@ -44,27 +39,15 @@ export function PriceBreakdown({
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
   
   useEffect(() => {
-    // Check for cached breakdown items
-    const cachedItemsStr = sessionStorage.getItem('cachedBreakdownItems');
-    if (cachedItemsStr) {
-      try {
-        const items = JSON.parse(cachedItemsStr);
-        if (Array.isArray(items) && items.length > 0) {
-          console.log('PriceBreakdown using cached items');
-          setBreakdownItems(items);
-          return;
-        }
-      } catch (e) {
-        console.error('Error parsing cached breakdown items:', e);
-      }
-    }
+    const items = renderPriceBreakdown();
+    setBreakdownItems(items);
     
-    // If no cache or error, generate the breakdown
-    setBreakdownItems(renderPriceBreakdown());
+    // Store breakdown items for later use in checkout
+    sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(items));
   }, [formData, totalCost, discountPercentage]);
   
   const renderPriceBreakdown = (): BreakdownItem[] => {
-    const breakdown = [];
+    const breakdown: BreakdownItem[] = [];
     
     // Base price based on garage capacity
     if (formData.garageCapacity) {
@@ -86,48 +69,41 @@ export function PriceBreakdown({
         label: `${formData.garageCapacity}-Car Garage (Base Price)`,
         price: garageBasePrice
       });
-    }
-
-    // Finish multiplier
-    if (formData.garageFinish) {
-      const multiplier = getFinishMultiplier(formData.garageFinish);
-      const finishLabel = formatFinishLabel(formData.garageFinish);
       
-      // Get base price
-      const baseKey = `base_price_${formData.garageCapacity}_car`;
-      let defaultBasePrice;
-      
-      switch (formData.garageCapacity) {
-        case 1: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR; break;
-        case 2: defaultBasePrice = DEFAULT_BASE_PRICE_2_CAR; break;
-        case 3: defaultBasePrice = DEFAULT_BASE_PRICE_3_CAR; break;
-        case 4: defaultBasePrice = DEFAULT_BASE_PRICE_4_CAR; break;
-        case 5: defaultBasePrice = DEFAULT_BASE_PRICE_5_CAR; break;
-        default: defaultBasePrice = DEFAULT_BASE_PRICE_1_CAR;
+      // Finish multiplier (applied to base price)
+      if (formData.garageFinish) {
+        const multiplier = getFinishMultiplier(formData.garageFinish);
+        const finishLabel = formatFinishLabel(formData.garageFinish);
+        
+        if (multiplier > 1) {
+          const additionalCost = Math.round(garageBasePrice * (multiplier - 1));
+          
+          breakdown.push({
+            label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
+            price: additionalCost
+          });
+        }
       }
-      
-      const garageBasePrice = getPrice(baseKey, defaultBasePrice);
-      const additionalCost = garageBasePrice * (multiplier - 1);
-      
-      breakdown.push({
-        label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
-        price: additionalCost
-      });
     }
 
-    // Stem walls
+    // Add stem walls cost if needed
     if (formData.needStemWalls === "yes") {
-      const stemWallPrice = formData.stemWallType === "standard" 
-        ? getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE)
-        : getPrice('stem_wall_large_price', DEFAULT_STEM_WALL_LARGE_PRICE);
-      
-      breakdown.push({
-        label: `${formData.stemWallType === "standard" ? "Standard" : "Large"} Stem Walls`,
-        price: stemWallPrice
-      });
+      if (formData.stemWallType === "standard") {
+        const stemWallPrice = getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE);
+        breakdown.push({
+          label: `Standard Stem Walls`,
+          price: stemWallPrice
+        });
+      } else if (formData.stemWallType === "large") {
+        const stemWallPrice = getPrice('stem_wall_large_price', DEFAULT_STEM_WALL_LARGE_PRICE);
+        breakdown.push({
+          label: `Large Stem Walls`,
+          price: stemWallPrice
+        });
+      }
     }
 
-    // Steps
+    // Add steps cost if needed
     if (formData.needSteps === "yes") {
       const stepsPrice = getPrice('steps_price', DEFAULT_STEPS_PRICE);
       breakdown.push({
@@ -136,7 +112,7 @@ export function PriceBreakdown({
       });
     }
 
-    // Extra footage
+    // Add extra footage cost if needed
     if (formData.needExtraFootage === "yes" && formData.extraFootage) {
       const footageKey = `extra_footage_${formData.extraFootage.replace(/-/g, '_')}`;
       const extraFootagePrice = getPrice(footageKey, 0);
@@ -147,7 +123,7 @@ export function PriceBreakdown({
       });
     }
 
-    // Current condition
+    // Add existing condition cost if applicable
     if (formData.currentCondition === "existing") {
       const existingPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
       breakdown.push({
@@ -158,15 +134,44 @@ export function PriceBreakdown({
 
     // Add discount if applicable
     if (discountPercentage > 0) {
-      const discountAmount = (totalCost * discountPercentage / 100) * -1;
+      const discountAmount = Math.round(totalCost * discountPercentage / 100) * -1;
       breakdown.push({
         label: `Discount (${discountPercentage}%)`,
         price: discountAmount
       });
     }
 
+    // Verify that the sum matches the total cost (before discount)
+    let calculatedTotal = 0;
+    breakdown.forEach(item => {
+      // Skip discount item for this calculation
+      if (!item.label.includes('Discount')) {
+        calculatedTotal += item.price;
+      }
+    });
+    
+    // If there's a discrepancy, add an adjustment item
+    const discrepancy = totalCost - calculatedTotal;
+    if (Math.abs(discrepancy) > 1) {
+      console.log(`Price breakdown discrepancy detected: ${discrepancy}`);
+      breakdown.push({
+        label: "Price Adjustment",
+        price: discrepancy
+      });
+    }
+
     return breakdown;
   };
+
+  // Calculate total from items for verification
+  const calculateTotalFromItems = (): number => {
+    return breakdownItems.reduce((sum, item) => sum + item.price, 0);
+  };
+
+  // Check if the calculated total matches the expected total
+  const calculatedTotal = calculateTotalFromItems();
+  const expectedTotal = discountPercentage > 0 ? discountedTotal : totalCost;
+  const hasDiscrepancy = Math.abs(calculatedTotal - expectedTotal) > 1;
 
   return (
     <div className="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-sm">
@@ -183,6 +188,12 @@ export function PriceBreakdown({
           <span>Total</span>
           <span>${discountPercentage > 0 ? discountedTotal.toFixed(2) : totalCost.toFixed(2)}</span>
         </div>
+        
+        {hasDiscrepancy && (
+          <div className="text-xs text-red-500 mt-1">
+            Note: There may be a small rounding difference in the total.
+          </div>
+        )}
       </div>
     </div>
   );

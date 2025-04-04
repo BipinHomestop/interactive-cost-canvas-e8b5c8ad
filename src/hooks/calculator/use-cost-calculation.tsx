@@ -64,8 +64,8 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     // Apply finish-specific multiplier if available (after step 4)
     if (formValues.garageFinish && step >= 4) {
       const finishMultiplier = getFinishMultiplier(formValues.garageFinish);
-      total *= finishMultiplier;
-      console.log(`After applying ${formValues.garageFinish} finish multiplier:`, total);
+      total = Math.round(total * finishMultiplier);
+      console.log(`After applying ${formValues.garageFinish} finish multiplier (${finishMultiplier}):`, total);
     }
     
     // Add stem walls cost if needed (after step 5)
