@@ -5,7 +5,7 @@ import { CalculatorInputs } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/components/ui/form";
 import { useState, useEffect } from "react";
-import { Flag, RefreshCw, AlertCircle, CheckCircle } from "lucide-react";
+import { Flag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,8 +24,6 @@ export function ContactStep({
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
-  const [errorDetails, setErrorDetails] = useState<string | null>(null);
-  const [successDetails, setSuccessDetails] = useState<string | null>(null);
   const { toast } = useToast();
   
   // Phone validation function
@@ -63,35 +61,17 @@ export function ContactStep({
     }
   }, [phoneValue, setError]);
   
-  // Function to send contact information
+  // Function to send contact information silently
   const sendContactEmail = async () => {
-    // Reset states
-    setErrorDetails(null);
-    setSuccessDetails(null);
-    
-    if (emailSent) {
-      return;
-    }
-    
-    if (isSending) {
+    if (emailSent || isSending) {
       return;
     }
     
     if (!nameValue || !emailValue || !phoneValue) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
-        variant: "destructive",
-      });
       return;
     }
     
     if (!validatePhoneNumber(phoneValue)) {
-      toast({
-        title: "Invalid Phone",
-        description: "Please enter a valid 10-digit phone number.",
-        variant: "destructive",
-      });
       return;
     }
     
@@ -117,41 +97,15 @@ export function ContactStep({
 
       if (error) {
         console.error("Error sending contact email:", error);
-        setErrorDetails(`Error: ${error.message}`);
-        toast({
-          title: "Error",
-          description: "There was an issue sending your information. See details below.",
-          variant: "destructive",
-        });
-        setIsSending(false);
       } else if (data && data.success) {
         console.log("Contact email sent successfully:", data);
         setEmailSent(true);
-        setIsSending(false);
-        setSuccessDetails(data.note || "Email sent successfully to our team.");
-        toast({
-          title: "Success",
-          description: "Your contact information has been sent to our team.",
-          className: "bg-green-500 text-white border-none",
-        });
       } else {
         console.warn("Unexpected response:", data);
-        setErrorDetails(`Unexpected response: ${JSON.stringify(data)}`);
-        setIsSending(false);
-        toast({
-          title: "Warning",
-          description: "Received an unexpected response. Please try again.",
-          variant: "destructive",
-        });
       }
     } catch (err) {
       console.error("Exception sending contact email:", err);
-      setErrorDetails(`Exception: ${err instanceof Error ? err.message : String(err)}`);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again later.",
-        variant: "destructive",
-      });
+    } finally {
       setIsSending(false);
     }
   };
@@ -164,11 +118,11 @@ export function ContactStep({
       phoneValue && 
       validatePhoneNumber(phoneValue);
       
-    if (allFieldsComplete && !emailSent && !isSending && !errorDetails) {
+    if (allFieldsComplete && !emailSent && !isSending) {
       // Auto-send when all fields are complete
       sendContactEmail();
     }
-  }, [nameValue, emailValue, phoneValue, emailSent, isSending, errorDetails]);
+  }, [nameValue, emailValue, phoneValue, emailSent, isSending]);
   
   return (
     <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : 'px-4'}`}>
@@ -229,35 +183,6 @@ export function ContactStep({
             placeholder="Enter your email address" 
           />
         </div>
-
-        {isSending && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700 text-sm flex items-center">
-            <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full mr-2"></div>
-            Sending your information...
-          </div>
-        )}
-
-        {emailSent && successDetails && (
-          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm flex items-start">
-            <CheckCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-semibold">Success!</p>
-              <p className="mt-1">{successDetails}</p>
-              <p className="mt-1 text-xs">You can now continue with your estimate.</p>
-            </div>
-          </div>
-        )}
-
-        {errorDetails && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm flex items-start">
-            <AlertCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-semibold">Error Details:</p>
-              <p className="mt-1 break-words">{errorDetails}</p>
-              <p className="mt-1 text-xs">Please try again or contact support if this issue persists.</p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
