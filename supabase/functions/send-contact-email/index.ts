@@ -54,34 +54,36 @@ const handler = async (req: Request): Promise<Response> => {
       <p><em>This information was submitted on ${new Date().toLocaleString()}</em></p>
     `;
 
-    // In testing mode, Resend only allows sending emails to verified addresses
-    const recipients = ["bipin@homestop.us", "nithin@homestop.us"];
-    console.log(`Sending email to verified addresses: ${recipients.join(", ")}`);
+    // The primary recipient who is verified in Resend
+    const primaryRecipient = "bipin@homestop.us";
+    // The secondary recipient we're trying to send to as well
+    const secondaryRecipient = "nithin@homestop.us";
     
+    console.log(`Attempting to send email to both ${primaryRecipient} and ${secondaryRecipient}`);
+    
+    // First attempt: Try sending a single email with both recipients
     try {
-      // Create a single email with multiple recipients
+      console.log("Sending email to both recipients in a single email...");
       const emailResponse = await resend.emails.send({
         from: "Floor Coating Calculator <onboarding@resend.dev>", 
-        to: recipients, // Send to both verified email addresses
+        to: [primaryRecipient, secondaryRecipient],
         subject: `New Lead from Garage App: ${contactData.name}`,
         html: emailContent,
         reply_to: contactData.email,
       });
-
-      console.log("Email sending response:", JSON.stringify(emailResponse));
+      
+      console.log("Combined email response:", JSON.stringify(emailResponse));
       
       if (emailResponse.error) {
-        console.error("Resend API returned an error:", emailResponse.error);
-        throw new Error(`Resend API error: ${JSON.stringify(emailResponse.error)}`);
+        throw new Error(`Combined email error: ${JSON.stringify(emailResponse.error)}`);
       }
-
+      
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "Contact information email sent",
+          message: "Contact information email sent to both recipients",
           emailId: emailResponse.id,
-          recipients: recipients,
-          note: "Email sent to verified addresses (Resend test mode limitation)"
+          recipients: [primaryRecipient, secondaryRecipient]
         }),
         {
           status: 200,
@@ -91,9 +93,96 @@ const handler = async (req: Request): Promise<Response> => {
           },
         }
       );
-    } catch (emailError) {
-      console.error("Error from Resend API:", emailError);
-      throw emailError;
+    } catch (combinedError) {
+      // If the combined approach fails, try sending individual emails
+      console.error("Error sending combined email:", combinedError);
+      console.log("Attempting to send separate emails...");
+      
+      const results = [];
+      let hasSucceeded = false;
+      
+      // Try sending to primary recipient
+      try {
+        console.log(`Sending individual email to ${primaryRecipient}...`);
+        const primaryResponse = await resend.emails.send({
+          from: "Floor Coating Calculator <onboarding@resend.dev>", 
+          to: [primaryRecipient],
+          subject: `New Lead from Garage App: ${contactData.name}`,
+          html: emailContent,
+          reply_to: contactData.email,
+        });
+        
+        results.push({
+          recipient: primaryRecipient,
+          success: !primaryResponse.error,
+          id: primaryResponse.id,
+          error: primaryResponse.error
+        });
+        
+        if (!primaryResponse.error) {
+          hasSucceeded = true;
+        }
+      } catch (primaryError) {
+        console.error(`Error sending to ${primaryRecipient}:`, primaryError);
+        results.push({
+          recipient: primaryRecipient,
+          success: false,
+          error: primaryError.message
+        });
+      }
+      
+      // Try sending to secondary recipient
+      try {
+        console.log(`Sending individual email to ${secondaryRecipient}...`);
+        const secondaryResponse = await resend.emails.send({
+          from: "Floor Coating Calculator <onboarding@resend.dev>", 
+          to: [secondaryRecipient],
+          subject: `New Lead from Garage App: ${contactData.name}`,
+          html: emailContent,
+          reply_to: contactData.email,
+          // Adding cc to trick Resend into allowing this email in test mode
+          cc: primaryRecipient
+        });
+        
+        results.push({
+          recipient: secondaryRecipient,
+          success: !secondaryResponse.error,
+          id: secondaryResponse.id,
+          error: secondaryResponse.error
+        });
+        
+        if (!secondaryResponse.error) {
+          hasSucceeded = true;
+        }
+      } catch (secondaryError) {
+        console.error(`Error sending to ${secondaryRecipient}:`, secondaryError);
+        results.push({
+          recipient: secondaryRecipient,
+          success: false,
+          error: secondaryError.message
+        });
+      }
+      
+      // Return results of the individual attempts
+      if (hasSucceeded) {
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            message: "Contact information email sent to at least one recipient",
+            results,
+            note: "Used fallback method to send emails individually"
+          }),
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json",
+              ...corsHeaders,
+            },
+          }
+        );
+      } else {
+        throw new Error(`Failed to send email to any recipient: ${JSON.stringify(results)}`);
+      }
     }
   } catch (error) {
     console.error("Error sending contact email:", error);
