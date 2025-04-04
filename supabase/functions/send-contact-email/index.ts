@@ -55,12 +55,14 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     // In testing mode, Resend only allows sending emails to verified addresses
-    console.log("Sending email to verified addresses: bipin@homestop.us and nithin@homestop.us");
+    const recipients = ["bipin@homestop.us", "nithin@homestop.us"];
+    console.log(`Sending email to verified addresses: ${recipients.join(", ")}`);
     
     try {
+      // Create a single email with multiple recipients
       const emailResponse = await resend.emails.send({
         from: "Floor Coating Calculator <onboarding@resend.dev>", 
-        to: ["bipin@homestop.us", "nithin@homestop.us"], // Send to both verified email addresses
+        to: recipients, // Send to both verified email addresses
         subject: `New Lead from Garage App: ${contactData.name}`,
         html: emailContent,
         reply_to: contactData.email,
@@ -78,6 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
           success: true, 
           message: "Contact information email sent",
           emailId: emailResponse.id,
+          recipients: recipients,
           note: "Email sent to verified addresses (Resend test mode limitation)"
         }),
         {
