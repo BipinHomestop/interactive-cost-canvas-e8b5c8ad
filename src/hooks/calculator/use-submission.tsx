@@ -1,8 +1,14 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "@/components/calculator/types";
+import { isValidZipCode } from "./utils/validation-utils";
+import { 
+  createSubmission, 
+  updateSubmission, 
+  buildUpdateObject, 
+  updatePaymentInfo as updatePaymentInfoDb 
+} from "./utils/submission-db";
 
 export const useSubmission = () => {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
@@ -16,12 +22,6 @@ export const useSubmission = () => {
       setSubmissionId(storedId);
     }
   }, [submissionId]);
-
-  // Helper function to validate ZIP code format
-  const isValidZipCode = (zipcode: string | undefined): boolean => {
-    if (!zipcode) return false;
-    return /^\d{5}$/.test(zipcode); // Must be exactly 5 digits
-  };
 
   const saveSubmission = async (
     formValues: Partial<CalculatorInputs>, 
@@ -43,27 +43,7 @@ export const useSubmission = () => {
 
       if (isNewSubmission) {
         // For new submissions, save whatever data we have so far
-        const { data, error } = await supabase
-          .from('cost_calculator_submissions')
-          .insert([{
-            location: formValues.location || '',
-            name: formValues.name || '',
-            phone: formValues.phone || '',
-            email: formValues.email || '',
-            garage_capacity: formValues.garageCapacity || null,
-            garage_finish: formValues.garageFinish || 'snowfall', // Default value
-            need_stem_walls: formValues.needStemWalls || 'no',
-            stem_wall_type: formValues.stemWallType,
-            need_steps: formValues.needSteps,
-            need_extra_footage: formValues.needExtraFootage,
-            extra_footage: formValues.extraFootage,
-            current_condition: formValues.currentCondition,
-            total_price: totalPrice,
-            discount_code: discountCode,
-            discount_percentage: discountPercentage,
-            payment_status: 'incomplete' // Mark as incomplete until payment step
-          }])
-          .select();
+        const { data, error } = await createSubmission(formValues, totalPrice, discountCode, discountPercentage);
 
         if (error) {
           console.error('Database error:', error);
@@ -95,36 +75,9 @@ export const useSubmission = () => {
         });
       } else if (submissionId) {
         // For updates, create update object with only non-undefined values
-        const updateData: Record<string, any> = {};
+        const updateData = buildUpdateObject(formValues, totalPrice, discountCode, discountPercentage);
         
-        // Only include fields that have values
-        if (formValues.garageCapacity !== undefined) updateData.garage_capacity = formValues.garageCapacity;
-        if (formValues.garageFinish !== undefined) updateData.garage_finish = formValues.garageFinish;
-        if (formValues.needStemWalls !== undefined) updateData.need_stem_walls = formValues.needStemWalls;
-        if (formValues.stemWallType !== undefined) updateData.stem_wall_type = formValues.stemWallType;
-        if (formValues.needSteps !== undefined) updateData.need_steps = formValues.needSteps;
-        if (formValues.needExtraFootage !== undefined) updateData.need_extra_footage = formValues.needExtraFootage;
-        if (formValues.extraFootage !== undefined) updateData.extra_footage = formValues.extraFootage;
-        if (formValues.currentCondition !== undefined) updateData.current_condition = formValues.currentCondition;
-        if (formValues.location !== undefined) updateData.location = formValues.location;
-        if (formValues.name !== undefined) updateData.name = formValues.name;
-        if (formValues.phone !== undefined) updateData.phone = formValues.phone;
-        if (formValues.email !== undefined) updateData.email = formValues.email;
-        
-        // Add optional fields
-        if (totalPrice !== undefined) updateData.total_price = totalPrice;
-        if (discountCode !== undefined) updateData.discount_code = discountCode;
-        if (discountPercentage !== undefined) updateData.discount_percentage = discountPercentage;
-
-        // Update payment status to 'pending' if we reach the last step
-        if (formValues.currentCondition !== undefined) {
-          updateData.payment_status = 'pending';
-        }
-
-        const { error } = await supabase
-          .from('cost_calculator_submissions')
-          .update(updateData)
-          .eq('id', submissionId);
+        const { error } = await updateSubmission(submissionId, updateData);
 
         if (error) {
           console.error('Update error:', error);
@@ -200,10 +153,7 @@ export const useSubmission = () => {
       if (checkoutSessionId) updateData.checkout_session_id = checkoutSessionId;
       if (paymentStatus) updateData.payment_status = paymentStatus;
       
-      const { error } = await supabase
-        .from('cost_calculator_submissions')
-        .update(updateData)
-        .eq('id', idToUse);
+      const { error } = await updatePaymentInfoDb(idToUse, updateData);
 
       if (error) {
         console.error('Payment info update error:', error);
