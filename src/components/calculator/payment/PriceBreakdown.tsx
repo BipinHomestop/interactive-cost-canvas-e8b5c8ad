@@ -1,15 +1,10 @@
 
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { useEffect, useState } from "react";
-import { BreakdownItem } from "@/components/calculator/types";
-
-// Helper function to format finish labels
-const formatFinishLabel = (finish: string): string => {
-  return finish
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
+import { BreakdownItem as BreakdownItemType } from "@/components/calculator/types";
+import { BreakdownItem } from "./components/BreakdownItem";
+import { BreakdownTotal } from "./components/BreakdownTotal";
+import { formatFinishLabel } from "./utils/formatUtils";
 
 interface PriceBreakdownProps {
   formData: any;
@@ -25,7 +20,7 @@ export function PriceBreakdown({
   discountedTotal 
 }: PriceBreakdownProps) {
   const { getPrice, getFinishMultiplier } = usePricingConfig();
-  const [breakdownItems, setBreakdownItems] = useState<BreakdownItem[]>([]);
+  const [breakdownItems, setBreakdownItems] = useState<BreakdownItemType[]>([]);
   
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -46,8 +41,8 @@ export function PriceBreakdown({
     sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(items));
   }, [formData, totalCost, discountPercentage]);
   
-  const renderPriceBreakdown = (): BreakdownItem[] => {
-    const breakdown: BreakdownItem[] = [];
+  const renderPriceBreakdown = (): BreakdownItemType[] => {
+    const breakdown: BreakdownItemType[] = [];
     
     // Base price based on garage capacity
     if (formData.garageCapacity) {
@@ -178,22 +173,17 @@ export function PriceBreakdown({
       <h3 className="font-semibold text-lg mb-3">Price Breakdown</h3>
       <div className="space-y-2 sm:space-y-3">
         {breakdownItems.map((item, index) => (
-          <div key={index} className="flex justify-between text-sm">
-            <span className="text-gray-600">{item.label}</span>
-            <span className="font-medium">${item.price.toFixed(2)}</span>
-          </div>
+          <BreakdownItem 
+            key={index} 
+            label={item.label} 
+            price={item.price} 
+          />
         ))}
         
-        <div className="border-t pt-3 mt-3 flex justify-between font-semibold text-lg">
-          <span>Total</span>
-          <span>${discountPercentage > 0 ? discountedTotal.toFixed(2) : totalCost.toFixed(2)}</span>
-        </div>
-        
-        {hasDiscrepancy && (
-          <div className="text-xs text-red-500 mt-1">
-            Note: There may be a small rounding difference in the total.
-          </div>
-        )}
+        <BreakdownTotal 
+          total={discountPercentage > 0 ? discountedTotal : totalCost}
+          hasDiscrepancy={hasDiscrepancy}
+        />
       </div>
     </div>
   );

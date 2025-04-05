@@ -1,5 +1,6 @@
 
 import { BreakdownItem } from "@/components/calculator/types";
+import { formatFinishLabel } from "./formatUtils";
 
 /**
  * Generate price breakdown items for checkout
@@ -34,7 +35,7 @@ export const getBreakdownItems = (
       price: basePrice,
     },
     {
-      label: `${formData.garageFinish.charAt(0).toUpperCase() + formData.garageFinish.slice(1)} Finish`,
+      label: `${formatFinishLabel(formData.garageFinish)} Finish`,
       price: (basePrice * finishMultiplier) - basePrice,
     }
   ];
