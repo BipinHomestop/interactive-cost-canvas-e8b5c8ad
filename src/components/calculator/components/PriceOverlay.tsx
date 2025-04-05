@@ -1,7 +1,7 @@
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { useEffect, useState } from "react";
+import { getPreservedCalculationData } from "@/hooks/calculator/utils/submission-db";
 
 interface PriceOverlayProps {
   totalCost: number;
@@ -18,8 +18,25 @@ export function PriceOverlay({
   useEffect(() => {
     console.log('PriceOverlay rendering with totalCost:', totalCost);
     
-    // Ensure we update our displayed cost whenever the provided totalCost changes
-    setDisplayedCost(totalCost);
+    // Check if we're coming back from payment step
+    const pathSegments = window.location.pathname.split('/');
+    const currentStep = pathSegments.length > 1 && pathSegments[1] === 'step' ? 
+                       parseInt(pathSegments[2]) : 1;
+    
+    // If we're on the last step before payment (step 8), check for preserved price
+    if (currentStep === 8) {
+      const preservedPrice = getPreservedCalculationData();
+      if (preservedPrice && preservedPrice > 0) {
+        console.log('Using preserved price in overlay:', preservedPrice);
+        setDisplayedCost(preservedPrice);
+        return;
+      }
+    }
+    
+    // Otherwise, ensure we update our displayed cost whenever the provided totalCost changes
+    if (totalCost > 0) {
+      setDisplayedCost(totalCost);
+    }
   }, [totalCost]);
   
   // Calculate market price (40% higher than our price by default)
@@ -37,11 +54,13 @@ export function PriceOverlay({
       
       if (currentStep !== 9) {
         console.log('Using live calculated cost instead of cached value');
-        // If we came back from payment page, clear any cached values
-        sessionStorage.removeItem('cachedTotalCost');
-        sessionStorage.removeItem('cachedDiscountPercentage');
-        sessionStorage.removeItem('cachedDiscountedTotal');
-        sessionStorage.removeItem('cachedBreakdownItems');
+        // Only clear cached values if we're not coming from payment
+        if (currentStep !== 8) {
+          sessionStorage.removeItem('cachedTotalCost');
+          sessionStorage.removeItem('cachedDiscountPercentage');
+          sessionStorage.removeItem('cachedDiscountedTotal');
+          sessionStorage.removeItem('cachedBreakdownItems');
+        }
       }
     }
   }, [totalCost]);

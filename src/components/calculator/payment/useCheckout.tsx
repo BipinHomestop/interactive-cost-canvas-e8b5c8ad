@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSubmission } from "@/hooks/calculator/use-submission";
 import { format } from "date-fns";
+import { getPreservedCalculationData } from "@/hooks/calculator/utils/submission-db";
 
 export function useCheckout(
   formData: any,
@@ -58,12 +59,19 @@ export function useCheckout(
 
       console.log('Successfully updated installation date, proceeding to checkout');
 
+      // Check if we should use preserved price
+      const preservedPrice = getPreservedCalculationData();
+      const finalTotalCost = preservedPrice && preservedPrice > 0 ? preservedPrice : totalCost;
+      const finalDiscountedTotal = discountPercentage > 0 ? 
+                                Math.round(finalTotalCost * (1 - discountPercentage / 100)) : 
+                                finalTotalCost;
+
       // Cache the breakdown items before sending to ensure consistency if user returns
       const breakdownItems = getBreakdownItems();
       sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(breakdownItems));
-      sessionStorage.setItem('cachedTotalCost', totalCost.toString());
+      sessionStorage.setItem('cachedTotalCost', finalTotalCost.toString());
       sessionStorage.setItem('cachedDiscountPercentage', discountPercentage.toString());
-      sessionStorage.setItem('cachedDiscountedTotal', discountedTotal.toString());
+      sessionStorage.setItem('cachedDiscountedTotal', finalDiscountedTotal.toString());
 
       // Prepare line items for Stripe based on price breakdown
       const lineItems = breakdownItems.map(item => ({
@@ -96,7 +104,7 @@ export function useCheckout(
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: {
           lineItems: lineItems,
-          totalAmount: discountPercentage > 0 ? discountedTotal : totalCost,
+          totalAmount: finalDiscountedTotal,
           metadata: metadata,
           successUrl: window.location.origin + '/success',
           cancelUrl: window.location.origin + '/step/9', // Return to payment step

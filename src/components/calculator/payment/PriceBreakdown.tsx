@@ -5,6 +5,7 @@ import { BreakdownItem as BreakdownItemType } from "@/components/calculator/type
 import { BreakdownItem } from "./components/BreakdownItem";
 import { BreakdownTotal } from "./components/BreakdownTotal";
 import { formatFinishLabel } from "./utils/formatUtils";
+import { getPreservedCalculationData } from "@/hooks/calculator/utils/submission-db";
 
 interface PriceBreakdownProps {
   formData: any;
@@ -21,6 +22,7 @@ export function PriceBreakdown({
 }: PriceBreakdownProps) {
   const { getPrice, getFinishMultiplier } = usePricingConfig();
   const [breakdownItems, setBreakdownItems] = useState<BreakdownItemType[]>([]);
+  const [displayCost, setDisplayCost] = useState(totalCost);
   
   // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
@@ -33,13 +35,25 @@ export function PriceBreakdown({
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
   
+  // Check for preserved cost
+  useEffect(() => {
+    // Check if we should use preserved price
+    const preservedPrice = getPreservedCalculationData();
+    if (preservedPrice && preservedPrice > 0) {
+      console.log('Using preserved price in breakdown:', preservedPrice);
+      setDisplayCost(preservedPrice);
+    } else if (totalCost > 0) {
+      setDisplayCost(totalCost);
+    }
+  }, [totalCost]);
+  
   useEffect(() => {
     const items = renderPriceBreakdown();
     setBreakdownItems(items);
     
     // Store breakdown items for later use in checkout
     sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(items));
-  }, [formData, totalCost, discountPercentage]);
+  }, [formData, displayCost, discountPercentage]);
   
   const renderPriceBreakdown = (): BreakdownItemType[] => {
     const breakdown: BreakdownItemType[] = [];
@@ -129,7 +143,7 @@ export function PriceBreakdown({
 
     // Add discount if applicable
     if (discountPercentage > 0) {
-      const discountAmount = Math.round(totalCost * discountPercentage / 100) * -1;
+      const discountAmount = Math.round(displayCost * discountPercentage / 100) * -1;
       breakdown.push({
         label: `Discount (${discountPercentage}%)`,
         price: discountAmount
@@ -146,7 +160,7 @@ export function PriceBreakdown({
     });
     
     // If there's a discrepancy, add an adjustment item
-    const discrepancy = totalCost - calculatedTotal;
+    const discrepancy = displayCost - calculatedTotal;
     if (Math.abs(discrepancy) > 1) {
       console.log(`Price breakdown discrepancy detected: ${discrepancy}`);
       breakdown.push({
@@ -165,7 +179,7 @@ export function PriceBreakdown({
 
   // Check if the calculated total matches the expected total
   const calculatedTotal = calculateTotalFromItems();
-  const expectedTotal = discountPercentage > 0 ? discountedTotal : totalCost;
+  const expectedTotal = discountPercentage > 0 ? discountedTotal : displayCost;
   const hasDiscrepancy = Math.abs(calculatedTotal - expectedTotal) > 1;
 
   return (
@@ -181,7 +195,7 @@ export function PriceBreakdown({
         ))}
         
         <BreakdownTotal 
-          total={discountPercentage > 0 ? discountedTotal : totalCost}
+          total={discountPercentage > 0 ? discountedTotal : displayCost}
           hasDiscrepancy={hasDiscrepancy}
         />
       </div>

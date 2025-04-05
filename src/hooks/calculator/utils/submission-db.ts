@@ -103,3 +103,26 @@ export const updatePaymentInfo = async (
 
   return { error };
 };
+
+/**
+ * Preserves calculation data in session storage when navigating back from payment
+ */
+export const preserveCalculationData = (totalPrice: number) => {
+  if (totalPrice > 0) {
+    // Store the current total price to preserve it when returning from payment screen
+    sessionStorage.setItem('preservedTotalPrice', totalPrice.toString());
+    console.log('Preserved total price in session storage:', totalPrice);
+  }
+};
+
+/**
+ * Retrieves preserved calculation data from session storage
+ */
+export const getPreservedCalculationData = (): number | null => {
+  const preservedPrice = sessionStorage.getItem('preservedTotalPrice');
+  if (preservedPrice) {
+    console.log('Retrieved preserved price from session storage:', preservedPrice);
+    return parseInt(preservedPrice, 10);
+  }
+  return null;
+};
