@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSubmission } from "@/hooks/calculator/use-submission";
@@ -30,17 +31,9 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     }
   }, [submissionId]);
   
-  // We'll use the total cost passed from the calculator always
-  // This ensures we're using the latest calculated value
-  console.log('Payment step using totalCost:', totalCost);
-  
-  // Store the current total cost for the checkout process
-  useEffect(() => {
-    if (totalCost > 0) {
-      sessionStorage.setItem('cachedTotalCost', totalCost.toString());
-      console.log('Stored current total cost in session storage:', totalCost);
-    }
-  }, [totalCost]);
+  // We'll use the total cost passed directly from the calculator
+  // This ensures we're always using the latest calculated value
+  console.log('Payment step using live totalCost:', totalCost);
   
   // Custom hooks for discount and checkout functionality
   const { 
@@ -52,37 +45,27 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
     setInitialDiscount
   } = useDiscountCode(totalCost);
 
-  // Check for cached discount percentage
+  // Check for cached discount percentage - only use if we're returning from a checkout attempt
   useEffect(() => {
-    const cachedDiscountPercentage = sessionStorage.getItem('cachedDiscountPercentage');
     const cachedCouponCode = sessionStorage.getItem('cachedCouponCode');
     
-    if (cachedDiscountPercentage && cachedCouponCode) {
-      const parsedPercentage = parseFloat(cachedDiscountPercentage);
-      if (!isNaN(parsedPercentage) && parsedPercentage > 0) {
-        console.log('Found cached discount:', parsedPercentage, 'for coupon:', cachedCouponCode);
-        setInitialDiscount(parsedPercentage, cachedCouponCode);
+    // Only restore discount if we have a coupon code cached
+    if (cachedCouponCode && cachedCouponCode.length > 0) {
+      const cachedDiscountPercentage = sessionStorage.getItem('cachedDiscountPercentage');
+      
+      if (cachedDiscountPercentage) {
+        const parsedPercentage = parseFloat(cachedDiscountPercentage);
+        if (!isNaN(parsedPercentage) && parsedPercentage > 0) {
+          console.log('Found cached discount:', parsedPercentage, 'for coupon:', cachedCouponCode);
+          setInitialDiscount(parsedPercentage, cachedCouponCode);
+        }
       }
     }
   }, [setInitialDiscount]);
 
   // Get price breakdown items for checkout
   const getBreakdownItems = () => {
-    // Check for cached breakdown items
-    const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
-    if (cachedItems) {
-      try {
-        const parsedItems = JSON.parse(cachedItems);
-        if (Array.isArray(parsedItems) && parsedItems.length > 0) {
-          console.log('Using cached breakdown items');
-          return parsedItems;
-        }
-      } catch (e) {
-        console.error('Error parsing cached breakdown items:', e);
-      }
-    }
-    
-    // Generate the breakdown items if no cache exists
+    // Generate fresh breakdown items each time - don't rely on cached values
     const basePrice = formData.garageCapacity === 1 ? 1000 : 
                       formData.garageCapacity === 2 ? 2000 : 
                       formData.garageCapacity === 3 ? 3500 : 
@@ -155,6 +138,9 @@ export function PaymentStep({ onBack, formData, totalCost }: PaymentStepProps) {
         price: discountAmount,
       });
     }
+    
+    // Store the fresh breakdown items for checkout
+    sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(items));
     
     return items;
   };

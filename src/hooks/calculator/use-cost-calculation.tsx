@@ -18,10 +18,24 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
-  // Clear cached values when going back from payment screen
+  // Ensure we're always using the fresh calculated price when on step 9 (payment)
   useEffect(() => {
-    if (step < 9) {
+    if (step === 9) {
+      // Calculate the price fresh when entering payment step
+      calculateCost();
+      // When going back TO the payment step, clear cached values to ensure we use fresh calculations
+      const cachedPrice = sessionStorage.getItem('cachedTotalCost');
+      if (cachedPrice) {
+        console.log('Entering payment step, clearing cached values to use fresh calculations');
+        sessionStorage.removeItem('cachedTotalCost');
+        sessionStorage.removeItem('cachedDiscountPercentage');
+        sessionStorage.removeItem('cachedCouponCode');
+        sessionStorage.removeItem('cachedBreakdownItems');
+        sessionStorage.removeItem('cachedDiscountedTotal');
+      }
+    } else if (step < 9) {
       // If we're not on the payment step, clear any cached values to prevent stale data
+      console.log('Navigating away from payment, clearing cached values');
       sessionStorage.removeItem('cachedTotalCost');
       sessionStorage.removeItem('cachedDiscountPercentage');
       sessionStorage.removeItem('cachedCouponCode');
