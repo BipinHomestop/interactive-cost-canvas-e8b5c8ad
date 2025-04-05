@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { CalculatorInputs } from "@/components/calculator/types";
 
@@ -121,8 +120,9 @@ export const preserveCalculationData = (totalPrice: number) => {
 export const getPreservedCalculationData = (): number | null => {
   const preservedPrice = sessionStorage.getItem('preservedTotalPrice');
   if (preservedPrice) {
-    console.log('Retrieved preserved price from session storage:', preservedPrice);
-    return parseInt(preservedPrice, 10);
+    const parsedPrice = parseInt(preservedPrice, 10);
+    console.log('Retrieved preserved price from session storage:', parsedPrice);
+    return parsedPrice;
   }
   return null;
 };

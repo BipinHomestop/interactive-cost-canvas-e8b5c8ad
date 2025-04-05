@@ -9,6 +9,7 @@ import { PaymentNavigation } from "./PaymentNavigation";
 import { useDiscountCode } from "./useDiscountCode";
 import { useCheckout } from "./useCheckout";
 import { getBreakdownItems } from "./utils/breakdownUtils";
+import { getPreservedCalculationData } from "@/hooks/calculator/utils/submission-db";
 
 interface PaymentStepContainerProps {
   onBack: () => void;
@@ -22,8 +23,21 @@ export function PaymentStepContainer({
   totalCost 
 }: PaymentStepContainerProps) {
   const [date, setDate] = useState<Date>();
+  const [finalCost, setFinalCost] = useState<number>(totalCost);
   const isMobile = useIsMobile();
   const { submissionId } = useSubmission();
+  
+  // Check for preserved price on component mount
+  useEffect(() => {
+    const preservedPrice = getPreservedCalculationData();
+    if (preservedPrice && preservedPrice > 0) {
+      console.log('PaymentStep using preserved price:', preservedPrice);
+      setFinalCost(preservedPrice);
+    } else {
+      console.log('PaymentStep using live totalCost:', totalCost);
+      setFinalCost(totalCost);
+    }
+  }, [totalCost]);
   
   // Load submission ID from session storage if not available in state
   useEffect(() => {
@@ -36,10 +50,6 @@ export function PaymentStepContainer({
     }
   }, [submissionId]);
   
-  // We'll use the total cost passed directly from the calculator
-  // This ensures we're always using the latest calculated value
-  console.log('Payment step using live totalCost:', totalCost);
-  
   // Custom hooks for discount and checkout functionality
   const { 
     couponCode, 
@@ -48,7 +58,7 @@ export function PaymentStepContainer({
     discountedTotal, 
     handleApplyCoupon,
     setInitialDiscount
-  } = useDiscountCode(totalCost);
+  } = useDiscountCode(finalCost);
 
   // Check for cached discount percentage - only use if we're returning from a checkout attempt
   useEffect(() => {
@@ -73,9 +83,9 @@ export function PaymentStepContainer({
     date,
     couponCode,
     discountPercentage,
-    totalCost,
+    finalCost,
     discountedTotal,
-    () => getBreakdownItems(formData, totalCost, discountPercentage)
+    () => getBreakdownItems(formData, finalCost, discountPercentage)
   );
 
   return (
@@ -83,7 +93,7 @@ export function PaymentStepContainer({
       <div className={`${isMobile ? 'space-y-5' : 'space-y-6'} px-4 sm:px-6 pb-8`}>
         <PriceBreakdown 
           formData={formData} 
-          totalCost={totalCost} 
+          totalCost={finalCost} 
           discountPercentage={discountPercentage} 
           discountedTotal={discountedTotal} 
         />

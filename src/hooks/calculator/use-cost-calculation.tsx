@@ -19,31 +19,26 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
-  // Handle step transitions, especially for step 9 (payment)
+  // Check for preserved data on step changes
   useEffect(() => {
-    if (step === 9) {
-      // When entering payment step, preserve the current calculation
-      if (totalCost > 0) {
-        preserveCalculationData(totalCost);
-      }
-      // Calculate the price fresh when entering payment step
-      calculateCost();
+    console.log('Step changed to:', step);
+    
+    // When entering or leaving the last two steps, handle preserved price
+    if (step >= 8 || step === 9) {
+      const preservedPrice = getPreservedCalculationData();
       
-      // When going back TO the payment step, clear cached values to ensure we use fresh calculations
-      const cachedPrice = sessionStorage.getItem('cachedTotalCost');
-      if (cachedPrice) {
-        console.log('Entering payment step, clearing cached values to use fresh calculations');
-        sessionStorage.removeItem('cachedTotalCost');
-        sessionStorage.removeItem('cachedDiscountPercentage');
-        sessionStorage.removeItem('cachedCouponCode');
-        sessionStorage.removeItem('cachedBreakdownItems');
-        sessionStorage.removeItem('cachedDiscountedTotal');
+      if (preservedPrice && preservedPrice > 0) {
+        console.log('Using preserved price in cost calculation hook:', preservedPrice);
+        setTotalCost(preservedPrice);
+        return;
       }
-    } else if (step === 8 && totalCost > 0) {
-      // When leaving payment step
-      preserveCalculationData(totalCost);
     }
-  }, [step, totalCost]);
+    
+    // For earlier steps, calculate the cost normally
+    if (step < 8) {
+      calculateCost();
+    }
+  }, [step]);
 
   // Initialize from preserved data if available
   useEffect(() => {
@@ -56,6 +51,16 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
 
   // Calculate the cost whenever relevant data changes
   useEffect(() => {
+    // Skip recalculation at payment step (9) or if we're using preserved data (step 8)
+    if (step === 9 || step === 8) {
+      const preservedCost = getPreservedCalculationData();
+      if (preservedCost && preservedCost > 0) {
+        console.log("In step 8 or 9, using preserved cost:", preservedCost);
+        setTotalCost(preservedCost);
+        return;
+      }
+    }
+    
     console.log("Data changed - recalculating cost for step:", step);
     console.log("Form values:", formValues);
     calculateCost();
@@ -68,17 +73,16 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     formValues.needExtraFootage,
     formValues.extraFootage,
     formValues.currentCondition,
-    step,
     isLoading,
     pricingConfig
   ]);
 
   const calculateCost = useCallback(() => {
-    // First check if we're returning from payment and should use preserved cost
-    if (step === 8) {
+    // Check if we're at step 8 or 9 (last step before payment or payment step)
+    if (step === 8 || step === 9) {
       const preservedCost = getPreservedCalculationData();
       if (preservedCost && preservedCost > 0) {
-        console.log("Using preserved cost from payment step:", preservedCost);
+        console.log("Using preserved cost from previous calculation:", preservedCost);
         setTotalCost(preservedCost);
         return;
       }
@@ -157,8 +161,9 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     setTotalCost(total);
     
     // Also preserve it in session storage to maintain state when returning from payment
-    if (step === 8) {
+    if (step >= 8 && total > 0) {
       preserveCalculationData(total);
+      console.log("Preserved calculation price in session storage:", total);
     }
   }, [formValues, step, getFinishMultiplier, getPrice]);
 
