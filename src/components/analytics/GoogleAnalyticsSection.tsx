@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, ExternalLink, PlusCircle } from 'lucide-react';
+import { AlertCircle, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -61,13 +61,13 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        {error && (
-          <Alert variant={isConnected ? "default" : "destructive"} className="mb-4">
+        {!isConnected && (
+          <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{isConnected ? "Connect Google Analytics" : "Google Analytics Not Available"}</AlertTitle>
+            <AlertTitle>Google Analytics Not Connected</AlertTitle>
             <AlertDescription>
               <p className="mb-2">
-                {typeof error === 'string' ? error : 'Failed to retrieve Google Analytics data. Please check your connection.'}
+                Google Analytics is not properly configured on this site. Connect Google Analytics to view traffic data.
               </p>
               <Button 
                 variant="outline" 
@@ -75,17 +75,8 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
                 className="mt-2" 
                 onClick={handleConnectGA}
               >
-                {isConnected ? (
-                  <>
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Configure Data Access
-                  </>
-                ) : (
-                  <>
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Connect Google Analytics
-                  </>
-                )}
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Connect Google Analytics
               </Button>
             </AlertDescription>
           </Alert>
@@ -93,49 +84,48 @@ export const GoogleAnalyticsSection: React.FC<GoogleAnalyticsSectionProps> = ({
       
         {isLoading || isGaLoading ? (
           <Skeleton className="h-[300px] w-full" />
-        ) : pageTrafficData.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground">
-            {isConnected ? 'No Google Analytics data available for the selected time period' : 'Connect to Google Analytics to view traffic data'}
-          </div>
-        ) : (
+        ) : isConnected && pageTrafficData.length > 0 ? (
           <>
             <div className="bg-blue-50 p-4 rounded-md mb-4 flex items-center justify-between">
               <div>
                 <h3 className="text-sm font-medium text-blue-800">Total Users</h3>
-                <p className="text-2xl font-bold text-blue-900">{totalUsers}</p>
+                <p className="text-2xl font-bold text-blue-900">{totalUsers.toLocaleString()}</p>
               </div>
               <div className="text-sm text-blue-700">
                 {gaTimeRange === '7d' ? 'Last 7 days' : 
                  gaTimeRange === '30d' ? 'Last 30 days' : 'Last 90 days'}
               </div>
             </div>
-            {pageTrafficData.length > 0 && (
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[300px]">Page Path</TableHead>
-                      <TableHead className="text-right">Page Views</TableHead>
-                      <TableHead className="text-right">Unique Views</TableHead>
-                      <TableHead className="text-right">Avg. Time on Page</TableHead>
-                      <TableHead className="text-right">Bounce Rate</TableHead>
+            
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[300px]">Page Path</TableHead>
+                    <TableHead className="text-right">Page Views</TableHead>
+                    <TableHead className="text-right">Unique Views</TableHead>
+                    <TableHead className="text-right">Avg. Time on Page</TableHead>
+                    <TableHead className="text-right">Bounce Rate</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pageTrafficData.map((page, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{page.pagePath}</TableCell>
+                      <TableCell className="text-right">{page.pageViews.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{page.uniqueViews.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{page.avgTimeOnPage}</TableCell>
+                      <TableCell className="text-right">{page.bounceRate}%</TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pageTrafficData.map((page, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{page.pagePath}</TableCell>
-                        <TableCell className="text-right">{page.pageViews}</TableCell>
-                        <TableCell className="text-right">{page.uniqueViews}</TableCell>
-                        <TableCell className="text-right">{page.avgTimeOnPage}</TableCell>
-                        <TableCell className="text-right">{page.bounceRate}%</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </>
+        ) : (
+          <div className="p-4 text-center text-muted-foreground">
+            {isConnected ? 'No Google Analytics data available for the selected time period' : 'Connect to Google Analytics to view traffic data'}
+          </div>
         )}
       </CardContent>
     </Card>

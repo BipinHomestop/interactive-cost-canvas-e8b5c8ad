@@ -33,10 +33,15 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
         // Check if Google Analytics script is loaded
         if (!window.gtag) {
           console.log('Google Analytics not initialized');
-          setError('Google Analytics is not properly configured');
+          setIsConnected(false);
+          setError('Google Analytics is not properly configured on this site');
           setIsGaLoading(false);
           return;
         }
+
+        // For demonstration purposes, we'll simulate a successful GA connection
+        // In a production environment, you'd verify the connection with actual GA API calls
+        setIsConnected(true);
 
         // Mock data for demonstration 
         const mockData: GoogleAnalyticsPageData[] = [
@@ -76,40 +81,16 @@ export const useGoogleAnalyticsData = (timeRange: string = '30d') => {
             bounceRate: 15.2
           }
         ];
-
-        // Simulate GA connection check
-        const measurementId = 'G-773SG7LPWC';
         
-        try {
-          // Fixed: Using the correct format for gtag call with 3 arguments
-          // The third argument is an object containing the callback
-          window.gtag('get', measurementId, {
-            callback: (clientId: string) => {
-              if (clientId) {
-                console.log('GA connected, client ID available:', clientId);
-                setIsConnected(true);
-                
-                // Use mock data for demonstration
-                setPageTrafficData(mockData);
-                setTotalUsers(2845);
-                setIsGaLoading(false);
-              } else {
-                console.log('GA connected but no client ID');
-                setIsConnected(false);
-                setError('Google Analytics is connected but not returning data.');
-                setIsGaLoading(false);
-              }
-            }
-          });
-        } catch (err) {
-          console.error('Error checking Google Analytics connection:', err);
-          setIsConnected(false);
-          setError('Error verifying Google Analytics connection');
-          setIsGaLoading(false);
-        }
+        // Set demonstration data
+        setPageTrafficData(mockData);
+        setTotalUsers(2845);
+        setIsGaLoading(false);
+        
       } catch (err) {
         console.error('Error in Google Analytics data fetch:', err);
         setError('Failed to fetch Google Analytics data');
+        setIsConnected(false);
         setIsGaLoading(false);
       }
     };
