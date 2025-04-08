@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { CalculatorInputs } from "@/components/calculator/types";
 
@@ -105,24 +106,48 @@ export const updatePaymentInfo = async (
 
 /**
  * Preserves calculation data in session storage when navigating back from payment
+ * This is a critical function to maintain price consistency in the calculator
  */
 export const preserveCalculationData = (totalPrice: number) => {
   if (totalPrice > 0) {
-    // Store the current total price to preserve it when returning from payment screen
-    sessionStorage.setItem('preservedTotalPrice', totalPrice.toString());
-    console.log('Preserved total price in session storage:', totalPrice);
+    try {
+      // Store the current total price to preserve it when returning from payment screen
+      sessionStorage.setItem('preservedTotalPrice', totalPrice.toString());
+      console.log('Price preserved successfully in session storage:', totalPrice);
+      
+      // Also store the timestamp when the price was preserved
+      sessionStorage.setItem('preservedTotalPriceTimestamp', Date.now().toString());
+      
+      return true;
+    } catch (error) {
+      console.error('Error preserving total price:', error);
+      return false;
+    }
   }
+  return false;
 };
 
 /**
  * Retrieves preserved calculation data from session storage
+ * Returns the preserved price or null if not found/invalid
  */
 export const getPreservedCalculationData = (): number | null => {
-  const preservedPrice = sessionStorage.getItem('preservedTotalPrice');
-  if (preservedPrice) {
-    const parsedPrice = parseInt(preservedPrice, 10);
-    console.log('Retrieved preserved price from session storage:', parsedPrice);
-    return parsedPrice;
+  try {
+    const preservedPrice = sessionStorage.getItem('preservedTotalPrice');
+    
+    if (preservedPrice) {
+      const parsedPrice = parseInt(preservedPrice, 10);
+      
+      if (!isNaN(parsedPrice) && parsedPrice > 0) {
+        console.log('Retrieved preserved price from session storage:', parsedPrice);
+        return parsedPrice;
+      }
+    }
+    
+    console.log('No valid preserved price found in session storage');
+    return null;
+  } catch (error) {
+    console.error('Error retrieving preserved price:', error);
+    return null;
   }
-  return null;
 };

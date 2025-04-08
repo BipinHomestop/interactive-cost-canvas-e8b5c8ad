@@ -9,7 +9,7 @@ import { PaymentNavigation } from "./PaymentNavigation";
 import { useDiscountCode } from "./useDiscountCode";
 import { useCheckout } from "./useCheckout";
 import { getBreakdownItems } from "./utils/breakdownUtils";
-import { getPreservedCalculationData } from "@/hooks/calculator/utils/submission-db";
+import { getPreservedCalculationData, preserveCalculationData } from "@/hooks/calculator/utils/submission-db";
 
 interface PaymentStepContainerProps {
   onBack: () => void;
@@ -27,15 +27,25 @@ export function PaymentStepContainer({
   const isMobile = useIsMobile();
   const { submissionId } = useSubmission();
   
-  // Check for preserved price on component mount
+  // Initialize with the correct price, prioritizing preserved price
   useEffect(() => {
     const preservedPrice = getPreservedCalculationData();
+    console.log('PaymentStep price initialization check:', { 
+      preservedPrice, 
+      totalCost, 
+      finalCost 
+    });
+    
     if (preservedPrice && preservedPrice > 0) {
       console.log('PaymentStep using preserved price:', preservedPrice);
       setFinalCost(preservedPrice);
-    } else {
-      console.log('PaymentStep using live totalCost:', totalCost);
+      
+      // Re-preserve the price to ensure it persists
+      preserveCalculationData(preservedPrice);
+    } else if (totalCost > 0 && totalCost !== finalCost) {
+      console.log('PaymentStep using and preserving live totalCost:', totalCost);
       setFinalCost(totalCost);
+      preserveCalculationData(totalCost);
     }
   }, [totalCost]);
   

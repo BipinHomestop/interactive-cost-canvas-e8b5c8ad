@@ -1,3 +1,4 @@
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { useEffect, useState } from "react";
@@ -14,37 +15,42 @@ export function PriceOverlay({
   const isMobile = useIsMobile();
   const { getPrice } = usePricingConfig();
   
-  // Log when price changes
+  // Handle price preservation and restoration
   useEffect(() => {
     console.log('PriceOverlay rendering with totalCost:', totalCost);
     
-    // Check if we're coming back from payment step
+    // Get the current step from URL path
     const pathSegments = window.location.pathname.split('/');
     const currentStep = pathSegments.length > 1 && pathSegments[1] === 'step' ? 
                        parseInt(pathSegments[2]) : 1;
     
-    // Get preserved price (if any)
+    // Get preserved calculation data if available
     const preservedPrice = getPreservedCalculationData();
-    console.log('Checking for preserved price:', preservedPrice, 'current step:', currentStep);
+    console.log('Preserved price check:', preservedPrice, 'currentStep:', currentStep);
     
-    // If we're going back from the payment step OR we're on step 8 (last step before payment)
-    // AND we have a preserved price, use it
-    if ((currentStep === 8 || currentStep === 7 || currentStep === 6) && preservedPrice && preservedPrice > 0) {
-      console.log('Using preserved price in overlay:', preservedPrice);
+    // CASE 1: If we're on step 6, 7, 8 (pre-payment steps) and have preserved price, use it
+    if ((currentStep === 6 || currentStep === 7 || currentStep === 8) && preservedPrice && preservedPrice > 0) {
+      console.log('Using preserved price from session storage:', preservedPrice);
       setDisplayedCost(preservedPrice);
       return;
     }
     
-    // Otherwise, ensure we update our displayed cost whenever the provided totalCost changes
+    // CASE 2: If we have a valid totalCost from calculation, use and preserve it
     if (totalCost > 0) {
-      console.log('Using calculated cost in overlay:', totalCost);
+      console.log('Using and preserving new calculated cost:', totalCost);
       setDisplayedCost(totalCost);
       
-      // Also preserve the current totalCost for later use
+      // Preserve the cost on step 8 (final step before payment)
       if (currentStep === 8) {
         preserveCalculationData(totalCost);
-        console.log('Preserving current cost:', totalCost);
+        console.log('Price preserved in session storage:', totalCost);
       }
+    }
+    
+    // CASE 3: If we don't have a totalCost but do have preserved price, fall back to it
+    else if (preservedPrice && preservedPrice > 0) {
+      console.log('Falling back to preserved price:', preservedPrice);
+      setDisplayedCost(preservedPrice);
     }
   }, [totalCost]);
   

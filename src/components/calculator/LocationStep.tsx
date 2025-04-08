@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { MapPin, AlertTriangle, CheckCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -51,6 +50,18 @@ export function LocationStep({
     setIsValidating(true);
     
     try {
+      try {
+        await supabase
+          .from('analytics_location_visits')
+          .insert({
+            zipcode: value,
+            page_visited: 'location-zipcode-search',
+            time_range: '30d'
+          });
+      } catch (analyticsError) {
+        console.error('Error logging zipcode search:', analyticsError);
+      }
+      
       const { data, error: queryError } = await supabase
         .from('service_area_zipcodes')
         .select('zipcode')
@@ -69,6 +80,19 @@ export function LocationStep({
         setError("We do not serve that area");
         setIsValid(false);
         setIsValidating(false);
+        
+        try {
+          await supabase
+            .from('analytics_location_visits')
+            .insert({
+              zipcode: value,
+              page_visited: 'location-zipcode-not-served',
+              time_range: '30d'
+            });
+        } catch (analyticsError) {
+          console.error('Error logging non-service zipcode:', analyticsError);
+        }
+        
         return false;
       }
       
@@ -76,7 +100,18 @@ export function LocationStep({
       setIsValid(true);
       setIsValidating(false);
       
-      // Automatically advance to next step when ZIP code is valid
+      try {
+        await supabase
+          .from('analytics_location_visits')
+          .insert({
+            zipcode: value,
+            page_visited: 'location-zipcode-valid',
+            time_range: '30d'
+          });
+      } catch (analyticsError) {
+        console.error('Error logging valid zipcode:', analyticsError);
+      }
+      
       onLocationChange(value);
       
       return true;
@@ -162,4 +197,3 @@ export function LocationStep({
     </div>
   );
 }
-
