@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Search } from 'lucide-react';
 import { SubmissionJourneyChart } from './charts/SubmissionJourneyChart';
-import { useSubmissionJourneyData } from '@/hooks/analytics/use-submission-journey-data';
+import { useSubmissionJourneyData } from '@/hooks/analytics/submission-journey/use-submission-journey-data';
 import { Input } from '@/components/ui/input';
 
 interface SubmissionJourneySectionProps {
