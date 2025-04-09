@@ -5,6 +5,8 @@ import { DashboardHeader } from './dashboard/DashboardHeader';
 import { ChartSection } from './dashboard/ChartSection';
 import { DataTablesSection } from './dashboard/DataTablesSection';
 import { VisitorInsights } from './dashboard/VisitorInsights';
+import { SubmissionJourneySection } from './SubmissionJourneySection';
+import { GoogleAnalyticsSection } from './GoogleAnalyticsSection';
 
 interface AnalyticsDashboardProps {
   isLoading: boolean;
@@ -66,6 +68,17 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         summary={summary}
         topLocation={topLocation}
         topZipCode={topZipCode}
+      />
+
+      {/* Add our new Submission Journey Section */}
+      <SubmissionJourneySection
+        isLoading={isLoading}
+        timeRange={timeRange}
+      />
+
+      <GoogleAnalyticsSection
+        isLoading={isLoading}
+        timeRange={timeRange}
       />
 
       <VisitorInsights 
