@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useUserLocation } from '@/hooks/analytics/use-user-location';
 import { SubmissionJourneySection } from './SubmissionJourneySection';
 import { PageVisitTable } from './AnalyticsTables';
 

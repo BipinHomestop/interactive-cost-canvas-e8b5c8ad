@@ -10,7 +10,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { Users, AlertCircle, Calendar, Clock, FileExcel, FileCsv, FilePdf } from 'lucide-react';
+import { Users, AlertCircle, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { exportToExcel, exportToCSV, exportToPDF } from '@/hooks/analytics/utils/submission-export';
 
@@ -111,7 +111,6 @@ export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({
               onClick={handleExportExcel}
               disabled={isLoading || data.submissions.length === 0}
             >
-              <FileExcel className="h-4 w-4" />
               Excel
             </Button>
             <Button
@@ -121,7 +120,6 @@ export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({
               onClick={handleExportCSV}
               disabled={isLoading || data.submissions.length === 0}
             >
-              <FileCsv className="h-4 w-4" />
               CSV
             </Button>
             <Button
@@ -131,7 +129,6 @@ export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({
               onClick={handleExportPDF}
               disabled={isLoading || data.submissions.length === 0}
             >
-              <FilePdf className="h-4 w-4" />
               PDF
             </Button>
           </div>
