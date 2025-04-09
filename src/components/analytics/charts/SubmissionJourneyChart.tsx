@@ -6,8 +6,6 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { 
   ResponsiveContainer,
   Sankey, 
-  SankeyNode,
-  SankeyLink,
   Tooltip
 } from 'recharts';
 import { CHART_COLORS } from './ChartConfig';
@@ -83,7 +81,7 @@ export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({
                   margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                   link={{ stroke: '#d1d5db' }}
                   node={{
-                    fill: (nodeProps: SankeyNode) => 
+                    fill: (nodeProps: any) => 
                       nodeColors[nodeProps.index % nodeColors.length],
                     stroke: '#fff'
                   }}
