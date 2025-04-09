@@ -10,6 +10,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
+import { Users, Clock, BarChart2, TrendingUp, TrendingDown } from 'lucide-react';
 import { SubmissionJourneyChart } from './charts/SubmissionJourneyChart';
 import { useSubmissionJourneyData } from '@/hooks/analytics/use-submission-journey-data';
 
@@ -28,7 +29,10 @@ export const SubmissionJourneySection: React.FC<SubmissionJourneySectionProps> =
     <Card className="shadow-md mb-8">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-xl text-[#1A3174]">User Journey Analytics</CardTitle>
+          <div className="flex items-center space-x-2">
+            <BarChart2 className="h-5 w-5 text-[#1A3174]" />
+            <CardTitle className="text-xl text-[#1A3174]">User Journey Analytics</CardTitle>
+          </div>
           <CardDescription>Analyze how users progress through the cost calculator</CardDescription>
         </div>
       </CardHeader>
@@ -36,33 +40,73 @@ export const SubmissionJourneySection: React.FC<SubmissionJourneySectionProps> =
         <SubmissionJourneyChart data={journeyData} isLoading={isLoading || isJourneyLoading} />
         
         <div className="mt-8">
-          <h3 className="text-lg font-medium mb-4">Step Completion Rates</h3>
+          <h3 className="text-lg font-medium mb-4 flex items-center">
+            <TrendingUp className="h-5 w-5 mr-2 text-[#1A3174]" />
+            Step Completion Rates
+          </h3>
           {isLoading || isJourneyLoading ? (
-            <Skeleton className="h-[200px] w-full" />
+            <Skeleton className="h-[300px] w-full" />
+          ) : stepCompletionData.length === 0 ? (
+            <div className="flex items-center justify-center h-[100px] border border-dashed rounded-md p-4 text-gray-500 text-sm">
+              No completion data available for the selected time range
+            </div>
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-hidden">
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-slate-50">
                   <TableRow>
-                    <TableHead>Step Name</TableHead>
-                    <TableHead className="text-right">Started</TableHead>
-                    <TableHead className="text-right">Completed</TableHead>
-                    <TableHead className="text-right">Completion Rate</TableHead>
-                    <TableHead className="text-right">Avg. Time to Complete</TableHead>
+                    <TableHead className="font-semibold">Step Name</TableHead>
+                    <TableHead className="text-right font-semibold">
+                      <div className="flex items-center justify-end">
+                        <Users className="h-4 w-4 mr-1" />
+                        Started
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right font-semibold">
+                      <div className="flex items-center justify-end">
+                        <Users className="h-4 w-4 mr-1" />
+                        Completed
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right font-semibold">
+                      <div className="flex items-center justify-end">
+                        <TrendingUp className="h-4 w-4 mr-1" />
+                        Completion Rate
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right font-semibold">
+                      <div className="flex items-center justify-end">
+                        <Clock className="h-4 w-4 mr-1" />
+                        Avg. Time
+                      </div>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {stepCompletionData.map((step, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={index} className="hover:bg-slate-50">
                       <TableCell className="font-medium">{step.name}</TableCell>
                       <TableCell className="text-right">{step.started}</TableCell>
                       <TableCell className="text-right">{step.completed}</TableCell>
                       <TableCell className="text-right">
-                        <span className={step.completionRate > 70 ? "text-green-600" : step.completionRate > 40 ? "text-amber-600" : "text-red-600"}>
-                          {step.completionRate}%
-                        </span>
+                        <div className="flex items-center justify-end">
+                          {step.completionRate > 70 ? (
+                            <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
+                          ) : step.completionRate > 40 ? (
+                            <TrendingUp className="h-4 w-4 text-amber-600 mr-1" />
+                          ) : (
+                            <TrendingDown className="h-4 w-4 text-red-600 mr-1" />
+                          )}
+                          <span className={
+                            step.completionRate > 70 ? "text-green-600" : 
+                            step.completionRate > 40 ? "text-amber-600" : 
+                            "text-red-600"
+                          }>
+                            {step.completionRate}%
+                          </span>
+                        </div>
                       </TableCell>
-                      <TableCell className="text-right">{step.avgTimeToComplete}</TableCell>
+                      <TableCell className="text-right font-mono">{step.avgTimeToComplete}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
