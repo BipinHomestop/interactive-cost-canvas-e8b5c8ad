@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -7,6 +6,7 @@ import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
 import { DateRangeFilter } from '@/components/analytics/DateRangeFilter';
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 import { useAnalyticsData } from '@/hooks/analytics/use-analytics-data';
+import { SubmissionJourneySection } from './submission-journey';
 
 export const AnalyticsContainer: React.FC = () => {
   const [timeRange, setTimeRange] = useState('30d');
