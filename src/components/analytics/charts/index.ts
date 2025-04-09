@@ -6,3 +6,4 @@ export * from './MonthlyPerformanceChart';
 export * from './HourlyActivityChart';
 export * from './ChartConfig';
 export * from './SubmissionJourneyChart';
+export * from './submission-journey';
