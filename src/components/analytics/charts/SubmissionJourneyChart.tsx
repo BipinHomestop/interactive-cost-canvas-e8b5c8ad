@@ -10,7 +10,9 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { Users, AlertCircle, Calendar, Clock } from 'lucide-react';
+import { Users, AlertCircle, Calendar, Clock, FileExcel, FileCsv, FilePdf } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { exportToExcel, exportToCSV, exportToPDF } from '@/hooks/analytics/utils/submission-export';
 
 interface SubmissionData {
   submissions: Array<{
@@ -36,11 +38,13 @@ interface SubmissionData {
 interface SubmissionJourneyChartProps {
   data: SubmissionData;
   isLoading: boolean;
+  timeRange: string;
 }
 
 export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({ 
   data,
-  isLoading
+  isLoading,
+  timeRange
 }) => {
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -79,12 +83,58 @@ export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({
     }
   };
 
+  const handleExportExcel = () => {
+    exportToExcel(data.submissions, timeRange);
+  };
+
+  const handleExportCSV = () => {
+    exportToCSV(data.submissions, timeRange);
+  };
+
+  const handleExportPDF = () => {
+    exportToPDF(data.submissions, timeRange);
+  };
+
   return (
     <Card className="shadow-md mb-8">
       <CardHeader>
-        <div className="flex items-center space-x-2">
-          <Users className="h-5 w-5 text-[#1A3174]" />
-          <CardTitle className="text-xl text-[#1A3174]">User Submissions</CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Users className="h-5 w-5 text-[#1A3174]" />
+            <CardTitle className="text-xl text-[#1A3174]">User Submissions</CardTitle>
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+              onClick={handleExportExcel}
+              disabled={isLoading || data.submissions.length === 0}
+            >
+              <FileExcel className="h-4 w-4" />
+              Excel
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+              onClick={handleExportCSV}
+              disabled={isLoading || data.submissions.length === 0}
+            >
+              <FileCsv className="h-4 w-4" />
+              CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+              onClick={handleExportPDF}
+              disabled={isLoading || data.submissions.length === 0}
+            >
+              <FilePdf className="h-4 w-4" />
+              PDF
+            </Button>
+          </div>
         </div>
         <CardDescription>Complete record of all calculator submissions</CardDescription>
       </CardHeader>
