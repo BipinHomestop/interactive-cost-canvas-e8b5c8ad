@@ -81,8 +81,7 @@ export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({
                   margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
                   link={{ stroke: '#d1d5db' }}
                   node={{
-                    fill: (nodeProps: any) => 
-                      nodeColors[nodeProps.index % nodeColors.length],
+                    fill: '#4C63B6', // Use a fixed color instead of a function
                     stroke: '#fff'
                   }}
                 >
