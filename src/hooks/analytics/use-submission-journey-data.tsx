@@ -14,7 +14,7 @@ interface StepCompletionData {
 interface SubmissionJourneyData {
   nodes: Array<{
     name: string;
-    value?: number;
+    value: number;
   }>;
   links: Array<{
     source: number;
@@ -101,8 +101,8 @@ export const useSubmissionJourneyData = (timeRange: string = '30d') => {
       'Completed'
     ];
     
-    // Create nodes for Sankey diagram
-    const nodes = steps.map(step => ({ name: step }));
+    // Create nodes for Sankey diagram - ensure value property is set
+    const nodes = steps.map(step => ({ name: step, value: 0 }));
     
     // Count submissions at each step
     const stepCounts = steps.map(() => 0);

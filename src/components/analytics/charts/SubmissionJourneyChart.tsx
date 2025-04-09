@@ -9,6 +9,7 @@ import {
   Tooltip
 } from 'recharts';
 import { Users, Check, AlertCircle } from 'lucide-react';
+import { CHART_CONFIG } from './ChartConfig';
 
 interface SubmissionData {
   nodes: Array<{
@@ -51,7 +52,9 @@ export const SubmissionJourneyChart: React.FC<SubmissionJourneyChartProps> = ({
           </div>
         ) : (
           <div className="h-[400px]">
-            <ChartContainer>
+            <ChartContainer 
+              config={CHART_CONFIG}
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <Sankey
                   data={data}
