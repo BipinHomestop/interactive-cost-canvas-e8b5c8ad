@@ -5,10 +5,10 @@ import { AnalyticsContainer } from '@/components/analytics/AnalyticsContainer';
 
 export default function Analytics() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Helmet>
         <title>Data Dashboard | American Concrete Coatings</title>
-        <meta name="description" content="View analytics and performance metrics for your garage floor coating calculator." />
+        <meta name="description" content="View submission data and performance metrics for your garage floor coating calculator." />
         <link rel="canonical" href="https://quote.garagefloorcoatingsdfw.com/analytics" />
       </Helmet>
 

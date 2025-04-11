@@ -131,7 +131,7 @@ export const exportToPDF = (submissions: SubmissionData, timeRange: string): voi
     doc.text(`Time Range: ${timeRange}`, 14, 30);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 36);
     
-    // Create simpler column headers
+    // Create simpler column headers for better PDF fit
     const tableColumn = [
       "Date", "Name", "Location", "Garage", "Price", "Status"
     ];
@@ -146,7 +146,7 @@ export const exportToPDF = (submissions: SubmissionData, timeRange: string): voi
       sub.payment_status || 'Unknown'
     ]);
     
-    // @ts-ignore - jsPDF-autotable adds this method
+    // Add table to document
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,

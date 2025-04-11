@@ -7,7 +7,6 @@ import { AnalyticsHeader } from '@/components/analytics/AnalyticsHeader';
 import { DateRangeFilter } from '@/components/analytics/DateRangeFilter';
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 import { useAnalyticsData } from '@/hooks/analytics/use-analytics-data';
-import { SubmissionJourneySection } from './submission-journey';
 
 export const AnalyticsContainer: React.FC = () => {
   const [timeRange, setTimeRange] = useState('30d');
@@ -64,21 +63,24 @@ export const AnalyticsContainer: React.FC = () => {
         downloadCSV={downloadCSV}
       />
 
-      <div className="flex-1 container mx-auto py-8 px-4">
-        <DateRangeFilter
-          timeRange={timeRange}
-          setTimeRange={setTimeRange}
-          customStartDate={customStartDate}
-          setCustomStartDate={setCustomStartDate}
-          customEndDate={customEndDate}
-          setCustomEndDate={setCustomEndDate}
-          applyCustomRange={applyCustomRange}
-        />
+      <div className="container mx-auto py-6 px-4">
+        {timeRange === 'custom' && (
+          <DateRangeFilter
+            timeRange={timeRange}
+            setTimeRange={setTimeRange}
+            customStartDate={customStartDate}
+            setCustomStartDate={setCustomStartDate}
+            customEndDate={customEndDate}
+            setCustomEndDate={setCustomEndDate}
+            applyCustomRange={applyCustomRange}
+          />
+        )}
         
-        {/* Simplified dashboard with only the essentials */}
-        <SubmissionJourneySection 
+        <AnalyticsDashboard
           isLoading={isLoading}
           timeRange={effectiveTimeRange}
+          pageVisitDetails={pageVisitDetails}
+          downloadPageVisitCSV={downloadPageVisitCSV}
         />
       </div>
     </>

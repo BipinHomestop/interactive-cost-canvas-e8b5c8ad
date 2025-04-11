@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { SubmissionJourneyChart } from '../charts/SubmissionJourneyChart';
 import { useSubmissionJourneyData } from '@/hooks/analytics/submission-journey/use-submission-journey-data';
 import { SubmissionHeader } from './SubmissionHeader';
 import { SubmissionSearch } from './SubmissionSearch';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface SubmissionJourneySectionProps {
   isLoading: boolean;
@@ -30,21 +31,30 @@ export const SubmissionJourneySection: React.FC<SubmissionJourneySectionProps> =
     : journeyData;
   
   return (
-    <Card className="shadow-md mb-8">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <div className="bg-transparent">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 border-b">
         <SubmissionHeader />
-        <SubmissionSearch 
-          searchTerm={searchTerm} 
-          setSearchTerm={setSearchTerm} 
-        />
-      </CardHeader>
-      <CardContent>
-        <SubmissionJourneyChart 
-          data={filteredData} 
-          isLoading={isLoading || isJourneyLoading}
-          timeRange={timeRange}
-        />
-      </CardContent>
-    </Card>
+        <div className="mt-4 md:mt-0 w-full md:w-auto">
+          <SubmissionSearch 
+            searchTerm={searchTerm} 
+            setSearchTerm={setSearchTerm} 
+          />
+        </div>
+      </div>
+      <div className="p-6">
+        {isLoading || isJourneyLoading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-full max-w-md" />
+            <Skeleton className="h-96 w-full" />
+          </div>
+        ) : (
+          <SubmissionJourneyChart 
+            data={filteredData} 
+            isLoading={false}
+            timeRange={timeRange}
+          />
+        )}
+      </div>
+    </div>
   );
 };

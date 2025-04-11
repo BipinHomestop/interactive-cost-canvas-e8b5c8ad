@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { SubmissionJourneySection } from './submission-journey/SubmissionJourneySection';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface AnalyticsDashboardProps {
   isLoading: boolean;
@@ -14,12 +15,18 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   timeRange,
 }) => {
   return (
-    <>
-      {/* User Submissions Data */}
-      <SubmissionJourneySection
-        isLoading={isLoading}
-        timeRange={timeRange}
-      />
-    </>
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 gap-6">
+        {/* Main Dashboard Content */}
+        <Card className="shadow-sm border-gray-100 bg-white/70 backdrop-blur-sm">
+          <CardContent className="p-0">
+            <SubmissionJourneySection
+              isLoading={isLoading}
+              timeRange={timeRange}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 };
