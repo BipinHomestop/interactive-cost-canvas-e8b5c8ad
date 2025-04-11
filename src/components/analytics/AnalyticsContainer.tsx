@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -41,14 +42,14 @@ export const AnalyticsContainer: React.FC = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'view_analytics_dashboard', {
+      window.gtag('event', 'view_data_dashboard', {
         time_range: effectiveTimeRange
       });
     }
     
     setTimeout(() => {
       refetchData();
-      toast.success('Analytics data refreshed', {
+      toast.success('Data refreshed', {
         position: 'bottom-right',
         duration: 2000,
       });
@@ -74,11 +75,10 @@ export const AnalyticsContainer: React.FC = () => {
           applyCustomRange={applyCustomRange}
         />
         
-        <AnalyticsDashboard 
+        {/* Simplified dashboard with only the essentials */}
+        <SubmissionJourneySection 
           isLoading={isLoading}
           timeRange={effectiveTimeRange}
-          pageVisitDetails={pageVisitDetails}
-          downloadPageVisitCSV={downloadPageVisitCSV}
         />
       </div>
     </>

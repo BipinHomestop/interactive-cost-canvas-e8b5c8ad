@@ -64,7 +64,7 @@ export const AnalyticsHeader: React.FC<AnalyticsHeaderProps> = ({
       </nav>
 
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#1A3174]">Analytics Dashboard</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#1A3174]">Data Dashboard</h1>
         
         <div className="flex items-center space-x-2">
           <Button 

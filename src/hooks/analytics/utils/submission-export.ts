@@ -118,52 +118,56 @@ export const exportToCSV = (submissions: SubmissionData, timeRange: string): voi
  * Export submission data to PDF
  */
 export const exportToPDF = (submissions: SubmissionData, timeRange: string): void => {
-  const doc = new jsPDF();
-  
-  // Add title
-  doc.setFontSize(18);
-  doc.text('User Submissions Report', 14, 22);
-  
-  // Add period
-  doc.setFontSize(12);
-  doc.text(`Time Range: ${timeRange}`, 14, 30);
-  doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 36);
-  
-  // Add table
-  const tableColumn = [
-    "Date", "Name", "Location", "Garage", "Features", "Price", "Status"
-  ];
-  
-  // Prepare data rows
-  const tableRows = submissions.map(sub => [
-    formatDate(sub.created_at),
-    sub.name || 'N/A',
-    sub.location || 'N/A',
-    `${sub.garage_capacity || 'N/A'}-Car ${sub.garage_finish || 'N/A'}`,
-    `Walls: ${sub.need_stem_walls}, Steps: ${sub.need_steps || 'N/A'}`,
-    formatCurrency(sub.total_price),
-    sub.payment_status || 'Unknown'
-  ]);
-  
-  // @ts-expect-error jsPDF-autotable adds this method
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: 45,
-    theme: 'grid',
-    styles: { fontSize: 8 },
-    columnStyles: {
-      0: { cellWidth: 25 },
-      1: { cellWidth: 30 },
-      2: { cellWidth: 30 },
-      3: { cellWidth: 25 },
-      4: { cellWidth: 40 },
-      5: { cellWidth: 20 },
-      6: { cellWidth: 20 }
-    },
-    headStyles: { fillColor: [26, 49, 116] }
-  });
-  
-  // Save PDF
-  doc.save(`submissions_${timeRange}.pdf`);
+  try {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text('User Submissions Report', 14, 22);
+    
+    // Add period
+    doc.setFontSize(12);
+    doc.text(`Time Range: ${timeRange}`, 14, 30);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 36);
+    
+    // Create simpler column headers
+    const tableColumn = [
+      "Date", "Name", "Location", "Garage", "Price", "Status"
+    ];
+    
+    // Simplify data rows for better fitting on PDF
+    const tableRows = submissions.map(sub => [
+      formatDate(sub.created_at),
+      sub.name || 'N/A',
+      sub.location || 'N/A',
+      `${sub.garage_capacity || 'N/A'}-Car`,
+      formatCurrency(sub.total_price),
+      sub.payment_status || 'Unknown'
+    ]);
+    
+    // @ts-ignore - jsPDF-autotable adds this method
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 45,
+      theme: 'grid',
+      styles: { fontSize: 8, cellPadding: 2 },
+      columnStyles: {
+        0: { cellWidth: 28 },
+        1: { cellWidth: 35 },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 25 },
+        5: { cellWidth: 25 }
+      },
+      headStyles: { fillColor: [26, 49, 116] }
+    });
+    
+    // Save PDF
+    doc.save(`submissions_${timeRange}.pdf`);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('There was an error generating the PDF. Please try again.');
+  }
 };
