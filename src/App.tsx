@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { MetaTags } from './seo/MetaTags';
 import { SchemaScript } from './seo/SchemaScript';
 import './App.css';
