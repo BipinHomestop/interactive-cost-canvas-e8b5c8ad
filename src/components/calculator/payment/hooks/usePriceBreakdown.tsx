@@ -24,7 +24,7 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
     const breakdown: BreakdownItem[] = [];
     let runningTotal = 0;
 
-    // Base price based on garage capacity
+    // Base garage price
     if (formData.garageCapacity) {
       const baseKey = `base_price_${formData.garageCapacity}_car`;
       const garageBasePrice = getPrice(baseKey, 0);
@@ -34,15 +34,13 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: `${formData.garageCapacity}-Car Garage (Base Price)`,
         price: garageBasePrice
       });
-
-      // Debug log for base price
-      console.log(`Base price for ${formData.garageCapacity}-car garage:`, garageBasePrice);
+      console.log(`Base garage price:`, garageBasePrice);
 
       // Finish multiplier
       if (formData.garageFinish) {
         const multiplier = getFinishMultiplier(formData.garageFinish);
         const finishLabel = formatFinishLabel(formData.garageFinish);
-        
+
         if (multiplier > 1) {
           const additionalCost = Math.round(garageBasePrice * (multiplier - 1));
           runningTotal += additionalCost;
@@ -51,14 +49,12 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
             label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
             price: additionalCost
           });
-          
-          // Debug log for finish multiplier
           console.log(`Finish multiplier cost:`, additionalCost);
         }
       }
     }
 
-    // Add stem walls cost if needed
+    // Stem walls
     if (formData.needStemWalls === "yes") {
       const stemWallKey = formData.stemWallType === "standard" ? 
         'stem_wall_standard_price' : 'stem_wall_large_price';
@@ -69,12 +65,10 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: `${formData.stemWallType === "standard" ? "Standard" : "Large"} Stem Walls`,
         price: stemWallPrice
       });
-      
-      // Debug log for stem walls
-      console.log(`Stem walls cost:`, stemWallPrice);
+      console.log(`Stem wall price:`, stemWallPrice);
     }
 
-    // Add steps cost if needed
+    // Steps
     if (formData.needSteps === "yes") {
       const stepsPrice = getPrice('steps_price', 0);
       runningTotal += stepsPrice;
@@ -82,12 +76,10 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: "House Steps",
         price: stepsPrice
       });
-      
-      // Debug log for steps
-      console.log(`Steps cost:`, stepsPrice);
+      console.log(`Steps price:`, stepsPrice);
     }
 
-    // Add extra footage cost if needed
+    // Additional footage
     if (formData.needExtraFootage === "yes" && formData.extraFootage) {
       const footageKey = `extra_footage_${formData.extraFootage.replace(/-/g, '_')}`;
       const extraFootagePrice = getPrice(footageKey, 0);
@@ -97,12 +89,10 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: `Additional Footage (${formData.extraFootage.replace(/-/g, ' to ')})`,
         price: extraFootagePrice
       });
-      
-      // Debug log for extra footage
-      console.log(`Extra footage cost:`, extraFootagePrice);
+      console.log(`Extra footage price:`, extraFootagePrice);
     }
 
-    // Add condition cost if applicable
+    // Current condition
     if (formData.currentCondition) {
       const conditionKey = `${formData.currentCondition}_condition_price`;
       const conditionPrice = getPrice(conditionKey, 0);
@@ -110,12 +100,11 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       if (conditionPrice > 0) {
         runningTotal += conditionPrice;
         breakdown.push({
-          label: formData.currentCondition === "existing" ? "Existing Coating Removal" : "Original Concrete",
+          label: formData.currentCondition === "existing" ? 
+            "Existing Coating Removal" : "Original Concrete Preparation",
           price: conditionPrice
         });
-        
-        // Debug log for condition price
-        console.log(`Condition cost (${formData.currentCondition}):`, conditionPrice);
+        console.log(`Condition price:`, conditionPrice);
       }
     }
 
@@ -126,12 +115,10 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: `Discount (${discountPercentage}%)`,
         price: discountAmount
       });
-      
-      // Debug log for discount
       console.log(`Discount amount:`, discountAmount);
     }
 
-    // Debug log final breakdown
+    // Debug log for final calculations
     console.log('Price breakdown calculation:', {
       formData,
       totalCost,

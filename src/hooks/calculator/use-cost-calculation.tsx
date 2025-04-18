@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { usePricingConfig } from "./use-pricing-config";
@@ -101,9 +102,9 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     }
     
     if (formValues.garageFinish && step >= 4) {
-      const finishMultiplier = getFinishMultiplier(formValues.garageFinish);
-      total = Math.round(total * finishMultiplier);
-      console.log(`After applying ${formValues.garageFinish} finish multiplier (${finishMultiplier}):`, total);
+      const multiplier = getFinishMultiplier(formValues.garageFinish);
+      total = Math.round(total * multiplier);
+      console.log(`After applying ${formValues.garageFinish} finish multiplier (${multiplier}):`, total);
     }
     
     if (step >= 5 && formValues.needStemWalls === "yes") {
