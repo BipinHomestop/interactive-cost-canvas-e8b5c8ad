@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { BreakdownItem } from "@/components/calculator/types";
-import { formatFinishLabel } from "../utils/formatUtils";
+import { formatFinishLabel } from "@/components/calculator/payment/utils/formatUtils";
 
 interface UsePriceBreakdownProps {
   formData: any;
