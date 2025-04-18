@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { BreakdownItem } from "@/components/calculator/types";
@@ -23,12 +24,14 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       formData, 
       totalCost, 
       discountPercentage,
-      currentCondition: formData.currentCondition 
+      currentCondition: formData.currentCondition,
+      extraFootage: formData.extraFootage,
+      needExtraFootage: formData.needExtraFootage
     });
     
     const items = generateBreakdownItems();
     setBreakdownItems(items);
-  }, [formData, totalCost, discountPercentage, isLoading, formData.currentCondition]);
+  }, [formData, totalCost, discountPercentage, isLoading, formData.currentCondition, formData.extraFootage]);
 
   const generateBreakdownItems = (): BreakdownItem[] => {
     const breakdown: BreakdownItem[] = [];
@@ -115,12 +118,12 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       
       const footageKey = `extra_footage_${dbKey}`;
       
-      // Set fallback prices based on range
+      // Set fallback prices based on range - IMPORTANT: ensuring the correct fallback values
       const fallbackPrices: { [key: string]: number } = {
         'up-to-50': 299,
         '51-100': 499,
-        '101-150': 899,
-        '151-200': 699
+        '101-150': 899,  // Ensuring this is correctly set to 899
+        '151-200': 699   // Ensuring this is correctly set to 699
       };
 
       const fallbackPrice = fallbackPrices[formData.extraFootage] || 0;
@@ -129,6 +132,7 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
 
       console.log(`Extra footage calculation:`, {
         selected: formData.extraFootage,
+        dbKey: dbKey,
         key: footageKey,
         fallback: fallbackPrice,
         price: extraFootagePrice
@@ -184,7 +188,8 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       items: breakdown,
       runningTotal,
       expectedTotal: totalCost,
-      currentCondition: formData.currentCondition
+      currentCondition: formData.currentCondition,
+      extraFootage: formData.extraFootage
     });
 
     return breakdown;

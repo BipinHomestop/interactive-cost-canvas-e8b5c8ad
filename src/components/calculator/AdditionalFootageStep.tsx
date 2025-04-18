@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,7 +60,17 @@ export function AdditionalFootageStep({
 
   const handleExtraFootageChange = (value: string) => {
     console.log('Step 7 - Extra Footage Type Change:', value);
+    // Log the value to ensure it's being set correctly
+    console.log(`Setting extra footage to: ${value}`);
     onExtraFootageChange(value);
+  };
+
+  // Define prices for display (these are just for UI, actual prices come from the database or fallbacks)
+  const footagePrices = {
+    'up-to-50': '$299',
+    '51-100': '$499',
+    '101-150': '$899',  // Ensure this matches the fallback price
+    '151-200': '$699'   // Ensure this matches the fallback price
   };
 
   return (
@@ -118,12 +129,17 @@ export function AdditionalFootageStep({
                     } ${isMobile ? 'min-h-14' : ''}`}
                     onClick={() => handleExtraFootageChange(value)}
                   >
-                    <span className="font-medium">
-                      {value === "up-to-50" ? "Up to 50 sq ft" :
-                       value === "51-100" ? "51-100 sq ft" :
-                       value === "101-150" ? "101-150 sq ft" :
-                       "151-200 sq ft"}
-                    </span>
+                    <div className="flex flex-col items-center w-full">
+                      <span className="font-medium">
+                        {value === "up-to-50" ? "Up to 50 sq ft" :
+                         value === "51-100" ? "51-100 sq ft" :
+                         value === "101-150" ? "101-150 sq ft" :
+                         "151-200 sq ft"}
+                      </span>
+                      <span className="text-sm mt-1">
+                        {footagePrices[value as keyof typeof footagePrices]}
+                      </span>
+                    </div>
                   </Button>
                 ))}
               </>
