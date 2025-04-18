@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { usePricingConfig } from "./use-pricing-config";
@@ -6,7 +5,7 @@ import { preserveCalculationData, getPreservedCalculationData } from "./utils/su
 
 export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: number) => {
   const [totalCost, setTotalCost] = useState<number>(0);
-  const { getPrice, getFinishMultiplier, isLoading, pricingConfig, hasConfig } = usePricingConfig();
+  const { getPrice, getFinishMultiplier, isLoading, pricingConfig } = usePricingConfig();
 
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
   const DEFAULT_BASE_PRICE_2_CAR = 2200;
@@ -25,34 +24,32 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   useEffect(() => {
     console.log('Step changed to:', step);
     
-    if (step >= 8 || step === 9) {
+    if (step === 9) {
       const preservedPrice = getPreservedCalculationData();
       
       if (preservedPrice && preservedPrice > 0) {
-        console.log('Using preserved price in cost calculation hook:', preservedPrice);
+        console.log('Using preserved price in step 9:', preservedPrice);
         setTotalCost(preservedPrice);
         return;
       }
     }
     
-    if (step < 8) {
-      calculateCost();
-    }
+    calculateCost();
   }, [step]);
 
   useEffect(() => {
     const preservedCost = getPreservedCalculationData();
-    if (preservedCost && preservedCost > 0 && totalCost === 0) {
-      console.log('Initializing with preserved cost:', preservedCost);
+    if (preservedCost && preservedCost > 0 && totalCost === 0 && step === 9) {
+      console.log('Initializing with preserved cost in step 9:', preservedCost);
       setTotalCost(preservedCost);
     }
   }, []);
 
   useEffect(() => {
-    if (step === 9 || step === 8) {
+    if (step === 9) {
       const preservedCost = getPreservedCalculationData();
       if (preservedCost && preservedCost > 0) {
-        console.log("In step 8 or 9, using preserved cost:", preservedCost);
+        console.log("In step 9, using preserved cost:", preservedCost);
         setTotalCost(preservedCost);
         return;
       }
@@ -75,7 +72,7 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   ]);
 
   const calculateCost = useCallback(() => {
-    if (step === 8 || step === 9) {
+    if (step === 9) {
       const preservedCost = getPreservedCalculationData();
       if (preservedCost && preservedCost > 0) {
         console.log("Using preserved cost from previous calculation:", preservedCost);
@@ -130,14 +127,12 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     }
     
     if (step >= 7 && formValues.needExtraFootage === "yes" && formValues.extraFootage) {
-      // Handle the special case for "up-to-50" which may be stored differently in the database
       const dbKey = formValues.extraFootage === "up-to-50" 
         ? "up_to_50" 
         : formValues.extraFootage.replace(/-/g, '_');
       
       const footageKey = `extra_footage_${dbKey}`;
       
-      // Set default prices based on the footage range
       let defaultPrice;
       switch(formValues.extraFootage) {
         case "up-to-50": defaultPrice = DEFAULT_EXTRA_FOOTAGE_UP_TO_50; break;
@@ -161,19 +156,15 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       console.log(`After adding extra footage price (${extraFootagePrice}):`, total);
     }
 
-    if (step >= 8 && formValues.currentCondition) {
-      const conditionKey = `${formValues.currentCondition}_condition_price`;
-      const conditionPrice = getPrice(conditionKey, 
-        formValues.currentCondition === 'existing' ? DEFAULT_EXISTING_CONDITION_PRICE : 0
-      );
-      
-      console.log(`Condition cost for ${formValues.currentCondition}:`, {
-        conditionKey,
-        conditionPrice,
-        totalBeforeCondition: total
-      });
-      
-      total += conditionPrice;
+    if (formValues.currentCondition) {
+      console.log('Calculating condition cost for:', formValues.currentCondition);
+      if (formValues.currentCondition === "existing") {
+        const conditionPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
+        total += conditionPrice;
+        console.log(`Added existing condition price: ${conditionPrice}`);
+      } else {
+        console.log('Original condition - no additional cost');
+      }
     }
     
     total = Math.round(total);
@@ -181,9 +172,9 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     
     setTotalCost(total);
     
-    if (step >= 8 && total > 0) {
+    if (step === 9 && total > 0) {
       preserveCalculationData(total);
-      console.log("Preserved calculation price in session storage:", total);
+      console.log("Preserved calculation price in step 9:", total);
     }
   }, [formValues, step, getFinishMultiplier, getPrice]);
 

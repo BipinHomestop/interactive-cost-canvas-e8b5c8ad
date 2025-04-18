@@ -24,13 +24,14 @@ export function PriceBreakdown({
   });
 
   useEffect(() => {
-    console.log('PriceBreakdown received props:', {
+    console.log('PriceBreakdown updated with:', {
       formData,
       totalCost,
       discountPercentage,
       discountedTotal,
       breakdownItems,
-      isLoading
+      isLoading,
+      currentCondition: formData.currentCondition
     });
   }, [formData, totalCost, discountPercentage, discountedTotal, breakdownItems, isLoading]);
 
