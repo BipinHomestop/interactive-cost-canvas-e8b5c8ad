@@ -79,11 +79,36 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       console.log(`Steps price:`, stepsPrice);
     }
 
-    // Additional footage
+    // Additional footage - Fix for proper key formatting and fallback values
     if (formData.needExtraFootage === "yes" && formData.extraFootage) {
-      const footageKey = `extra_footage_${formData.extraFootage.replace(/-/g, '_')}`;
-      const extraFootagePrice = getPrice(footageKey, 0);
+      // Convert dash format to underscore format for database keys
+      const footageRangeFormatted = formData.extraFootage.replace(/-/g, '_');
+      
+      // Handle the special case for "up-to-50" which is stored as "up_to_50" in the database
+      const dbKey = formData.extraFootage === "up-to-50" 
+        ? "up_to_50" 
+        : formData.extraFootage.replace(/-/g, '_');
+      
+      const footageKey = `extra_footage_${dbKey}`;
+      
+      // Add fallback values for each range
+      let fallbackPrice = 0;
+      switch(formData.extraFootage) {
+        case "up-to-50": fallbackPrice = 299; break;
+        case "51-100": fallbackPrice = 499; break;
+        case "101-150": fallbackPrice = 899; break;
+        case "151-200": fallbackPrice = 699; break;
+        default: fallbackPrice = 0;
+      }
+      
+      const extraFootagePrice = getPrice(footageKey, fallbackPrice);
       runningTotal += extraFootagePrice;
+
+      // Debug logs to track what's happening
+      console.log(`Extra footage selected:`, formData.extraFootage);
+      console.log(`Looking up price key:`, footageKey);
+      console.log(`Fallback price:`, fallbackPrice);
+      console.log(`Retrieved price:`, extraFootagePrice);
 
       breakdown.push({
         label: `Additional Footage (${formData.extraFootage.replace(/-/g, ' to ')})`,

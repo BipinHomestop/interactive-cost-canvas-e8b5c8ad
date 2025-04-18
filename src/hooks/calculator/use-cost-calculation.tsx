@@ -17,6 +17,10 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_STEM_WALL_LARGE_PRICE = 1000;
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
+  const DEFAULT_EXTRA_FOOTAGE_UP_TO_50 = 299;
+  const DEFAULT_EXTRA_FOOTAGE_51_100 = 499;
+  const DEFAULT_EXTRA_FOOTAGE_101_150 = 899;
+  const DEFAULT_EXTRA_FOOTAGE_151_200 = 699;
 
   useEffect(() => {
     console.log('Step changed to:', step);
@@ -126,8 +130,33 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     }
     
     if (step >= 7 && formValues.needExtraFootage === "yes" && formValues.extraFootage) {
-      const footageKey = `extra_footage_${formValues.extraFootage.replace(/-/g, '_')}`;
-      const extraFootagePrice = getPrice(footageKey, 0);
+      // Handle the special case for "up-to-50" which may be stored differently in the database
+      const dbKey = formValues.extraFootage === "up-to-50" 
+        ? "up_to_50" 
+        : formValues.extraFootage.replace(/-/g, '_');
+      
+      const footageKey = `extra_footage_${dbKey}`;
+      
+      // Set default prices based on the footage range
+      let defaultPrice;
+      switch(formValues.extraFootage) {
+        case "up-to-50": defaultPrice = DEFAULT_EXTRA_FOOTAGE_UP_TO_50; break;
+        case "51-100": defaultPrice = DEFAULT_EXTRA_FOOTAGE_51_100; break;
+        case "101-150": defaultPrice = DEFAULT_EXTRA_FOOTAGE_101_150; break;
+        case "151-200": defaultPrice = DEFAULT_EXTRA_FOOTAGE_151_200; break;
+        default: defaultPrice = 0;
+      }
+      
+      const extraFootagePrice = getPrice(footageKey, defaultPrice);
+      
+      console.log(`Extra footage details:`, {
+        selectedOption: formValues.extraFootage,
+        dbKey,
+        footageKey,
+        defaultPrice,
+        retrievedPrice: extraFootagePrice
+      });
+      
       total += extraFootagePrice;
       console.log(`After adding extra footage price (${extraFootagePrice}):`, total);
     }
