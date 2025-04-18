@@ -2,6 +2,7 @@
 import { usePriceBreakdown } from "./hooks/usePriceBreakdown";
 import { PriceBreakdownContainer } from "./components/PriceBreakdownContainer";
 import { useEffect } from "react";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 interface PriceBreakdownProps {
   formData: any;
@@ -16,22 +17,30 @@ export function PriceBreakdown({
   discountPercentage, 
   discountedTotal 
 }: PriceBreakdownProps) {
-  const { breakdownItems } = usePriceBreakdown({
+  const { breakdownItems, isLoading } = usePriceBreakdown({
     formData,
     totalCost,
     discountPercentage
   });
 
-  // Debug log to track what's being passed and calculated
   useEffect(() => {
-    console.log('PriceBreakdown props:', {
+    console.log('PriceBreakdown received props:', {
       formData,
       totalCost,
       discountPercentage,
       discountedTotal,
-      breakdownItems
+      breakdownItems,
+      isLoading
     });
-  }, [formData, totalCost, discountPercentage, discountedTotal, breakdownItems]);
+  }, [formData, totalCost, discountPercentage, discountedTotal, breakdownItems, isLoading]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <PriceBreakdownContainer 

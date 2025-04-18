@@ -11,14 +11,19 @@ interface UsePriceBreakdownProps {
 }
 
 export function usePriceBreakdown({ formData, totalCost, discountPercentage }: UsePriceBreakdownProps) {
-  const { getPrice, getFinishMultiplier } = usePricingConfig();
+  const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
   const [breakdownItems, setBreakdownItems] = useState<BreakdownItem[]>([]);
 
   useEffect(() => {
+    if (isLoading) {
+      console.log('Waiting for pricing config to load...');
+      return;
+    }
+
+    console.log('Generating breakdown with:', { formData, totalCost, discountPercentage });
     const items = generateBreakdownItems();
     setBreakdownItems(items);
-    console.log('Generated breakdown items:', items);
-  }, [formData, totalCost, discountPercentage]);
+  }, [formData, totalCost, discountPercentage, isLoading]);
 
   const generateBreakdownItems = (): BreakdownItem[] => {
     const breakdown: BreakdownItem[] = [];
@@ -27,29 +32,38 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
     // Base garage price
     if (formData.garageCapacity) {
       const baseKey = `base_price_${formData.garageCapacity}_car`;
-      const garageBasePrice = getPrice(baseKey, 0);
-      runningTotal += garageBasePrice;
+      const basePrice = getPrice(baseKey, 0);
+      runningTotal += basePrice;
+
+      console.log(`Base price calculation:`, {
+        key: baseKey,
+        price: basePrice
+      });
 
       breakdown.push({
         label: `${formData.garageCapacity}-Car Garage (Base Price)`,
-        price: garageBasePrice
+        price: basePrice
       });
-      console.log(`Base garage price:`, garageBasePrice);
 
       // Finish multiplier
       if (formData.garageFinish) {
         const multiplier = getFinishMultiplier(formData.garageFinish);
         const finishLabel = formatFinishLabel(formData.garageFinish);
+        
+        console.log(`Finish calculation:`, {
+          finish: formData.garageFinish,
+          multiplier,
+          basePrice
+        });
 
         if (multiplier > 1) {
-          const additionalCost = Math.round(garageBasePrice * (multiplier - 1));
+          const additionalCost = Math.round(basePrice * (multiplier - 1));
           runningTotal += additionalCost;
 
           breakdown.push({
             label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
             price: additionalCost
           });
-          console.log(`Finish multiplier cost:`, additionalCost);
         }
       }
     }
@@ -61,104 +75,111 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       const stemWallPrice = getPrice(stemWallKey, 0);
       runningTotal += stemWallPrice;
 
+      console.log(`Stem wall calculation:`, {
+        type: formData.stemWallType,
+        key: stemWallKey,
+        price: stemWallPrice
+      });
+
       breakdown.push({
         label: `${formData.stemWallType === "standard" ? "Standard" : "Large"} Stem Walls`,
         price: stemWallPrice
       });
-      console.log(`Stem wall price:`, stemWallPrice);
     }
 
     // Steps
     if (formData.needSteps === "yes") {
       const stepsPrice = getPrice('steps_price', 0);
       runningTotal += stepsPrice;
+
+      console.log(`Steps calculation:`, {
+        price: stepsPrice
+      });
+
       breakdown.push({
         label: "House Steps",
         price: stepsPrice
       });
-      console.log(`Steps price:`, stepsPrice);
     }
 
-    // Additional footage - Fix for proper key formatting and fallback values
+    // Additional footage
     if (formData.needExtraFootage === "yes" && formData.extraFootage) {
-      // Convert dash format to underscore format for database keys
-      const footageRangeFormatted = formData.extraFootage.replace(/-/g, '_');
-      
-      // Handle the special case for "up-to-50" which is stored as "up_to_50" in the database
-      const dbKey = formData.extraFootage === "up-to-50" 
-        ? "up_to_50" 
-        : formData.extraFootage.replace(/-/g, '_');
+      // Handle the special case for "up-to-50"
+      const dbKey = formData.extraFootage === "up-to-50" ? "up_to_50" 
+                   : formData.extraFootage.replace(/-/g, '_');
       
       const footageKey = `extra_footage_${dbKey}`;
       
-      // Add fallback values for each range
-      let fallbackPrice = 0;
-      switch(formData.extraFootage) {
-        case "up-to-50": fallbackPrice = 299; break;
-        case "51-100": fallbackPrice = 499; break;
-        case "101-150": fallbackPrice = 899; break;
-        case "151-200": fallbackPrice = 699; break;
-        default: fallbackPrice = 0;
-      }
-      
+      // Set fallback prices based on range
+      const fallbackPrices: { [key: string]: number } = {
+        'up-to-50': 299,
+        '51-100': 499,
+        '101-150': 899,
+        '151-200': 699
+      };
+
+      const fallbackPrice = fallbackPrices[formData.extraFootage] || 0;
       const extraFootagePrice = getPrice(footageKey, fallbackPrice);
       runningTotal += extraFootagePrice;
 
-      // Debug logs to track what's happening
-      console.log(`Extra footage selected:`, formData.extraFootage);
-      console.log(`Looking up price key:`, footageKey);
-      console.log(`Fallback price:`, fallbackPrice);
-      console.log(`Retrieved price:`, extraFootagePrice);
+      console.log(`Extra footage calculation:`, {
+        selected: formData.extraFootage,
+        key: footageKey,
+        fallback: fallbackPrice,
+        price: extraFootagePrice
+      });
 
       breakdown.push({
         label: `Additional Footage (${formData.extraFootage.replace(/-/g, ' to ')})`,
         price: extraFootagePrice
       });
-      console.log(`Extra footage price:`, extraFootagePrice);
     }
 
-    // Current condition costs
+    // Current condition
     if (formData.currentCondition) {
-      const conditionKey = `${formData.currentCondition}_condition_price`;
-      const conditionPrice = getPrice(conditionKey, 0);
-      
       if (formData.currentCondition === "existing") {
+        const conditionPrice = getPrice('existing_condition_price', 200);
         runningTotal += conditionPrice;
+
+        console.log(`Existing condition price:`, conditionPrice);
+
         breakdown.push({
           label: "Existing Coating Removal",
           price: conditionPrice
         });
-        console.log(`Existing condition price:`, conditionPrice);
-      } else if (formData.currentCondition === "original") {
+      } else {
+        console.log('Original condition - no additional cost');
         breakdown.push({
           label: "Original Concrete Preparation",
           price: 0
         });
-        console.log(`Original condition price: 0`);
       }
     }
 
     // Add discount if applicable
     if (discountPercentage > 0) {
-      const discountAmount = Math.round(totalCost * discountPercentage / 100) * -1;
+      const discountAmount = Math.round(totalCost * (discountPercentage / 100)) * -1;
+      
+      console.log(`Discount calculation:`, {
+        percentage: discountPercentage,
+        totalCost,
+        amount: discountAmount
+      });
+
       breakdown.push({
         label: `Discount (${discountPercentage}%)`,
         price: discountAmount
       });
-      console.log(`Discount amount:`, discountAmount);
     }
 
-    // Debug log for final calculations
-    console.log('Price breakdown calculation:', {
-      formData,
-      totalCost,
-      discountPercentage,
-      breakdownItems: breakdown,
-      runningTotal
+    console.log('Final breakdown calculation:', {
+      items: breakdown,
+      runningTotal,
+      expectedTotal: totalCost
     });
 
     return breakdown;
   };
 
-  return { breakdownItems };
+  return { breakdownItems, isLoading };
 }
