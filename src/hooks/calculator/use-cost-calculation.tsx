@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { usePricingConfig } from "./use-pricing-config";
@@ -8,7 +7,6 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const [totalCost, setTotalCost] = useState<number>(0);
   const { getPrice, getFinishMultiplier, isLoading, pricingConfig, hasConfig } = usePricingConfig();
 
-  // Default fallback values in case database fetch fails
   const DEFAULT_BASE_PRICE_1_CAR = 1000;
   const DEFAULT_BASE_PRICE_2_CAR = 2200;
   const DEFAULT_BASE_PRICE_3_CAR = 3500;
@@ -19,11 +17,9 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_STEPS_PRICE = 300;
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
 
-  // Check for preserved data on step changes
   useEffect(() => {
     console.log('Step changed to:', step);
     
-    // When entering or leaving the last two steps, handle preserved price
     if (step >= 8 || step === 9) {
       const preservedPrice = getPreservedCalculationData();
       
@@ -34,13 +30,11 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       }
     }
     
-    // For earlier steps, calculate the cost normally
     if (step < 8) {
       calculateCost();
     }
   }, [step]);
 
-  // Initialize from preserved data if available
   useEffect(() => {
     const preservedCost = getPreservedCalculationData();
     if (preservedCost && preservedCost > 0 && totalCost === 0) {
@@ -49,9 +43,7 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     }
   }, []);
 
-  // Calculate the cost whenever relevant data changes
   useEffect(() => {
-    // Skip recalculation at payment step (9) or if we're using preserved data (step 8)
     if (step === 9 || step === 8) {
       const preservedCost = getPreservedCalculationData();
       if (preservedCost && preservedCost > 0) {
@@ -78,7 +70,6 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   ]);
 
   const calculateCost = useCallback(() => {
-    // Check if we're at step 8 or 9 (last step before payment or payment step)
     if (step === 8 || step === 9) {
       const preservedCost = getPreservedCalculationData();
       if (preservedCost && preservedCost > 0) {
@@ -92,8 +83,6 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     console.log("Current step:", step);
     let total = 0;
     
-    // Only include prices for steps that have been completed
-    // Get appropriate base price for the selected garage capacity (after step 3)
     if (formValues.garageCapacity && step >= 3) {
       const baseKey = `base_price_${formValues.garageCapacity}_car`;
       let defaultBasePrice;
@@ -111,14 +100,12 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       console.log(`Base price for ${formValues.garageCapacity} car garage:`, total);
     }
     
-    // Apply finish-specific multiplier if available (after step 4)
     if (formValues.garageFinish && step >= 4) {
       const finishMultiplier = getFinishMultiplier(formValues.garageFinish);
       total = Math.round(total * finishMultiplier);
       console.log(`After applying ${formValues.garageFinish} finish multiplier (${finishMultiplier}):`, total);
     }
     
-    // Add stem walls cost if needed (after step 5)
     if (step >= 5 && formValues.needStemWalls === "yes") {
       if (formValues.stemWallType === "standard") {
         const stemWallPrice = getPrice('stem_wall_standard_price', DEFAULT_STEM_WALL_STANDARD_PRICE);
@@ -131,14 +118,12 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       }
     }
     
-    // Add steps cost if needed (after step 6)
     if (step >= 6 && formValues.needSteps === "yes") {
       const stepsPrice = getPrice('steps_price', DEFAULT_STEPS_PRICE);
       total += stepsPrice;
       console.log(`After adding steps price (${stepsPrice}):`, total);
     }
     
-    // Add extra footage cost if needed (after step 7)
     if (step >= 7 && formValues.needExtraFootage === "yes" && formValues.extraFootage) {
       const footageKey = `extra_footage_${formValues.extraFootage.replace(/-/g, '_')}`;
       const extraFootagePrice = getPrice(footageKey, 0);
@@ -146,21 +131,26 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       console.log(`After adding extra footage price (${extraFootagePrice}):`, total);
     }
 
-    // Add existing condition cost if applicable (after step 8)
-    if (step >= 8 && formValues.currentCondition === "existing") {
-      const existingConditionPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
-      total += existingConditionPrice;
-      console.log(`After adding existing condition price (${existingConditionPrice}):`, total);
+    if (step >= 8 && formValues.currentCondition) {
+      const conditionKey = `${formValues.currentCondition}_condition_price`;
+      const conditionPrice = getPrice(conditionKey, 
+        formValues.currentCondition === 'existing' ? DEFAULT_EXISTING_CONDITION_PRICE : 0
+      );
+      
+      console.log(`Condition cost for ${formValues.currentCondition}:`, {
+        conditionKey,
+        conditionPrice,
+        totalBeforeCondition: total
+      });
+      
+      total += conditionPrice;
     }
     
-    // Round to nearest whole number
     total = Math.round(total);
     console.log("Final calculated cost for step", step, ":", total);
     
-    // Store the calculated price
     setTotalCost(total);
     
-    // Also preserve it in session storage to maintain state when returning from payment
     if (step >= 8 && total > 0) {
       preserveCalculationData(total);
       console.log("Preserved calculation price in session storage:", total);
