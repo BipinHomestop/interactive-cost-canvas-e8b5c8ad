@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { usePricingConfig } from "./use-pricing-config";
@@ -19,8 +18,8 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
   const DEFAULT_EXTRA_FOOTAGE_UP_TO_50 = 299;
   const DEFAULT_EXTRA_FOOTAGE_51_100 = 499;
-  const DEFAULT_EXTRA_FOOTAGE_101_150 = 899;  // Correct value
-  const DEFAULT_EXTRA_FOOTAGE_151_200 = 699;  // Correct value
+  const DEFAULT_EXTRA_FOOTAGE_101_150 = 899;
+  const DEFAULT_EXTRA_FOOTAGE_151_200 = 699;
 
   useEffect(() => {
     console.log('Step changed to:', step);
@@ -138,8 +137,8 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       switch(formValues.extraFootage) {
         case "up-to-50": defaultPrice = DEFAULT_EXTRA_FOOTAGE_UP_TO_50; break;
         case "51-100": defaultPrice = DEFAULT_EXTRA_FOOTAGE_51_100; break;
-        case "101-150": defaultPrice = DEFAULT_EXTRA_FOOTAGE_101_150; break; // Ensure correct value (899)
-        case "151-200": defaultPrice = DEFAULT_EXTRA_FOOTAGE_151_200; break; // Ensure correct value (699)
+        case "101-150": defaultPrice = DEFAULT_EXTRA_FOOTAGE_101_150; break;
+        case "151-200": defaultPrice = DEFAULT_EXTRA_FOOTAGE_151_200; break;
         default: defaultPrice = 0;
       }
       

@@ -65,14 +65,6 @@ export function AdditionalFootageStep({
     onExtraFootageChange(value);
   };
 
-  // Define prices for display (these are just for UI, actual prices come from the database or fallbacks)
-  const footagePrices = {
-    'up-to-50': '$299',
-    '51-100': '$499',
-    '101-150': '$899',  // Ensure this matches the fallback price
-    '151-200': '$699'   // Ensure this matches the fallback price
-  };
-
   return (
     <div className={`space-y-6 ${isMobile ? 'pb-24 px-2' : ''}`}>
       <div>
@@ -135,9 +127,6 @@ export function AdditionalFootageStep({
                          value === "51-100" ? "51-100 sq ft" :
                          value === "101-150" ? "101-150 sq ft" :
                          "151-200 sq ft"}
-                      </span>
-                      <span className="text-sm mt-1">
-                        {footagePrices[value as keyof typeof footagePrices]}
                       </span>
                     </div>
                   </Button>
