@@ -1,4 +1,3 @@
-
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { useEffect, useState } from "react";
 import { BreakdownItem as BreakdownItemType } from "@/components/calculator/types";
