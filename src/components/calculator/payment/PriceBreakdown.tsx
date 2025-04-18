@@ -1,6 +1,7 @@
 
 import { usePriceBreakdown } from "./hooks/usePriceBreakdown";
 import { PriceBreakdownContainer } from "./components/PriceBreakdownContainer";
+import { useEffect } from "react";
 
 interface PriceBreakdownProps {
   formData: any;
@@ -20,6 +21,17 @@ export function PriceBreakdown({
     totalCost,
     discountPercentage
   });
+
+  // Debug log to track what's being passed and calculated
+  useEffect(() => {
+    console.log('PriceBreakdown props:', {
+      formData,
+      totalCost,
+      discountPercentage,
+      discountedTotal,
+      breakdownItems
+    });
+  }, [formData, totalCost, discountPercentage, discountedTotal, breakdownItems]);
 
   return (
     <PriceBreakdownContainer 

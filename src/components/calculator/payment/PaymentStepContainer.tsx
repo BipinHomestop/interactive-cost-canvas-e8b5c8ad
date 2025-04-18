@@ -70,6 +70,16 @@ export function PaymentStepContainer({
     setInitialDiscount
   } = useDiscountCode(finalCost);
 
+  // Debug log to track price values
+  useEffect(() => {
+    console.log('PaymentStepContainer price values:', {
+      totalCost,
+      finalCost,
+      discountPercentage,
+      discountedTotal
+    });
+  }, [totalCost, finalCost, discountPercentage, discountedTotal]);
+
   // Check for cached discount percentage - only use if we're returning from a checkout attempt
   useEffect(() => {
     const cachedCouponCode = sessionStorage.getItem('cachedCouponCode');
