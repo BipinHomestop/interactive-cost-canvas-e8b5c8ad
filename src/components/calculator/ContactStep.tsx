@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { UseFormRegister, UseFormSetError, UseFormWatch } from "react-hook-form";
 import { CalculatorInputs } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { FormControl, FormItem, FormLabel, FormMessage, Form } from "@/components/ui/form";
 import { useState, useEffect } from "react";
 import { Flag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -133,7 +132,7 @@ export function ContactStep({
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1 text-left">
             Full Name
           </label>
           <Input 
@@ -146,7 +145,7 @@ export function ContactStep({
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1 text-left">
             Phone Number
           </label>
           <div className="relative">
@@ -170,7 +169,7 @@ export function ContactStep({
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 text-left">
             Email Address
           </label>
           <Input 
@@ -185,3 +184,4 @@ export function ContactStep({
     </div>
   );
 };
+
