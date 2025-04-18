@@ -92,19 +92,24 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       console.log(`Extra footage price:`, extraFootagePrice);
     }
 
-    // Current condition
+    // Current condition costs
     if (formData.currentCondition) {
       const conditionKey = `${formData.currentCondition}_condition_price`;
       const conditionPrice = getPrice(conditionKey, 0);
       
-      if (conditionPrice > 0) {
+      if (formData.currentCondition === "existing") {
         runningTotal += conditionPrice;
         breakdown.push({
-          label: formData.currentCondition === "existing" ? 
-            "Existing Coating Removal" : "Original Concrete Preparation",
+          label: "Existing Coating Removal",
           price: conditionPrice
         });
-        console.log(`Condition price:`, conditionPrice);
+        console.log(`Existing condition price:`, conditionPrice);
+      } else if (formData.currentCondition === "original") {
+        breakdown.push({
+          label: "Original Concrete Preparation",
+          price: 0
+        });
+        console.log(`Original condition price: 0`);
       }
     }
 
