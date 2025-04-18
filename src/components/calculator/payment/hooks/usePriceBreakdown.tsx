@@ -35,11 +35,14 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         price: garageBasePrice
       });
 
+      // Debug log for base price
+      console.log(`Base price for ${formData.garageCapacity}-car garage:`, garageBasePrice);
+
       // Finish multiplier
       if (formData.garageFinish) {
         const multiplier = getFinishMultiplier(formData.garageFinish);
         const finishLabel = formatFinishLabel(formData.garageFinish);
-
+        
         if (multiplier > 1) {
           const additionalCost = Math.round(garageBasePrice * (multiplier - 1));
           runningTotal += additionalCost;
@@ -48,6 +51,9 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
             label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
             price: additionalCost
           });
+          
+          // Debug log for finish multiplier
+          console.log(`Finish multiplier cost:`, additionalCost);
         }
       }
     }
@@ -63,6 +69,9 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: `${formData.stemWallType === "standard" ? "Standard" : "Large"} Stem Walls`,
         price: stemWallPrice
       });
+      
+      // Debug log for stem walls
+      console.log(`Stem walls cost:`, stemWallPrice);
     }
 
     // Add steps cost if needed
@@ -73,6 +82,9 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: "House Steps",
         price: stepsPrice
       });
+      
+      // Debug log for steps
+      console.log(`Steps cost:`, stepsPrice);
     }
 
     // Add extra footage cost if needed
@@ -85,16 +97,26 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: `Additional Footage (${formData.extraFootage.replace(/-/g, ' to ')})`,
         price: extraFootagePrice
       });
+      
+      // Debug log for extra footage
+      console.log(`Extra footage cost:`, extraFootagePrice);
     }
 
-    // Add existing condition cost if applicable
-    if (formData.currentCondition === "existing") {
-      const existingPrice = getPrice('existing_condition_price', 0);
-      runningTotal += existingPrice;
-      breakdown.push({
-        label: "Existing Coating Removal",
-        price: existingPrice
-      });
+    // Add condition cost if applicable
+    if (formData.currentCondition) {
+      const conditionKey = `${formData.currentCondition}_condition_price`;
+      const conditionPrice = getPrice(conditionKey, 0);
+      
+      if (conditionPrice > 0) {
+        runningTotal += conditionPrice;
+        breakdown.push({
+          label: formData.currentCondition === "existing" ? "Existing Coating Removal" : "Original Concrete",
+          price: conditionPrice
+        });
+        
+        // Debug log for condition price
+        console.log(`Condition cost (${formData.currentCondition}):`, conditionPrice);
+      }
     }
 
     // Add discount if applicable
@@ -104,7 +126,19 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
         label: `Discount (${discountPercentage}%)`,
         price: discountAmount
       });
+      
+      // Debug log for discount
+      console.log(`Discount amount:`, discountAmount);
     }
+
+    // Debug log final breakdown
+    console.log('Price breakdown calculation:', {
+      formData,
+      totalCost,
+      discountPercentage,
+      breakdownItems: breakdown,
+      runningTotal
+    });
 
     return breakdown;
   };
