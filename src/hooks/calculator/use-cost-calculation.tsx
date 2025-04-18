@@ -133,23 +133,23 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       
       const footageKey = `extra_footage_${dbKey}`;
       
-      let defaultPrice;
-      switch(formValues.extraFootage) {
-        case "up-to-50": defaultPrice = DEFAULT_EXTRA_FOOTAGE_UP_TO_50; break;
-        case "51-100": defaultPrice = DEFAULT_EXTRA_FOOTAGE_51_100; break;
-        case "101-150": defaultPrice = DEFAULT_EXTRA_FOOTAGE_101_150; break;
-        case "151-200": defaultPrice = DEFAULT_EXTRA_FOOTAGE_151_200; break;
-        default: defaultPrice = 0;
-      }
+      const fallbackPrices: { [key: string]: number } = {
+        'up-to-50': DEFAULT_EXTRA_FOOTAGE_UP_TO_50,
+        '51-100': DEFAULT_EXTRA_FOOTAGE_51_100,
+        '101-150': DEFAULT_EXTRA_FOOTAGE_101_150,
+        '151-200': DEFAULT_EXTRA_FOOTAGE_151_200
+      };
       
-      const extraFootagePrice = getPrice(footageKey, defaultPrice);
+      const fallbackPrice = fallbackPrices[formValues.extraFootage] || 0;
+      const extraFootagePrice = getPrice(footageKey, fallbackPrice);
       
-      console.log(`Extra footage details:`, {
+      console.log('Extra footage calculation details:', {
         selectedOption: formValues.extraFootage,
         dbKey,
         footageKey,
-        defaultPrice,
-        retrievedPrice: extraFootagePrice
+        fallbackPrice,
+        configValue: pricingConfig[footageKey],
+        finalPrice: extraFootagePrice
       });
       
       total += extraFootagePrice;
@@ -176,7 +176,7 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
       preserveCalculationData(total);
       console.log("Preserved calculation price in step 9:", total);
     }
-  }, [formValues, step, getFinishMultiplier, getPrice]);
+  }, [formValues, step, getFinishMultiplier, getPrice, pricingConfig]);
 
   return { totalCost };
 };

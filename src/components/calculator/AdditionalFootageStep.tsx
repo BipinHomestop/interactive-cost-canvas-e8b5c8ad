@@ -60,7 +60,6 @@ export function AdditionalFootageStep({
 
   const handleExtraFootageChange = (value: string) => {
     console.log('Step 7 - Extra Footage Type Change:', value);
-    // Log the value to ensure it's being set correctly
     console.log(`Setting extra footage to: ${value}`);
     onExtraFootageChange(value);
   };
