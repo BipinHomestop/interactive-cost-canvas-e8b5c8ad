@@ -8,7 +8,7 @@ import { DiscountCodeInput } from "./DiscountCodeInput";
 import { PaymentNavigation } from "./PaymentNavigation";
 import { useDiscountCode } from "./useDiscountCode";
 import { useCheckout } from "./useCheckout";
-import { getBreakdownItems } from "./utils/breakdownUtils";
+import { usePriceBreakdown } from "./hooks/usePriceBreakdown";
 import { getPreservedCalculationData, preserveCalculationData } from "@/hooks/calculator/utils/submission-db";
 
 interface PaymentStepContainerProps {
@@ -88,6 +88,13 @@ export function PaymentStepContainer({
     }
   }, [setInitialDiscount]);
 
+  // Use the price breakdown hook to get the breakdown items for checkout
+  const { breakdownItems } = usePriceBreakdown({
+    formData,
+    totalCost: finalCost,
+    discountPercentage
+  });
+
   const { isLoading, handleCheckout } = useCheckout(
     formData,
     date,
@@ -95,7 +102,7 @@ export function PaymentStepContainer({
     discountPercentage,
     finalCost,
     discountedTotal,
-    () => getBreakdownItems(formData, finalCost, discountPercentage)
+    () => breakdownItems
   );
 
   return (
