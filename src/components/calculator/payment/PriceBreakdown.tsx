@@ -24,16 +24,16 @@ export function PriceBreakdown({
   });
 
   useEffect(() => {
-    console.log('PriceBreakdown updated with:', {
-      formData,
-      totalCost,
-      discountPercentage,
+    // Validate total matches breakdown sum
+    const breakdownSum = breakdownItems.reduce((sum, item) => sum + item.price, 0);
+    console.log('Price breakdown validation:', {
+      breakdownSum,
+      providedTotal: totalCost,
       discountedTotal,
-      breakdownItems,
-      isLoading,
-      currentCondition: formData.currentCondition
+      items: breakdownItems,
+      formData
     });
-  }, [formData, totalCost, discountPercentage, discountedTotal, breakdownItems, isLoading]);
+  }, [breakdownItems, totalCost, discountedTotal, formData]);
 
   if (isLoading) {
     return (
@@ -43,10 +43,16 @@ export function PriceBreakdown({
     );
   }
 
+  // Calculate the actual total from breakdown items
+  const calculatedTotal = breakdownItems.reduce((sum, item) => sum + item.price, 0);
+  const finalTotal = discountPercentage > 0 ? 
+    Math.round(calculatedTotal * (1 - discountPercentage / 100)) : 
+    calculatedTotal;
+
   return (
     <PriceBreakdownContainer 
       items={breakdownItems}
-      total={discountPercentage > 0 ? discountedTotal : totalCost}
+      total={finalTotal}
     />
   );
 }

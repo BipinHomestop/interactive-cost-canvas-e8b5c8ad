@@ -28,63 +28,60 @@ export function PaymentStepContainer({
   const { submissionId } = useSubmission();
   const { toast } = useToast();
   
-  // Initialize with the correct price, with fallback mechanisms
   useEffect(() => {
-    // Function to set a valid price, with fallbacks
-    const setValidPrice = () => {
-      // First check preserved price
+    const validateAndSetPrice = () => {
       const preservedPrice = getPreservedCalculationData();
       
-      if (preservedPrice && preservedPrice > 0) {
-        console.log('PaymentStep using preserved price:', preservedPrice);
-        setFinalCost(preservedPrice);
-        return;
-      } 
+      const breakdownTotal = usePriceBreakdown({
+        formData,
+        totalCost: totalCost,
+        discountPercentage: 0
+      }).breakdownItems.reduce((sum, item) => sum + item.price, 0);
       
-      // Next check live totalCost
+      console.log('Price validation check:', {
+        totalCost,
+        preservedPrice,
+        breakdownTotal
+      });
+
+      if (breakdownTotal > 0 && breakdownTotal !== totalCost) {
+        console.log('Using breakdown total as it differs from provided total:', breakdownTotal);
+        setFinalCost(breakdownTotal);
+        preserveCalculationData(breakdownTotal);
+        return;
+      }
+      
       if (totalCost > 0) {
-        console.log('PaymentStep using and preserving live totalCost:', totalCost);
+        console.log('Using and preserving provided total:', totalCost);
         setFinalCost(totalCost);
         preserveCalculationData(totalCost);
         return;
       }
       
-      // Last resort fallback: use garage capacity-based price
-      if (formData && formData.garageCapacity) {
-        const fallbackPrices = {
-          1: 1000,
-          2: 2200,
-          3: 3500,
-          4: 5000,
-          5: 6500
-        };
+      if (preservedPrice && preservedPrice > 0) {
+        console.log('Using preserved price:', preservedPrice);
+        setFinalCost(preservedPrice);
+        return;
+      }
+
+      if (formData?.garageCapacity) {
+        const basePrice = formData.garageCapacity * 1600;
+        console.log('Using calculated base price:', basePrice);
+        setFinalCost(basePrice);
+        preserveCalculationData(basePrice);
         
-        const fallbackPrice = fallbackPrices[formData.garageCapacity] || 2000;
-        console.log('Using fallback price based on garage capacity:', fallbackPrice);
-        setFinalCost(fallbackPrice);
-        preserveCalculationData(fallbackPrice);
-        
-        // Notify user about the fallback price
         toast({
-          title: "Price Estimation",
-          description: "We've estimated your price based on your garage size. You can continue with checkout.",
+          title: "Price Calculation",
+          description: "Total has been recalculated based on your garage size.",
           duration: 6000,
         });
-      } else {
-        // Absolute last resort
-        console.log('No valid price source found, using minimum fallback price');
-        setFinalCost(2000);
-        preserveCalculationData(2000);
       }
     };
     
-    // Execute the price validation logic
-    setValidPrice();
+    validateAndSetPrice();
   }, [totalCost, formData, toast]);
   
-  // Load submission ID from session storage if not available in state
   useEffect(() => {
-    // This is just a backup - our hook should already be doing this
     if (!submissionId) {
       const storedId = sessionStorage.getItem('calculatorSubmissionId');
       console.log('PaymentStep checking for stored submission ID:', storedId);
@@ -93,7 +90,6 @@ export function PaymentStepContainer({
     }
   }, [submissionId]);
   
-  // Custom hooks for discount and checkout functionality
   const { 
     couponCode, 
     setCouponCode, 
@@ -103,7 +99,6 @@ export function PaymentStepContainer({
     setInitialDiscount
   } = useDiscountCode(finalCost);
 
-  // Debug log to track price values
   useEffect(() => {
     console.log('PaymentStepContainer price values:', {
       totalCost,
@@ -113,11 +108,9 @@ export function PaymentStepContainer({
     });
   }, [totalCost, finalCost, discountPercentage, discountedTotal]);
 
-  // Check for cached discount percentage - only use if we're returning from a checkout attempt
   useEffect(() => {
     const cachedCouponCode = sessionStorage.getItem('cachedCouponCode');
     
-    // Only restore discount if we have a coupon code cached
     if (cachedCouponCode && cachedCouponCode.length > 0) {
       const cachedDiscountPercentage = sessionStorage.getItem('cachedDiscountPercentage');
       
@@ -131,7 +124,6 @@ export function PaymentStepContainer({
     }
   }, [setInitialDiscount]);
 
-  // Use the price breakdown hook to get the breakdown items for checkout
   const { breakdownItems } = usePriceBreakdown({
     formData,
     totalCost: finalCost,
