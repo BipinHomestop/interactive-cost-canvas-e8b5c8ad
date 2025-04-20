@@ -1,7 +1,7 @@
 
 import { usePriceBreakdown } from "./hooks/usePriceBreakdown";
 import { PriceBreakdownContainer } from "./components/PriceBreakdownContainer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
 interface PriceBreakdownProps {
@@ -22,18 +22,32 @@ export function PriceBreakdown({
     totalCost,
     discountPercentage
   });
+  
+  const [calculatedTotal, setCalculatedTotal] = useState(totalCost);
+  const [finalTotal, setFinalTotal] = useState(discountedTotal || totalCost);
 
   useEffect(() => {
     // Validate total matches breakdown sum
     const breakdownSum = breakdownItems.reduce((sum, item) => sum + item.price, 0);
+    
+    setCalculatedTotal(breakdownSum);
+    
+    // Calculate final total including discount
+    const newFinalTotal = discountPercentage > 0 ? 
+      Math.round(breakdownSum * (1 - discountPercentage / 100)) : 
+      breakdownSum;
+      
+    setFinalTotal(newFinalTotal);
+    
     console.log('Price breakdown validation:', {
       breakdownSum,
       providedTotal: totalCost,
       discountedTotal,
+      calculatedFinalTotal: newFinalTotal,
       items: breakdownItems,
       formData
     });
-  }, [breakdownItems, totalCost, discountedTotal, formData]);
+  }, [breakdownItems, totalCost, discountPercentage, discountedTotal, formData]);
 
   if (isLoading) {
     return (
@@ -42,12 +56,6 @@ export function PriceBreakdown({
       </div>
     );
   }
-
-  // Calculate the actual total from breakdown items
-  const calculatedTotal = breakdownItems.reduce((sum, item) => sum + item.price, 0);
-  const finalTotal = discountPercentage > 0 ? 
-    Math.round(calculatedTotal * (1 - discountPercentage / 100)) : 
-    calculatedTotal;
 
   return (
     <PriceBreakdownContainer 

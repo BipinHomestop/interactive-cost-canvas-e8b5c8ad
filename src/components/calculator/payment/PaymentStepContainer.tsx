@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSubmission } from "@/hooks/calculator/use-submission";
@@ -7,7 +8,6 @@ import { DiscountCodeInput } from "./DiscountCodeInput";
 import { PaymentNavigation } from "./PaymentNavigation";
 import { useDiscountCode } from "./useDiscountCode";
 import { useCheckout } from "./useCheckout";
-import { usePriceBreakdown } from "./hooks/usePriceBreakdown";
 import { getPreservedCalculationData, preserveCalculationData } from "@/hooks/calculator/utils/submission-db";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -23,7 +23,8 @@ export function PaymentStepContainer({
   totalCost 
 }: PaymentStepContainerProps) {
   const [date, setDate] = useState<Date>();
-  const [finalCost, setFinalCost] = useState<number>(totalCost);
+  const [finalCost, setFinalCost] = useState<number>(totalCost > 0 ? totalCost : 0);
+  const [breakdownItems, setBreakdownItems] = useState<Array<{label: string, price: number}>>([]);
   const isMobile = useIsMobile();
   const { submissionId } = useSubmission();
   const { toast } = useToast();
@@ -32,25 +33,7 @@ export function PaymentStepContainer({
     const validateAndSetPrice = () => {
       const preservedPrice = getPreservedCalculationData();
       
-      const breakdownTotal = usePriceBreakdown({
-        formData,
-        totalCost: totalCost,
-        discountPercentage: 0
-      }).breakdownItems.reduce((sum, item) => sum + item.price, 0);
-      
-      console.log('Price validation check:', {
-        totalCost,
-        preservedPrice,
-        breakdownTotal
-      });
-
-      if (breakdownTotal > 0 && breakdownTotal !== totalCost) {
-        console.log('Using breakdown total as it differs from provided total:', breakdownTotal);
-        setFinalCost(breakdownTotal);
-        preserveCalculationData(breakdownTotal);
-        return;
-      }
-      
+      // Only use provided totalCost if it's valid
       if (totalCost > 0) {
         console.log('Using and preserving provided total:', totalCost);
         setFinalCost(totalCost);
@@ -58,12 +41,14 @@ export function PaymentStepContainer({
         return;
       }
       
+      // Fall back to preserved price if available
       if (preservedPrice && preservedPrice > 0) {
         console.log('Using preserved price:', preservedPrice);
         setFinalCost(preservedPrice);
         return;
       }
 
+      // Final fallback: calculate based on garage capacity
       if (formData?.garageCapacity) {
         const basePrice = formData.garageCapacity * 1600;
         console.log('Using calculated base price:', basePrice);
@@ -124,11 +109,10 @@ export function PaymentStepContainer({
     }
   }, [setInitialDiscount]);
 
-  const { breakdownItems } = usePriceBreakdown({
-    formData,
-    totalCost: finalCost,
-    discountPercentage
-  });
+  // This function is only used to get the breakdown items for the checkout
+  const getBreakdownItemsForCheckout = () => {
+    return breakdownItems.length > 0 ? breakdownItems : [];
+  };
 
   const { isLoading, handleCheckout } = useCheckout(
     formData,
@@ -137,8 +121,12 @@ export function PaymentStepContainer({
     discountPercentage,
     finalCost,
     discountedTotal,
-    () => breakdownItems
+    getBreakdownItemsForCheckout
   );
+
+  const handleBreakdownItemsUpdate = (items: Array<{label: string, price: number}>) => {
+    setBreakdownItems(items);
+  };
 
   return (
     <div className={`flex flex-col ${isMobile ? 'pb-16' : 'h-[calc(100vh-80px)]'}`}>
