@@ -61,10 +61,23 @@ export function useCheckout(
 
       // Check if we should use preserved price
       const preservedPrice = getPreservedCalculationData();
-      const finalTotalCost = preservedPrice && preservedPrice > 0 ? preservedPrice : totalCost;
+      let finalTotalCost = preservedPrice && preservedPrice > 0 ? preservedPrice : totalCost;
+      
+      // Final sanity check to make sure we never process a zero price
+      if (finalTotalCost <= 0) {
+        console.error('Checkout attempted with zero or negative price');
+        toast({
+          title: "Price Error",
+          description: "There was a problem with the price calculation. Please refresh and try again.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      
       const finalDiscountedTotal = discountPercentage > 0 ? 
-                                Math.round(finalTotalCost * (1 - discountPercentage / 100)) : 
-                                finalTotalCost;
+                              Math.round(finalTotalCost * (1 - discountPercentage / 100)) : 
+                              finalTotalCost;
 
       // Cache the breakdown items before sending to ensure consistency if user returns
       const breakdownItems = getBreakdownItems();
@@ -99,6 +112,7 @@ export function useCheckout(
       };
 
       console.log('Calling Stripe checkout with metadata:', metadata);
+      console.log('Final price being processed:', finalDiscountedTotal);
 
       // Create the checkout session
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
@@ -119,10 +133,22 @@ export function useCheckout(
       }
 
       if (data && data.url) {
-        // Update submission with checkout session ID
+        // Update submission with checkout session ID and the final price
         if (data.sessionId) {
-          console.log('Updating with checkout session ID:', data.sessionId);
+          console.log('Updating with checkout session ID and final price:', data.sessionId, finalDiscountedTotal);
           await updatePaymentInfo(date, data.sessionId, 'checkout_started');
+          
+          // Explicitly update the total_price directly to ensure it's correctly set
+          const { error: priceUpdateError } = await supabase
+            .from('cost_calculator_submissions')
+            .update({ total_price: finalDiscountedTotal })
+            .eq('id', currentSubmissionId);
+            
+          if (priceUpdateError) {
+            console.error('Error updating final price:', priceUpdateError);
+          } else {
+            console.log('Successfully updated submission with final price:', finalDiscountedTotal);
+          }
         }
         
         // Redirect to Stripe Checkout

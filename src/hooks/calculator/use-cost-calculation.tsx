@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { usePricingConfig } from "./use-pricing-config";
@@ -168,6 +169,13 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     }
     
     total = Math.round(total);
+    
+    // Ensure we never return a zero or negative price after step 3
+    if (step >= 3 && total <= 0) {
+      console.warn("Calculated price was zero or negative, using minimum default price");
+      total = DEFAULT_BASE_PRICE_1_CAR; // Use minimum base price as fallback
+    }
+    
     console.log("Final calculated cost for step", step, ":", total);
     
     setTotalCost(total);

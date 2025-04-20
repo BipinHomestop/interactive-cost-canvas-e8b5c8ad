@@ -7,7 +7,8 @@ import {
   createSubmission, 
   updateSubmission, 
   buildUpdateObject, 
-  updatePaymentInfo as updatePaymentInfoDb 
+  updatePaymentInfo as updatePaymentInfoDb,
+  getPreservedCalculationData
 } from "./utils/submission-db";
 
 export const useSubmission = () => {
@@ -36,6 +37,26 @@ export const useSubmission = () => {
         toast({
           title: "Error",
           description: "Please enter a valid 5-digit ZIP code before continuing",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      // Check for preserved price if totalPrice is 0 or undefined
+      if ((!totalPrice || totalPrice <= 0) && !isNewSubmission) {
+        const preservedPrice = getPreservedCalculationData();
+        if (preservedPrice && preservedPrice > 0) {
+          console.log('Using preserved price for submission:', preservedPrice);
+          totalPrice = preservedPrice;
+        }
+      }
+
+      // Ensure we have a valid totalPrice for payment steps
+      if (formValues.currentCondition && (!totalPrice || totalPrice <= 0)) {
+        console.error('Trying to save submission with invalid price:', totalPrice);
+        toast({
+          title: "Error",
+          description: "Unable to save your information due to an invalid price calculation",
           variant: "destructive",
         });
         return false;
@@ -84,7 +105,7 @@ export const useSubmission = () => {
           throw error;
         }
         
-        console.log('Updated submission with ID:', submissionId);
+        console.log('Updated submission with ID:', submissionId, 'with data:', updateData);
       } else {
         // Try to recover submission ID from session storage
         const storedId = sessionStorage.getItem('calculatorSubmissionId');
@@ -152,6 +173,13 @@ export const useSubmission = () => {
       if (formattedDate) updateData.preferred_installation_date = formattedDate;
       if (checkoutSessionId) updateData.checkout_session_id = checkoutSessionId;
       if (paymentStatus) updateData.payment_status = paymentStatus;
+      
+      // Ensure we have a valid price when updating payment info
+      const preservedPrice = getPreservedCalculationData();
+      if (preservedPrice && preservedPrice > 0) {
+        updateData.total_price = preservedPrice;
+        console.log('Including preserved price in payment update:', preservedPrice);
+      }
       
       const { error } = await updatePaymentInfoDb(idToUse, updateData);
 

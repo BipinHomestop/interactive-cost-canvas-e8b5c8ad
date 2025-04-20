@@ -11,6 +11,9 @@ export const createSubmission = async (
   discountCode?: string,
   discountPercentage?: number
 ) => {
+  // Ensure we never save a zero or negative price to the database
+  const finalPrice = totalPrice && totalPrice > 0 ? totalPrice : null;
+  
   const { data, error } = await supabase
     .from('cost_calculator_submissions')
     .insert([{
@@ -26,13 +29,14 @@ export const createSubmission = async (
       need_extra_footage: formValues.needExtraFootage,
       extra_footage: formValues.extraFootage,
       current_condition: formValues.currentCondition,
-      total_price: totalPrice,
+      total_price: finalPrice,
       discount_code: discountCode,
       discount_percentage: discountPercentage,
       payment_status: 'incomplete' // Mark as incomplete until payment step
     }])
     .select();
 
+  console.log('Created submission with price:', finalPrice);
   return { data, error };
 };
 
@@ -43,6 +47,12 @@ export const updateSubmission = async (
   submissionId: string,
   updateData: Record<string, any>
 ) => {
+  // Ensure we never save a zero or negative price to the database
+  if (updateData.total_price !== undefined && updateData.total_price <= 0) {
+    console.warn('Prevented saving zero or negative price to database');
+    delete updateData.total_price;
+  }
+  
   const { error } = await supabase
     .from('cost_calculator_submissions')
     .update(updateData)
@@ -76,8 +86,8 @@ export const buildUpdateObject = (
   if (formValues.phone !== undefined) updateData.phone = formValues.phone;
   if (formValues.email !== undefined) updateData.email = formValues.email;
   
-  // Add optional fields
-  if (totalPrice !== undefined) updateData.total_price = totalPrice;
+  // Add optional fields - ensuring totalPrice is valid
+  if (totalPrice !== undefined && totalPrice > 0) updateData.total_price = totalPrice;
   if (discountCode !== undefined) updateData.discount_code = discountCode;
   if (discountPercentage !== undefined) updateData.discount_percentage = discountPercentage;
 
@@ -96,6 +106,12 @@ export const updatePaymentInfo = async (
   submissionId: string,
   updateData: Record<string, any>
 ) => {
+  // Ensure we never save a zero or negative price to the database
+  if (updateData.total_price !== undefined && updateData.total_price <= 0) {
+    console.warn('Prevented saving zero or negative price in payment info');
+    delete updateData.total_price;
+  }
+  
   const { error } = await supabase
     .from('cost_calculator_submissions')
     .update(updateData)
