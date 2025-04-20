@@ -10,6 +10,7 @@ import { useDiscountCode } from "./useDiscountCode";
 import { useCheckout } from "./useCheckout";
 import { getPreservedCalculationData, preserveCalculationData } from "@/hooks/calculator/utils/submission-db";
 import { useToast } from "@/components/ui/use-toast";
+import { BreakdownItem } from "@/components/calculator/types";
 
 interface PaymentStepContainerProps {
   onBack: () => void;
@@ -24,7 +25,7 @@ export function PaymentStepContainer({
 }: PaymentStepContainerProps) {
   const [date, setDate] = useState<Date>();
   const [finalCost, setFinalCost] = useState<number>(totalCost > 0 ? totalCost : 0);
-  const [breakdownItems, setBreakdownItems] = useState<Array<{label: string, price: number}>>([]);
+  const [breakdownItems, setBreakdownItems] = useState<BreakdownItem[]>([]);
   const isMobile = useIsMobile();
   const { submissionId } = useSubmission();
   const { toast } = useToast();
@@ -109,9 +110,32 @@ export function PaymentStepContainer({
     }
   }, [setInitialDiscount]);
 
-  // This function is only used to get the breakdown items for the checkout
+  // Handle the breakdown items update from the PriceBreakdown component
+  const handleBreakdownItemsUpdate = (items: BreakdownItem[]) => {
+    console.log('Received breakdown items update:', items);
+    setBreakdownItems(items);
+    
+    // Cache the items for checkout
+    sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(items));
+  };
+
+  // This function is used by the checkout hook to get the current breakdown items
   const getBreakdownItemsForCheckout = () => {
-    return breakdownItems.length > 0 ? breakdownItems : [];
+    console.log('Getting breakdown items for checkout:', breakdownItems);
+    
+    // If we don't have items in state, try to get from session storage
+    if (!breakdownItems || breakdownItems.length === 0) {
+      try {
+        const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
+        if (cachedItems) {
+          return JSON.parse(cachedItems);
+        }
+      } catch (error) {
+        console.error('Error getting cached breakdown items:', error);
+      }
+    }
+    
+    return breakdownItems;
   };
 
   const { isLoading, handleCheckout } = useCheckout(
@@ -123,10 +147,6 @@ export function PaymentStepContainer({
     discountedTotal,
     getBreakdownItemsForCheckout
   );
-
-  const handleBreakdownItemsUpdate = (items: Array<{label: string, price: number}>) => {
-    setBreakdownItems(items);
-  };
 
   return (
     <div className={`flex flex-col ${isMobile ? 'pb-16' : 'h-[calc(100vh-80px)]'}`}>

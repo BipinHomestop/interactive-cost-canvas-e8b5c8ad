@@ -79,12 +79,46 @@ export function useCheckout(
                               Math.round(finalTotalCost * (1 - discountPercentage / 100)) : 
                               finalTotalCost;
 
-      // Cache the breakdown items before sending to ensure consistency if user returns
-      const breakdownItems = getBreakdownItems();
-      sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(breakdownItems));
-      sessionStorage.setItem('cachedTotalCost', finalTotalCost.toString());
-      sessionStorage.setItem('cachedDiscountPercentage', discountPercentage.toString());
-      sessionStorage.setItem('cachedDiscountedTotal', finalDiscountedTotal.toString());
+      // Get the breakdown items - first try from function, then from session storage
+      let breakdownItems = getBreakdownItems();
+      
+      // If no items returned from function, try to get from session storage
+      if (!breakdownItems || breakdownItems.length === 0) {
+        try {
+          const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
+          if (cachedItems) {
+            breakdownItems = JSON.parse(cachedItems);
+            console.log('Retrieved breakdown items from session storage', breakdownItems);
+          }
+        } catch (error) {
+          console.error('Error parsing cached breakdown items:', error);
+        }
+      }
+      
+      // If still no items, create a fallback item
+      if (!breakdownItems || breakdownItems.length === 0) {
+        console.log('No breakdown items available, using fallback');
+        breakdownItems = [{
+          label: `${formData.garageCapacity || 1}-Car Garage Installation`,
+          price: finalDiscountedTotal
+        }];
+      }
+
+      // Ensure all prices are positive
+      breakdownItems = breakdownItems.filter(item => item.price !== 0).map(item => ({
+        ...item,
+        price: Math.abs(item.price) // Ensure all prices are positive for Stripe
+      }));
+
+      // Make sure we have at least one line item
+      if (breakdownItems.length === 0) {
+        breakdownItems = [{
+          label: "Garage Floor Installation",
+          price: finalDiscountedTotal
+        }];
+      }
+
+      console.log('Final breakdown items for Stripe:', breakdownItems);
 
       // Prepare line items for Stripe based on price breakdown
       const lineItems = breakdownItems.map(item => ({
@@ -100,12 +134,12 @@ export function useCheckout(
 
       // Metadata to include with the Stripe checkout session
       const metadata = {
-        customer_name: formData.name,
-        customer_email: formData.email,
-        customer_phone: formData.phone,
+        customer_name: formData.name || 'Customer',
+        customer_email: formData.email || '',
+        customer_phone: formData.phone || '',
         installation_date: date ? format(date, "yyyy-MM-dd") : '',
-        garage_capacity: formData.garageCapacity,
-        garage_finish: formData.garageFinish,
+        garage_capacity: formData.garageCapacity || 1,
+        garage_finish: formData.garageFinish || 'standard',
         coupon_code: couponCode || 'none',
         discount_percentage: discountPercentage.toString(),
         submission_id: currentSubmissionId

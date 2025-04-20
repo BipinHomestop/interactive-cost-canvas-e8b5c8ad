@@ -39,6 +39,9 @@ export function PriceBreakdown({
       
     setFinalTotal(newFinalTotal);
     
+    // Store the breakdown items in session storage for checkout
+    sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(breakdownItems));
+    
     console.log('Price breakdown validation:', {
       breakdownSum,
       providedTotal: totalCost,
