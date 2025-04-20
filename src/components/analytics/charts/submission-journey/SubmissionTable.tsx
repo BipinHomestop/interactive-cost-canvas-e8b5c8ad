@@ -90,6 +90,8 @@ export const SubmissionTable: React.FC<SubmissionTableProps> = ({ data }) => {
             <TableHead>Contact</TableHead>
             <TableHead>Garage</TableHead>
             <TableHead>Features</TableHead>
+            <TableHead>Extra Footage</TableHead>
+            <TableHead>Condition</TableHead>
             <TableHead className="text-right">Price</TableHead>
             <TableHead className="text-center">Status</TableHead>
           </TableRow>

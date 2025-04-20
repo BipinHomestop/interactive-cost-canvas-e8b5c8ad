@@ -57,6 +57,17 @@ export const SubmissionTableRow: React.FC<SubmissionTableRowProps> = ({
           <span>Steps: {submission.need_steps || 'N/A'}</span>
         </div>
       </TableCell>
+      <TableCell>
+        <div className="flex flex-col">
+          <span>Extra Footage: {submission.need_extra_footage || 'N/A'}</span>
+          {submission.need_extra_footage === 'yes' && (
+            <span className="text-gray-500 text-xs">Amount: {submission.extra_footage || 'N/A'} sq ft</span>
+          )}
+        </div>
+      </TableCell>
+      <TableCell>
+        {submission.current_condition || 'N/A'}
+      </TableCell>
       <TableCell className="text-right font-medium">
         {formatCurrency(submission.total_price)}
       </TableCell>

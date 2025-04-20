@@ -140,7 +140,7 @@ export const exportToPDF = (submissions: SubmissionData, timeRange: string): voi
     
     // Create simpler column headers for better PDF fit
     const tableColumn = [
-      "Date", "Name", "Location", "Garage", "Price", "Status"
+      "Date", "Name", "Location", "Garage", "Extra Footage", "Condition", "Price", "Status"
     ];
     
     // Simplify data rows for better fitting on PDF
@@ -149,6 +149,8 @@ export const exportToPDF = (submissions: SubmissionData, timeRange: string): voi
       sub.name || 'N/A',
       sub.location || 'N/A',
       `${sub.garage_capacity || 'N/A'}-Car`,
+      sub.need_extra_footage === 'yes' ? `Yes (${sub.extra_footage || 'N/A'})` : 'No',
+      sub.current_condition || 'N/A',
       formatCurrency(sub.total_price),
       sub.payment_status || 'Unknown'
     ]);
@@ -161,12 +163,14 @@ export const exportToPDF = (submissions: SubmissionData, timeRange: string): voi
       theme: 'grid',
       styles: { fontSize: 8, cellPadding: 2 },
       columnStyles: {
-        0: { cellWidth: 28 },
-        1: { cellWidth: 35 },
-        2: { cellWidth: 35 },
-        3: { cellWidth: 25 },
+        0: { cellWidth: 25 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 20 },
         4: { cellWidth: 25 },
-        5: { cellWidth: 25 }
+        5: { cellWidth: 25 },
+        6: { cellWidth: 20 },
+        7: { cellWidth: 20 }
       },
       headStyles: { fillColor: [26, 49, 116] }
     });
