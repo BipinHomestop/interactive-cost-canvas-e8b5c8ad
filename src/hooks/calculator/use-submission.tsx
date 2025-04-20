@@ -1,18 +1,16 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "@/components/calculator/types";
-import { isValidZipCode } from "./utils/validation-utils";
-import { 
-  createSubmission, 
-  updateSubmission, 
-  buildUpdateObject, 
-  updatePaymentInfo as updatePaymentInfoDb,
-  getPreservedCalculationData
-} from "./utils/submission-db";
+import { createSubmission, updateSubmission, buildUpdateObject } from "./utils/submission-db";
+import { usePaymentSubmission } from "./use-payment-submission";
+import { determineFallbackPrice } from "./utils/pricing-utils";
+import { validateZipCode, validateRequiredFields } from "./utils/validation-utils";
 
 export const useSubmission = () => {
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { updatePaymentInfo } = usePaymentSubmission(submissionId);
 
   // Load submission ID from session storage on mount
   useEffect(() => {
@@ -32,7 +30,7 @@ export const useSubmission = () => {
   ) => {
     try {
       // Validate ZIP code format before saving
-      if (isNewSubmission && (!formValues.location || !isValidZipCode(formValues.location))) {
+      if (isNewSubmission && !validateZipCode(formValues.location)) {
         toast({
           title: "Error",
           description: "Please enter a valid 5-digit ZIP code before continuing",
@@ -44,21 +42,10 @@ export const useSubmission = () => {
       // Add price validation and fallback logic
       let finalPrice = totalPrice;
       
-      // Check for preserved price if totalPrice is invalid
-      if ((!finalPrice || finalPrice <= 0) && !isNewSubmission) {
-        const preservedPrice = getPreservedCalculationData();
-        if (preservedPrice && preservedPrice > 0) {
-          console.log('Using preserved price for submission:', preservedPrice);
-          finalPrice = preservedPrice;
-        }
-      }
-
       // Final safeguard: use fallback price if still invalid
-      if (formValues.currentCondition && (!finalPrice || finalPrice <= 0)) {
-        // Use garage capacity to determine fallback price
-        const fallbackPrice = determineFallbackPrice(formValues.garageCapacity);
-        console.log(`Using fallback price for submission based on garage capacity: $${fallbackPrice}`);
-        finalPrice = fallbackPrice;
+      if (formValues.garageCapacity && (!finalPrice || finalPrice <= 0)) {
+        finalPrice = determineFallbackPrice(formValues.garageCapacity);
+        console.log(`Using fallback price for submission based on garage capacity: $${finalPrice}`);
         
         // Preserve this fallback price for consistency
         if (typeof window !== 'undefined') {
@@ -68,20 +55,13 @@ export const useSubmission = () => {
       }
 
       if (isNewSubmission) {
-        // For new submissions, save whatever data we have so far
         const { data, error } = await createSubmission(formValues, finalPrice, discountCode, discountPercentage);
 
         if (error) {
           console.error('Database error:', error);
-          
-          let errorMessage = "Failed to save your information";
-          if (error.code === '23514' && error.message.includes('valid_zipcode_format')) {
-            errorMessage = "Please enter a valid 5-digit ZIP code";
-          }
-          
           toast({
             title: "Error",
-            description: errorMessage,
+            description: "Failed to save your information",
             variant: "destructive",
           });
           return false;
@@ -90,7 +70,6 @@ export const useSubmission = () => {
         if (data && data[0]) {
           console.log('Saved new submission with ID:', data[0].id);
           setSubmissionId(data[0].id);
-          // Store submission ID in session storage to persist across page reloads
           sessionStorage.setItem('calculatorSubmissionId', data[0].id);
         }
 
@@ -100,9 +79,7 @@ export const useSubmission = () => {
           className: "bg-green-500 text-white border-none",
         });
       } else if (submissionId) {
-        // For updates, create update object with only non-undefined values
         const updateData = buildUpdateObject(formValues, finalPrice, discountCode, discountPercentage);
-        
         const { error } = await updateSubmission(submissionId, updateData);
 
         if (error) {
@@ -135,89 +112,6 @@ export const useSubmission = () => {
       toast({
         title: "Error",
         description: isNewSubmission ? "Failed to save your information" : "Failed to update your information",
-        variant: "destructive",
-      });
-      return false;
-    }
-  };
-
-  // Helper function to determine a fallback price based on garage capacity
-  const determineFallbackPrice = (garageCapacity?: number): number => {
-    if (!garageCapacity || garageCapacity <= 0) {
-      return 2000; // Default fallback price
-    }
-    
-    // Price tiers based on garage capacity
-    const priceTiers: Record<number, number> = {
-      1: 1000,
-      2: 2200,
-      3: 3500,
-      4: 5000,
-      5: 6500
-    };
-    
-    return priceTiers[garageCapacity] || 2000;
-  };
-
-  const updatePaymentInfo = async (
-    preferredInstallationDate?: Date,
-    checkoutSessionId?: string,
-    paymentStatus?: string
-  ) => {
-    // Try to use stored ID if not available in state
-    const idToUse = submissionId || sessionStorage.getItem('calculatorSubmissionId');
-    
-    if (!idToUse) {
-      console.error('No submission ID found for payment update');
-      toast({
-        title: "Error",
-        description: "Session information is missing. Please refresh the page and try again.",
-        variant: "destructive",
-      });
-      return false;
-    }
-    
-    try {
-      console.log('Updating payment info with:', {
-        id: idToUse,
-        date: preferredInstallationDate,
-        sessionId: checkoutSessionId,
-        status: paymentStatus
-      });
-      
-      // Convert Date object to ISO string format before sending to the database
-      const formattedDate = preferredInstallationDate 
-        ? new Date(preferredInstallationDate.getTime() - (preferredInstallationDate.getTimezoneOffset() * 60000))
-            .toISOString().split('T')[0]
-        : undefined;
-      
-      const updateData: Record<string, any> = {};
-      
-      if (formattedDate) updateData.preferred_installation_date = formattedDate;
-      if (checkoutSessionId) updateData.checkout_session_id = checkoutSessionId;
-      if (paymentStatus) updateData.payment_status = paymentStatus;
-      
-      // Ensure we have a valid price when updating payment info
-      const preservedPrice = getPreservedCalculationData();
-      if (preservedPrice && preservedPrice > 0) {
-        updateData.total_price = preservedPrice;
-        console.log('Including preserved price in payment update:', preservedPrice);
-      }
-      
-      const { error } = await updatePaymentInfoDb(idToUse, updateData);
-
-      if (error) {
-        console.error('Payment info update error:', error);
-        throw error;
-      }
-      
-      console.log('Successfully updated payment info for submission:', idToUse);
-      return true;
-    } catch (error) {
-      console.error('Error updating payment information:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update payment information. Please try again.",
         variant: "destructive",
       });
       return false;
