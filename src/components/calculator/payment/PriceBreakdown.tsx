@@ -9,18 +9,21 @@ interface PriceBreakdownProps {
   totalCost: number;
   discountPercentage: number;
   discountedTotal: number;
+  step?: number; // Add step as an optional prop
 }
 
 export function PriceBreakdown({ 
   formData, 
   totalCost, 
   discountPercentage, 
-  discountedTotal 
+  discountedTotal,
+  step = 0 // Default to 0 if not provided
 }: PriceBreakdownProps) {
   const { breakdownItems, isLoading } = usePriceBreakdown({
     formData,
     totalCost,
-    discountPercentage
+    discountPercentage,
+    step // Pass the step to usePriceBreakdown
   });
   
   const [calculatedTotal, setCalculatedTotal] = useState(totalCost);

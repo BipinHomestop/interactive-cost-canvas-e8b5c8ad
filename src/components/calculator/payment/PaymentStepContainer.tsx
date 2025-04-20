@@ -156,6 +156,7 @@ export function PaymentStepContainer({
           totalCost={finalCost} 
           discountPercentage={discountPercentage} 
           discountedTotal={discountedTotal} 
+          step={9} // Always pass 9 since we're in the payment step
         />
 
         <InstallationDatePicker 

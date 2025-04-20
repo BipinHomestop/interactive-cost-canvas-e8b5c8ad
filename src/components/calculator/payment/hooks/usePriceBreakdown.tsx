@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { BreakdownItem } from "@/components/calculator/types";
@@ -7,9 +8,15 @@ interface UsePriceBreakdownProps {
   formData: any;
   totalCost: number;
   discountPercentage: number;
+  step?: number; // Add step as an optional parameter
 }
 
-export function usePriceBreakdown({ formData, totalCost, discountPercentage }: UsePriceBreakdownProps) {
+export function usePriceBreakdown({ 
+  formData, 
+  totalCost, 
+  discountPercentage,
+  step = 0 // Default to 0 if not provided
+}: UsePriceBreakdownProps) {
   const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
   const [breakdownItems, setBreakdownItems] = useState<BreakdownItem[]>([]);
 
