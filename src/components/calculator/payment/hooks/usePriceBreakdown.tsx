@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { usePricingConfig } from "@/hooks/calculator/use-pricing-config";
 import { BreakdownItem } from "@/components/calculator/types";
@@ -14,16 +13,39 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
   const { getPrice, getFinishMultiplier, isLoading } = usePricingConfig();
   const [breakdownItems, setBreakdownItems] = useState<BreakdownItem[]>([]);
 
+  // Check for cached items on mount
+  useEffect(() => {
+    try {
+      const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
+      if (cachedItems && step === 9) {
+        const parsed = JSON.parse(cachedItems);
+        console.log('Retrieved cached breakdown items:', parsed);
+        setBreakdownItems(parsed);
+        return;
+      }
+    } catch (error) {
+      console.error('Error retrieving cached breakdown items:', error);
+    }
+    
+    if (!isLoading) {
+      const items = generateBreakdownItems();
+      setBreakdownItems(items);
+    }
+  }, [isLoading]);
+
+  // Only regenerate items if we're not in step 9 or if specific values change
   useEffect(() => {
     if (isLoading) {
       console.log('Waiting for pricing config to load...');
       return;
     }
 
-    // Ensure we have a valid price before generating breakdown
-    if (totalCost <= 0) {
-      console.log('Invalid totalCost detected in usePriceBreakdown:', totalCost);
-      return;
+    // Don't regenerate in step 9 if we have cached items
+    if (step === 9) {
+      const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
+      if (cachedItems) {
+        return;
+      }
     }
 
     console.log('Generating breakdown with:', { formData, totalCost, discountPercentage });
