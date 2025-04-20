@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { 
   DailyPerformanceTable,
   LocationPerformanceTable,
   ZipCodePerformanceTable
-} from '@/components/analytics/AnalyticsTables';
+} from '@/components/analytics/tables';
 
 interface DataTablesSectionProps {
   hasVisitorData: boolean;
