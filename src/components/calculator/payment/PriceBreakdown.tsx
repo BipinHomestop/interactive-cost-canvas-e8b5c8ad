@@ -9,57 +9,37 @@ interface PriceBreakdownProps {
   totalCost: number;
   discountPercentage: number;
   discountedTotal: number;
-  step?: number; // Add step as an optional prop
 }
 
 export function PriceBreakdown({ 
   formData, 
   totalCost, 
   discountPercentage, 
-  discountedTotal,
-  step = 0 // Default to 0 if not provided
+  discountedTotal 
 }: PriceBreakdownProps) {
   const { breakdownItems, isLoading } = usePriceBreakdown({
     formData,
     totalCost,
-    discountPercentage,
-    step // Pass the step to usePriceBreakdown
+    discountPercentage
   });
   
   const [calculatedTotal, setCalculatedTotal] = useState(totalCost);
   const [finalTotal, setFinalTotal] = useState(discountedTotal || totalCost);
 
   useEffect(() => {
-    // Try to get cached breakdown first
-    const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
-    if (cachedItems) {
-      try {
-        const items = JSON.parse(cachedItems);
-        const breakdownSum = items.reduce((sum: number, item: any) => sum + item.price, 0);
-        setCalculatedTotal(breakdownSum);
-        
-        const newFinalTotal = discountPercentage > 0 ? 
-          Math.round(breakdownSum * (1 - discountPercentage / 100)) : 
-          breakdownSum;
-          
-        setFinalTotal(newFinalTotal);
-        return;
-      } catch (error) {
-        console.error('Error parsing cached breakdown items:', error);
-      }
-    }
-    
-    // If no cache or error, calculate from current items
+    // Validate total matches breakdown sum
     const breakdownSum = breakdownItems.reduce((sum, item) => sum + item.price, 0);
+    
     setCalculatedTotal(breakdownSum);
     
+    // Calculate final total including discount
     const newFinalTotal = discountPercentage > 0 ? 
       Math.round(breakdownSum * (1 - discountPercentage / 100)) : 
       breakdownSum;
       
     setFinalTotal(newFinalTotal);
     
-    // Update cache
+    // Store the breakdown items in session storage for checkout
     sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(breakdownItems));
     
     console.log('Price breakdown validation:', {
