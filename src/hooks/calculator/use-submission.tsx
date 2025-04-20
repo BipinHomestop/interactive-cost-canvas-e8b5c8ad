@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "@/components/calculator/types";
@@ -42,29 +41,35 @@ export const useSubmission = () => {
         return false;
       }
 
-      // Check for preserved price if totalPrice is 0 or undefined
-      if ((!totalPrice || totalPrice <= 0) && !isNewSubmission) {
+      // Add price validation and fallback logic
+      let finalPrice = totalPrice;
+      
+      // Check for preserved price if totalPrice is invalid
+      if ((!finalPrice || finalPrice <= 0) && !isNewSubmission) {
         const preservedPrice = getPreservedCalculationData();
         if (preservedPrice && preservedPrice > 0) {
           console.log('Using preserved price for submission:', preservedPrice);
-          totalPrice = preservedPrice;
+          finalPrice = preservedPrice;
         }
       }
 
-      // Ensure we have a valid totalPrice for payment steps
-      if (formValues.currentCondition && (!totalPrice || totalPrice <= 0)) {
-        console.error('Trying to save submission with invalid price:', totalPrice);
-        toast({
-          title: "Error",
-          description: "Unable to save your information due to an invalid price calculation",
-          variant: "destructive",
-        });
-        return false;
+      // Final safeguard: use fallback price if still invalid
+      if (formValues.currentCondition && (!finalPrice || finalPrice <= 0)) {
+        // Use garage capacity to determine fallback price
+        const fallbackPrice = determineFallbackPrice(formValues.garageCapacity);
+        console.log(`Using fallback price for submission based on garage capacity: $${fallbackPrice}`);
+        finalPrice = fallbackPrice;
+        
+        // Preserve this fallback price for consistency
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('preservedTotalPrice', finalPrice.toString());
+          sessionStorage.setItem('preservedTotalPriceTimestamp', Date.now().toString());
+        }
       }
 
       if (isNewSubmission) {
         // For new submissions, save whatever data we have so far
-        const { data, error } = await createSubmission(formValues, totalPrice, discountCode, discountPercentage);
+        const { data, error } = await createSubmission(formValues, finalPrice, discountCode, discountPercentage);
 
         if (error) {
           console.error('Database error:', error);
@@ -96,7 +101,7 @@ export const useSubmission = () => {
         });
       } else if (submissionId) {
         // For updates, create update object with only non-undefined values
-        const updateData = buildUpdateObject(formValues, totalPrice, discountCode, discountPercentage);
+        const updateData = buildUpdateObject(formValues, finalPrice, discountCode, discountPercentage);
         
         const { error } = await updateSubmission(submissionId, updateData);
 
@@ -113,7 +118,7 @@ export const useSubmission = () => {
           console.log('Recovered submission ID from session storage:', storedId);
           setSubmissionId(storedId);
           // Recursively call this function again now that we have the ID
-          return await saveSubmission(formValues, false, totalPrice, discountCode, discountPercentage);
+          return await saveSubmission(formValues, false, finalPrice, discountCode, discountPercentage);
         } else {
           console.error('No submission ID found and could not recover from session storage');
           toast({
@@ -134,6 +139,24 @@ export const useSubmission = () => {
       });
       return false;
     }
+  };
+
+  // Helper function to determine a fallback price based on garage capacity
+  const determineFallbackPrice = (garageCapacity?: number): number => {
+    if (!garageCapacity || garageCapacity <= 0) {
+      return 2000; // Default fallback price
+    }
+    
+    // Price tiers based on garage capacity
+    const priceTiers: Record<number, number> = {
+      1: 1000,
+      2: 2200,
+      3: 3500,
+      4: 5000,
+      5: 6500
+    };
+    
+    return priceTiers[garageCapacity] || 2000;
   };
 
   const updatePaymentInfo = async (

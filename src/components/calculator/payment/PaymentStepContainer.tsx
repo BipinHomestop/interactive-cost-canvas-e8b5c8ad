@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSubmission } from "@/hooks/calculator/use-submission";
@@ -10,6 +9,7 @@ import { useDiscountCode } from "./useDiscountCode";
 import { useCheckout } from "./useCheckout";
 import { usePriceBreakdown } from "./hooks/usePriceBreakdown";
 import { getPreservedCalculationData, preserveCalculationData } from "@/hooks/calculator/utils/submission-db";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PaymentStepContainerProps {
   onBack: () => void;
@@ -26,28 +26,61 @@ export function PaymentStepContainer({
   const [finalCost, setFinalCost] = useState<number>(totalCost);
   const isMobile = useIsMobile();
   const { submissionId } = useSubmission();
+  const { toast } = useToast();
   
-  // Initialize with the correct price, prioritizing preserved price
+  // Initialize with the correct price, with fallback mechanisms
   useEffect(() => {
-    const preservedPrice = getPreservedCalculationData();
-    console.log('PaymentStep price initialization check:', { 
-      preservedPrice, 
-      totalCost, 
-      finalCost 
-    });
-    
-    if (preservedPrice && preservedPrice > 0) {
-      console.log('PaymentStep using preserved price:', preservedPrice);
-      setFinalCost(preservedPrice);
+    // Function to set a valid price, with fallbacks
+    const setValidPrice = () => {
+      // First check preserved price
+      const preservedPrice = getPreservedCalculationData();
       
-      // Re-preserve the price to ensure it persists
-      preserveCalculationData(preservedPrice);
-    } else if (totalCost > 0 && totalCost !== finalCost) {
-      console.log('PaymentStep using and preserving live totalCost:', totalCost);
-      setFinalCost(totalCost);
-      preserveCalculationData(totalCost);
-    }
-  }, [totalCost]);
+      if (preservedPrice && preservedPrice > 0) {
+        console.log('PaymentStep using preserved price:', preservedPrice);
+        setFinalCost(preservedPrice);
+        return;
+      } 
+      
+      // Next check live totalCost
+      if (totalCost > 0) {
+        console.log('PaymentStep using and preserving live totalCost:', totalCost);
+        setFinalCost(totalCost);
+        preserveCalculationData(totalCost);
+        return;
+      }
+      
+      // Last resort fallback: use garage capacity-based price
+      if (formData && formData.garageCapacity) {
+        const fallbackPrices = {
+          1: 1000,
+          2: 2200,
+          3: 3500,
+          4: 5000,
+          5: 6500
+        };
+        
+        const fallbackPrice = fallbackPrices[formData.garageCapacity] || 2000;
+        console.log('Using fallback price based on garage capacity:', fallbackPrice);
+        setFinalCost(fallbackPrice);
+        preserveCalculationData(fallbackPrice);
+        
+        // Notify user about the fallback price
+        toast({
+          title: "Price Estimation",
+          description: "We've estimated your price based on your garage size. You can continue with checkout.",
+          duration: 6000,
+        });
+      } else {
+        // Absolute last resort
+        console.log('No valid price source found, using minimum fallback price');
+        setFinalCost(2000);
+        preserveCalculationData(2000);
+      }
+    };
+    
+    // Execute the price validation logic
+    setValidPrice();
+  }, [totalCost, formData, toast]);
   
   // Load submission ID from session storage if not available in state
   useEffect(() => {

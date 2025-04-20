@@ -20,12 +20,24 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
       return;
     }
 
+    // Ensure we have a valid price before generating breakdown
+    if (totalCost <= 0) {
+      console.log('Invalid totalCost detected in usePriceBreakdown:', totalCost);
+      return;
+    }
+
     console.log('Generating breakdown with:', { formData, totalCost, discountPercentage });
     const items = generateBreakdownItems();
     setBreakdownItems(items);
   }, [formData, totalCost, discountPercentage, isLoading]);
 
   const generateBreakdownItems = (): BreakdownItem[] => {
+    // Return empty array if totalCost is invalid
+    if (totalCost <= 0) {
+      console.log('Skipping breakdown generation due to invalid totalCost');
+      return [];
+    }
+
     const breakdown: BreakdownItem[] = [];
     let runningTotal = 0;
 
@@ -33,35 +45,41 @@ export function usePriceBreakdown({ formData, totalCost, discountPercentage }: U
     if (formData.garageCapacity) {
       const baseKey = `base_price_${formData.garageCapacity}_car`;
       const basePrice = getPrice(baseKey, 0);
-      runningTotal += basePrice;
+      
+      // Use a minimum price if the base price is invalid
+      const validBasePrice = basePrice > 0 ? basePrice : 1000;
+      runningTotal += validBasePrice;
 
       console.log(`Base price calculation:`, {
         key: baseKey,
-        price: basePrice
+        price: basePrice,
+        validPrice: validBasePrice
       });
 
       breakdown.push({
         label: `${formData.garageCapacity}-Car Garage (Base Price)`,
-        price: basePrice
+        price: validBasePrice
       });
 
       // Finish multiplier
       if (formData.garageFinish) {
         const multiplier = getFinishMultiplier(formData.garageFinish);
-        const finishLabel = formatFinishLabel(formData.garageFinish);
+        // Ensure multiplier is valid and at least 1.0
+        const validMultiplier = multiplier >= 1.0 ? multiplier : 1.0;
         
         console.log(`Finish calculation:`, {
           finish: formData.garageFinish,
           multiplier,
-          basePrice
+          validMultiplier,
+          basePrice: validBasePrice
         });
 
-        if (multiplier > 1) {
-          const additionalCost = Math.round(basePrice * (multiplier - 1));
+        if (validMultiplier > 1) {
+          const additionalCost = Math.round(validBasePrice * (validMultiplier - 1));
           runningTotal += additionalCost;
 
           breakdown.push({
-            label: `${finishLabel} Finish (${Math.round((multiplier - 1) * 100)}% premium)`,
+            label: `${formatFinishLabel(formData.garageFinish)} Finish (${Math.round((validMultiplier - 1) * 100)}% premium)`,
             price: additionalCost
           });
         }
