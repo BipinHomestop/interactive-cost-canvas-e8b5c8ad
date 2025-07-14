@@ -50,7 +50,6 @@ const AnalyticsTracker = () => {
 function App() {
   return (
     <>
-      <MetaTags />
       <SchemaScript />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter basename="/">
