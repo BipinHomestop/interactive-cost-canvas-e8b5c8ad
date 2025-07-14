@@ -134,8 +134,20 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
 }
 
 export function getCanonicalUrl(step?: number): string {
+  const baseUrl = baseMetaTags.og.url;
+  
   if (!step) {
-    return baseMetaTags.og.url;
+    return baseUrl;
   }
-  return `${baseMetaTags.og.url}step/${step}`;
+  
+  // Ensure proper URL formatting
+  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  return `${cleanBaseUrl}/step/${step}`;
+}
+
+export function getPageUrl(path: string = ''): string {
+  const baseUrl = baseMetaTags.og.url;
+  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${cleanBaseUrl}${cleanPath}`;
 }
