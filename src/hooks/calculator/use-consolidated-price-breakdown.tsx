@@ -152,8 +152,13 @@ export function useConsolidatedPriceBreakdown({
 
     // Current condition - Fixed logic
     if (formData.currentCondition) {
+      console.log('=== BREAKDOWN CONDITION DEBUG ===');
+      console.log('formData.currentCondition:', formData.currentCondition);
+      console.log('typeof currentCondition:', typeof formData.currentCondition);
+      console.log('condition === "existing":', formData.currentCondition === "existing");
+      
       if (formData.currentCondition === "existing") {
-        const conditionPrice = getPrice('existing_condition_price', 300);
+        const conditionPrice = getPrice('existing_condition_price', 200);
         runningTotal += conditionPrice;
 
         console.log(`Existing condition price calculated:`, {
@@ -166,12 +171,13 @@ export function useConsolidatedPriceBreakdown({
           price: conditionPrice
         });
       } else {
-        console.log('Original condition selected - no additional cost');
+        console.log('Original condition selected - no additional cost, condition value:', formData.currentCondition);
         breakdown.push({
           label: "Original Concrete Preparation",
           price: 0
         });
       }
+      console.log('=== END BREAKDOWN CONDITION DEBUG ===');
     }
 
     // Add discount if applicable

@@ -19,8 +19,8 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
   const DEFAULT_EXISTING_CONDITION_PRICE = 200;
   const DEFAULT_EXTRA_FOOTAGE_UP_TO_50 = 299;
   const DEFAULT_EXTRA_FOOTAGE_51_100 = 499;
-  const DEFAULT_EXTRA_FOOTAGE_101_150 = 899;
-  const DEFAULT_EXTRA_FOOTAGE_151_200 = 699;
+  const DEFAULT_EXTRA_FOOTAGE_101_150 = 699;  // Fixed: should be 699, not 899
+  const DEFAULT_EXTRA_FOOTAGE_151_200 = 899;  // Fixed: should be 899, not 699
 
   useEffect(() => {
     console.log('Step changed to:', step);
@@ -158,14 +158,19 @@ export const useCostCalculation = (formValues: Partial<CalculatorInputs>, step: 
     }
 
     if (formValues.currentCondition) {
-      console.log('Calculating condition cost for:', formValues.currentCondition);
+      console.log('=== COST CALCULATION CONDITION DEBUG ===');
+      console.log('formValues.currentCondition:', formValues.currentCondition);
+      console.log('typeof currentCondition:', typeof formValues.currentCondition);
+      console.log('condition === "existing":', formValues.currentCondition === "existing");
+      
       if (formValues.currentCondition === "existing") {
         const conditionPrice = getPrice('existing_condition_price', DEFAULT_EXISTING_CONDITION_PRICE);
         total += conditionPrice;
-        console.log(`Added existing condition price: ${conditionPrice}`);
+        console.log(`Added existing condition price: ${conditionPrice}, new total: ${total}`);
       } else {
-        console.log('Original condition - no additional cost');
+        console.log('Original condition - no additional cost, condition value:', formValues.currentCondition);
       }
+      console.log('=== END COST CALCULATION CONDITION DEBUG ===');
     }
     
     total = Math.round(total);
