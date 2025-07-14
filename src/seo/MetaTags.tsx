@@ -9,13 +9,14 @@ const BASE_URL = 'https://quote.garagefloorcoatingsdfw.com';
 interface MetaTagsProps {
   step?: number;
   customMeta?: Partial<MetaTagsConfig>;
+  pathname?: string;
 }
 
-export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
+export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
   
-  // Get the current URL for canonical link - this ensures each page has its correct canonical URL
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : BASE_URL;
+  // Construct canonical URL from base URL and current pathname
+  const canonicalUrl = pathname ? `${BASE_URL}${pathname}` : BASE_URL;
   
   return (
     <Helmet>
@@ -79,7 +80,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:url" content={metaTags.og?.url} />
 
       {/* Technical SEO */}
-      <link rel="canonical" href={currentUrl} />
+      <link rel="canonical" href={canonicalUrl} />
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
