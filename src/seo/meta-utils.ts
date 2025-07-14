@@ -1,4 +1,5 @@
 import { baseMetaTags, stepMetaTags, successMetaTags, analyticsMetaTags } from './meta-tags';
+import { generateDynamicUrl } from './url-utils';
 
 export interface MetaTagsConfig {
   title: string;
@@ -133,28 +134,16 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
   };
 }
 
-// Consolidated URL generation function
+// Consolidated URL generation function using dynamic detection
 export function generatePageUrl(path?: string | number): string {
-  const baseUrl = baseMetaTags.og.url;
-  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-  
-  if (!path) {
-    return baseUrl; // Homepage with trailing slash
-  }
-  
-  if (typeof path === 'number') {
-    return `${cleanBaseUrl}/step/${path}`;
-  }
-  
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${cleanBaseUrl}${cleanPath}`;
+  return generateDynamicUrl(path);
 }
 
-// Keep existing functions for compatibility, but use consolidated logic
+// Keep existing functions for compatibility, but use dynamic logic
 export function getCanonicalUrl(step?: number): string {
-  return generatePageUrl(step);
+  return generateDynamicUrl(step);
 }
 
 export function getPageUrl(path: string = ''): string {
-  return generatePageUrl(path);
+  return generateDynamicUrl(path);
 }

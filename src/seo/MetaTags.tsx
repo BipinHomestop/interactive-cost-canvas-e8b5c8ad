@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { baseMetaTags } from './meta-tags';
 import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
+import { urlConfig } from './url-utils';
 
 interface MetaTagsProps {
   step?: number;
@@ -69,7 +70,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:description" content={metaTags.twitter?.description} />
       <meta name="twitter:image" content={metaTags.twitter?.image} />
       <meta name="twitter:image:alt" content={baseMetaTags.twitter.imageAlt} />
-      <meta name="twitter:domain" content="quote.garagefloorcoatingsdfw.com" />
+      <meta name="twitter:domain" content={new URL(urlConfig.getBaseUrl()).hostname} />
       <meta name="twitter:url" content={metaTags.og?.url} />
 
       {/* Technical SEO */}
@@ -78,7 +79,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="//quote.garagefloorcoatingsdfw.com" />
+      <link rel="dns-prefetch" href={`//${new URL(urlConfig.getBaseUrl()).hostname}`} />
       
       {/* Structured Data for Local Business */}
       <script type="application/ld+json">
@@ -86,7 +87,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
           "@context": "https://schema.org",
           "@type": ["WebSite", "LocalBusiness"],
           "name": "American Concrete Coatings - Garage Floor Coating Calculator",
-          "url": "https://quote.garagefloorcoatingsdfw.com/",
+          "url": urlConfig.getBaseUrl() + "/",
           "description": metaTags.description,
           "telephone": "817-839-3485",
           "address": {
@@ -127,7 +128,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
           },
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://quote.garagefloorcoatingsdfw.com/?q={search_term_string}",
+            "target": urlConfig.getBaseUrl() + "/?q={search_term_string}",
             "query-input": "required name=search_term_string"
           }
         })}

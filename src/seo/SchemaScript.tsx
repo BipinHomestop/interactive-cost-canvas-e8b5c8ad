@@ -1,8 +1,10 @@
 
 import React from 'react';
-import { schemaData } from './schema-data';
+import { generateSchemaData } from './dynamic-schema-data';
 
 export const SchemaScript: React.FC = () => {
+  const schemaData = generateSchemaData();
+  
   return (
     <>
       {/* Enhanced Website Schema */}
