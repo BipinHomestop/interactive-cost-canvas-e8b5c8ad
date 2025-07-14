@@ -1,29 +1,32 @@
 
 export const metaTags = {
-  title: "Garage Floor Concrete Coating Cost Calculator | American Concrete Coatings",
-  description: "Use our Garage Floor Concrete Coating Cost Calculator to get a quick estimate of your garage coatings within minutes! Get your free estimate now!",
-  author: "Garage Floor Coatings DFW",
+  title: "FREE Garage Floor Coating Calculator | Get Instant Quote & Save 20% | American Concrete Coatings DFW",
+  description: "🔥 Get your FREE garage floor coating estimate in under 60 seconds! ✓ Epoxy ✓ Polyurea ✓ Polyaspartic coatings ✓ DFW's #1 rated contractor ✓ Same-day quotes ✓ 20+ year warranty. Start your instant quote now!",
+  author: "American Concrete Coatings",
   googleVerification: "VERIFICATION-CODE",
-  keywords: "garage floor coating, epoxy floor, polyaspartic coating, concrete coatings, garage renovation, floor estimate, DFW concrete, American Concrete Coatings",
-  robots: "index, follow",
-  revisitAfter: "7 days",
-  language: "English",
+  keywords: "garage floor coating calculator, free epoxy floor estimate, polyaspartic coating cost, concrete coating Dallas, garage floor renovation DFW, epoxy floor installation Texas, garage makeover calculator, concrete resurfacing quote, floor coating estimate tool, garage transformation cost",
+  robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+  revisitAfter: "3 days",
+  language: "en-US",
   
   // Open Graph
   og: {
-    title: "Garage Floor Concrete Coating Cost Calculator | American Concrete Coatings",
-    description: "Get an instant estimate for your garage floor coating project. Premium epoxy, polyurea, and polyaspartic coatings for your garage floor.",
+    title: "FREE Garage Floor Coating Calculator | Get Instant Quote & Save 20%",
+    description: "🚀 Transform your garage in 60 seconds! Get your FREE estimate for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
     image: "/og-image.png",
     url: "https://quote.garagefloorcoatingsdfw.com/",
     type: "website",
-    siteName: "American Concrete Coatings"
+    siteName: "American Concrete Coatings",
+    locale: "en_US"
   },
   
   // Twitter
   twitter: {
     card: "summary_large_image",
-    title: "Garage Floor Coating Cost Calculator",
-    description: "Get an instant estimate for premium garage floor coatings in DFW area.",
+    site: "@dfwACC",
+    creator: "@dfwACC",
+    title: "FREE Garage Floor Coating Calculator | Save 20% Today",
+    description: "⚡ Get your FREE garage floor coating estimate in 60 seconds! Premium epoxy & polyaspartic coatings. DFW's #1 rated contractor.",
     image: "/og-image.png"
   }
 };

@@ -1,17 +1,143 @@
 export const schemaData = {
+  // Enhanced WebPage Schema for better indexing
+  webpage: {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://quote.garagefloorcoatingsdfw.com/#webpage",
+    "url": "https://quote.garagefloorcoatingsdfw.com/",
+    "name": "FREE Garage Floor Coating Calculator | Get Instant Quote & Save 20%",
+    "description": "Get your FREE garage floor coating estimate in under 60 seconds! Epoxy, Polyurea, Polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
+    "inLanguage": "en-US",
+    "isPartOf": {
+      "@type": "WebSite",
+      "@id": "https://quote.garagefloorcoatingsdfw.com/#website"
+    },
+    "about": {
+      "@type": "Thing",
+      "name": "Garage Floor Coating Calculator"
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://quote.garagefloorcoatingsdfw.com/"
+        }
+      ]
+    },
+    "mainEntity": {
+      "@type": "SoftwareApplication",
+      "name": "Garage Floor Coating Cost Calculator",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  },
+
+  // Enhanced Website Schema
+  website: {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://quote.garagefloorcoatingsdfw.com/#website",
+    "url": "https://quote.garagefloorcoatingsdfw.com/",
+    "name": "American Concrete Coatings - Garage Floor Coating Calculator",
+    "description": "Professional garage floor coating services and instant cost calculator for the Dallas-Fort Worth area.",
+    "publisher": {
+      "@id": "https://quote.garagefloorcoatingsdfw.com/#organization"
+    },
+    "potentialAction": [
+      {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://quote.garagefloorcoatingsdfw.com/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    ],
+    "inLanguage": "en-US"
+  },
+
+  // Calculator Software Application Schema
+  softwareApplication: {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Garage Floor Coating Cost Calculator",
+    "description": "Free online calculator to estimate garage floor coating costs including epoxy, polyurea, and polyaspartic systems.",
+    "url": "https://quote.garagefloorcoatingsdfw.com/",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "name": "Free Calculator Tool"
+    },
+    "author": {
+      "@type": "Organization",
+      "@id": "https://quote.garagefloorcoatingsdfw.com/#organization"
+    },
+    "featureList": [
+      "Instant cost estimates",
+      "Multiple coating options",
+      "Customizable garage sizes",
+      "Professional consultation booking"
+    ]
+  },
   organization: {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Garage Floor Concrete Coating Cost Calculator",
-    "alternateName": "American Concrete Coatings",
+    "@type": ["Organization", "LocalBusiness", "HomeAndConstructionBusiness"],
+    "@id": "https://quote.garagefloorcoatingsdfw.com/#organization",
+    "name": "American Concrete Coatings",
+    "alternateName": ["ACC DFW", "Garage Floor Coatings DFW"],
+    "legalName": "American Concrete Coatings LLC",
     "url": "https://quote.garagefloorcoatingsdfw.com/",
-    "logo": "https://quote.garagefloorcoatingsdfw.com/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://quote.garagefloorcoatingsdfw.com/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png",
+      "width": "300",
+      "height": "100"
+    },
+    "image": "https://quote.garagefloorcoatingsdfw.com/og-image.png",
+    "description": "Premier garage floor coating contractor in Dallas-Fort Worth specializing in epoxy, polyurea, and polyaspartic concrete coatings with over 15 years of experience.",
+    "foundingDate": "2008",
+    "slogan": "Transform Your Garage, Transform Your Home",
+    "address": {
+      "@type": "PostalAddress",
+      "addressRegion": "TX",
+      "addressCountry": "US",
+      "addressLocality": "Dallas-Fort Worth Metroplex"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "32.7767",
+      "longitude": "-96.7970"
+    },
     "contactPoint": [
       {
         "@type": "ContactPoint",
         "telephone": "817-839-3485",
         "contactType": "customer service",
-        "areaServed": "USA"
+        "areaServed": ["TX", "Dallas", "Fort Worth", "Arlington", "Plano", "Irving"],
+        "availableLanguage": ["English", "Spanish"],
+        "hoursAvailable": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "08:00",
+          "closes": "18:00"
+        }
+      },
+      {
+        "@type": "ContactPoint",
+        "contactType": "sales",
+        "telephone": "817-839-3485",
+        "areaServed": "US"
       }
     ],
     "sameAs": [
@@ -23,112 +149,271 @@ export const schemaData = {
       "https://www.youtube.com/channel/UCGMQa-wnfPo-gdQl013ZQrg",
       "https://birdeye.com/american-concrete-coatings-152165460731942",
       "https://www.bbb.org/us/tx/arlington/profile/concrete-contractors/american-concrete-coatings-0825-1000196267"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "284",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "award": [
+      "BBB A+ Rating",
+      "Angie's List Super Service Award",
+      "Best of HomeAdvisor"
     ]
   },
   localBusiness: {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": ["LocalBusiness", "HomeAndConstructionBusiness", "Contractor"],
+    "@id": "https://quote.garagefloorcoatingsdfw.com/#localbusiness",
     "name": "American Concrete Coatings",
-    "image": "https://quote.garagefloorcoatingsdfw.com/og-image.png",
+    "image": [
+      "https://quote.garagefloorcoatingsdfw.com/og-image.png",
+      "https://quote.garagefloorcoatingsdfw.com/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png"
+    ],
     "url": "https://quote.garagefloorcoatingsdfw.com/",
-    "description": "Professional garage floor coating services for residential and commercial properties in the Dallas-Fort Worth metroplex.",
+    "description": "Premier garage floor coating contractor in Dallas-Fort Worth. Professional installation of epoxy, polyurea, and polyaspartic concrete coatings for residential and commercial properties. Free estimates and 20+ year warranties.",
     "address": {
       "@type": "PostalAddress",
       "addressRegion": "TX",
-      "addressCountry": "US"
+      "addressCountry": "US",
+      "addressLocality": "Dallas-Fort Worth Metroplex"
     },
     "geo": {
       "@type": "GeoCoordinates",
       "latitude": "32.7767",
       "longitude": "-96.7970"
     },
-    "priceRange": "$$",
+    "areaServed": [
+      {
+        "@type": "GeoCircle",
+        "geoMidpoint": {
+          "@type": "GeoCoordinates",
+          "latitude": "32.7767",
+          "longitude": "-96.7970"
+        },
+        "geoRadius": "80"
+      }
+    ],
+    "priceRange": "$$-$$$",
     "telephone": "817-839-3485",
+    "currenciesAccepted": "USD",
+    "paymentAccepted": ["Cash", "Credit Card", "Check", "PayPal"],
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday"
-        ],
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
         "opens": "08:00",
         "closes": "18:00"
       },
       {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": [
-          "Saturday"
-        ],
+        "dayOfWeek": ["Saturday"],
         "opens": "09:00",
         "closes": "16:00"
       }
     ],
     "sameAs": [
       "https://www.facebook.com/americanconcretecoatingsdfw",
-      "https://www.instagram.com/americanconcretecoatings"
-    ]
+      "https://www.instagram.com/americanconcretecoatings",
+      "https://www.pinterest.com/americanconcretecoatings/",
+      "https://x.com/dfwACC",
+      "https://www.tiktok.com/@acc_dfw",
+      "https://www.youtube.com/channel/UCGMQa-wnfPo-gdQl013ZQrg"
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "284",
+      "bestRating": "5"
+    },
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Garage Floor Coating Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Epoxy Floor Coating"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Polyaspartic Floor Coating"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Polyurea Floor Coating"
+          }
+        }
+      ]
+    }
   },
   product: {
     "@context": "https://schema.org/",
     "@type": "Product",
-    "name": "Garage Floor Coating",
-    "image": "https://quote.garagefloorcoatingsdfw.com/og-image.png",
-    "description": "Professional garage floor coatings including epoxy, polyurea, and polyaspartic systems for residential and commercial properties.",
+    "name": "Professional Garage Floor Coating Systems",
+    "image": [
+      "https://quote.garagefloorcoatingsdfw.com/og-image.png",
+      "https://quote.garagefloorcoatingsdfw.com/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png"
+    ],
+    "description": "Premium garage floor coating systems including epoxy, polyurea, and polyaspartic coatings. Professional installation with lifetime warranty options for residential and commercial properties in Dallas-Fort Worth.",
     "brand": {
       "@type": "Brand",
+      "name": "American Concrete Coatings",
+      "logo": "https://quote.garagefloorcoatingsdfw.com/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png"
+    },
+    "manufacturer": {
+      "@type": "Organization",
       "name": "American Concrete Coatings"
     },
+    "category": "Home Improvement > Flooring > Concrete Coating",
+    "model": "Professional Grade Coating Systems",
     "offers": {
       "@type": "AggregateOffer",
       "priceCurrency": "USD",
-      "lowPrice": "1000",
-      "highPrice": "5000",
-      "offerCount": "5",
+      "lowPrice": "800",
+      "highPrice": "8000",
+      "offerCount": "12",
+      "availability": "https://schema.org/InStock",
       "offers": [
         {
           "@type": "Offer",
+          "name": "Basic Epoxy Coating",
           "priceCurrency": "USD",
-          "price": "1000",
+          "price": "1200",
           "itemCondition": "https://schema.org/NewCondition",
           "availability": "https://schema.org/InStock",
           "url": "https://quote.garagefloorcoatingsdfw.com/",
-          "priceValidUntil": "2024-12-31"
+          "priceValidUntil": "2025-12-31",
+          "warranty": {
+            "@type": "WarrantyPromise",
+            "durationOfWarranty": "P10Y"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Premium Polyaspartic Coating",
+          "priceCurrency": "USD",
+          "price": "2800",
+          "itemCondition": "https://schema.org/NewCondition",
+          "availability": "https://schema.org/InStock",
+          "url": "https://quote.garagefloorcoatingsdfw.com/",
+          "priceValidUntil": "2025-12-31",
+          "warranty": {
+            "@type": "WarrantyPromise",
+            "durationOfWarranty": "P20Y"
+          }
         }
       ]
     },
     "aggregateRating": {
       "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "150"
-    }
+      "ratingValue": "4.9",
+      "reviewCount": "284",
+      "bestRating": "5"
+    },
+    "additionalProperty": [
+      {
+        "@type": "PropertyValue",
+        "name": "Installation Time",
+        "value": "1-3 days"
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Cure Time",
+        "value": "24-48 hours"
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Warranty",
+        "value": "Up to 20 years"
+      }
+    ]
   },
   service: {
     "@context": "https://schema.org",
     "@type": "Service",
     "serviceType": "Garage Floor Coating Installation",
+    "name": "Professional Garage Floor Coating Services",
+    "description": "Expert installation of premium garage floor coatings including epoxy, polyurea, and polyaspartic systems. Serving Dallas-Fort Worth with industry-leading warranties and same-day estimates.",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "American Concrete Coatings",
-      "telephone": "817-839-3485",
-      "url": "https://quote.garagefloorcoatingsdfw.com/"
+      "@id": "https://quote.garagefloorcoatingsdfw.com/#localbusiness"
     },
-    "areaServed": {
-      "@type": "GeoCircle",
-      "geoMidpoint": {
-        "@type": "GeoCoordinates",
-        "latitude": "32.7767",
-        "longitude": "-96.7970"
+    "areaServed": [
+      {
+        "@type": "State",
+        "name": "Texas"
       },
-      "geoRadius": "50"
+      {
+        "@type": "City",
+        "name": "Dallas"
+      },
+      {
+        "@type": "City",
+        "name": "Fort Worth"
+      },
+      {
+        "@type": "City",
+        "name": "Arlington"
+      },
+      {
+        "@type": "City",
+        "name": "Plano"
+      },
+      {
+        "@type": "City",
+        "name": "Irving"
+      }
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Garage Floor Coating Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Epoxy Floor Coating Installation",
+            "description": "Durable epoxy coating system with decorative flakes"
+          },
+          "price": "1200-3500",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Polyaspartic Floor Coating Installation",
+            "description": "Premium fast-cure polyaspartic coating system"
+          },
+          "price": "2500-6000",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Polyurea Floor Coating Installation",
+            "description": "Industrial-grade polyurea coating system"
+          },
+          "price": "2000-5000",
+          "priceCurrency": "USD"
+        }
+      ]
     },
-    "description": "Professional installation of high-quality garage floor coatings including epoxy, polyurea, and polyaspartic systems with industry-leading warranties.",
-    "offers": {
-      "@type": "Offer",
-      "price": "1000-5000",
-      "priceCurrency": "USD"
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "284"
     }
   },
   faq: {

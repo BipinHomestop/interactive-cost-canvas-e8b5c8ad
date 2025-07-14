@@ -1,7 +1,7 @@
 
 import { useToast } from "@/components/ui/use-toast";
 import { getPreservedCalculationData } from "./utils/submission-db";
-import { updatePaymentInfo } from "./utils/submission-db";
+import { updatePaymentInfo as updatePaymentInfoDb } from "./utils/submission-db";
 
 export const usePaymentSubmission = (submissionId: string | null) => {
   const { toast } = useToast();
@@ -51,7 +51,7 @@ export const usePaymentSubmission = (submissionId: string | null) => {
         console.log('Including preserved price in payment update:', preservedPrice);
       }
       
-      const { error } = await updatePaymentInfo(idToUse, updateData);
+      const { error } = await updatePaymentInfoDb(idToUse, updateData);
 
       if (error) {
         console.error('Payment info update error:', error);
