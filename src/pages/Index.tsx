@@ -16,7 +16,7 @@ const Index = () => {
   const [showFAQs, setShowFAQs] = useState(false);
   const { stepNumber } = useParams<{ stepNumber: string }>();
   
-  const currentStep = stepNumber ? parseInt(stepNumber, 10) : 1;
+  const currentStep = stepNumber ? parseInt(stepNumber, 10) : undefined;
   
   useEffect(() => {
     if (window.gtag) {
