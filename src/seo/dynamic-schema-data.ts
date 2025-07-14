@@ -1,11 +1,12 @@
-import { urlConfig } from './url-utils';
+// Hardcoded base URL
+const BASE_URL = 'https://quote.garagefloorcoatingsdfw.com';
 
 /**
- * Generates dynamic schema data using the current base URL
- * This replaces hardcoded URLs with dynamically detected ones
+ * Generates dynamic schema data using the hardcoded base URL
+ * This provides consistent canonical URLs for SEO
  */
 export function generateSchemaData() {
-  const baseUrl = urlConfig.getBaseUrl();
+  const baseUrl = BASE_URL;
   const websiteUrl = `${baseUrl}/`;
   const organizationId = `${baseUrl}/#organization`;
   const websiteId = `${baseUrl}/#website`;
