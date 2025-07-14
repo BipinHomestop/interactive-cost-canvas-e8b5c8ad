@@ -63,6 +63,7 @@ const Index = () => {
       });
     }
     console.log(`Viewing step ${currentStep}: ${stepTitle}`);
+    console.log(`Canonical URL: ${getCanonicalUrl(currentStep)}`);
   }, [currentStep, stepTitle, stepNumber]);
   
   // Admin password check for analytics access
