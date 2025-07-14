@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { CalculatorInputs } from "@/components/calculator/types";
+import { withRetry, handleDatabaseError } from "./database-retry";
 
 /**
  * Creates a new submission in the database
@@ -11,33 +12,45 @@ export const createSubmission = async (
   discountCode?: string,
   discountPercentage?: number
 ) => {
-  // Ensure we never save a zero or negative price to the database
-  const finalPrice = totalPrice && totalPrice > 0 ? totalPrice : null;
-  
-  const { data, error } = await supabase
-    .from('cost_calculator_submissions')
-    .insert([{
-      location: formValues.location || '',
-      name: formValues.name || '',
-      phone: formValues.phone || '',
-      email: formValues.email || '',
-      garage_capacity: formValues.garageCapacity || null,
-      garage_finish: formValues.garageFinish || 'snowfall', // Default value
-      need_stem_walls: formValues.needStemWalls || 'no',
-      stem_wall_type: formValues.stemWallType,
-      need_steps: formValues.needSteps,
-      need_extra_footage: formValues.needExtraFootage,
-      extra_footage: formValues.extraFootage,
-      current_condition: formValues.currentCondition,
-      total_price: finalPrice,
-      discount_code: discountCode,
-      discount_percentage: discountPercentage,
-      payment_status: 'incomplete' // Mark as incomplete until payment step
-    }])
-    .select();
+  return withRetry(async () => {
+    // Ensure we never save a zero or negative price to the database
+    const finalPrice = totalPrice && totalPrice > 0 ? totalPrice : null;
+    
+    console.log('Creating submission with data:', {
+      location: formValues.location,
+      garage_capacity: formValues.garageCapacity,
+      total_price: finalPrice
+    });
+    
+    const { data, error } = await supabase
+      .from('cost_calculator_submissions')
+      .insert([{
+        location: formValues.location || '',
+        name: formValues.name || '',
+        phone: formValues.phone || '',
+        email: formValues.email || '',
+        garage_capacity: formValues.garageCapacity || null,
+        garage_finish: formValues.garageFinish || 'snowfall', // Default value
+        need_stem_walls: formValues.needStemWalls || 'no',
+        stem_wall_type: formValues.stemWallType,
+        need_steps: formValues.needSteps,
+        need_extra_footage: formValues.needExtraFootage,
+        extra_footage: formValues.extraFootage,
+        current_condition: formValues.currentCondition,
+        total_price: finalPrice,
+        discount_code: discountCode,
+        discount_percentage: discountPercentage,
+        payment_status: 'incomplete' // Mark as incomplete until payment step
+      }])
+      .select();
 
-  console.log('Created submission with price:', finalPrice);
-  return { data, error };
+    if (error) {
+      throw handleDatabaseError(error, 'create submission');
+    }
+
+    console.log('Created submission successfully with price:', finalPrice);
+    return { data, error: null };
+  });
 };
 
 /**
@@ -47,18 +60,27 @@ export const updateSubmission = async (
   submissionId: string,
   updateData: Record<string, any>
 ) => {
-  // Ensure we never save a zero or negative price to the database
-  if (updateData.total_price !== undefined && updateData.total_price <= 0) {
-    console.warn('Prevented saving zero or negative price to database');
-    delete updateData.total_price;
-  }
-  
-  const { error } = await supabase
-    .from('cost_calculator_submissions')
-    .update(updateData)
-    .eq('id', submissionId);
+  return withRetry(async () => {
+    // Ensure we never save a zero or negative price to the database
+    if (updateData.total_price !== undefined && updateData.total_price <= 0) {
+      console.warn('Prevented saving zero or negative price to database');
+      delete updateData.total_price;
+    }
+    
+    console.log('Updating submission:', submissionId, 'with data:', updateData);
+    
+    const { error } = await supabase
+      .from('cost_calculator_submissions')
+      .update(updateData)
+      .eq('id', submissionId);
 
-  return { error };
+    if (error) {
+      throw handleDatabaseError(error, 'update submission');
+    }
+
+    console.log('Updated submission successfully');
+    return { error: null };
+  });
 };
 
 /**
@@ -106,18 +128,27 @@ export const updatePaymentInfo = async (
   submissionId: string,
   updateData: Record<string, any>
 ) => {
-  // Ensure we never save a zero or negative price to the database
-  if (updateData.total_price !== undefined && updateData.total_price <= 0) {
-    console.warn('Prevented saving zero or negative price in payment info');
-    delete updateData.total_price;
-  }
-  
-  const { error } = await supabase
-    .from('cost_calculator_submissions')
-    .update(updateData)
-    .eq('id', submissionId);
+  return withRetry(async () => {
+    // Ensure we never save a zero or negative price to the database
+    if (updateData.total_price !== undefined && updateData.total_price <= 0) {
+      console.warn('Prevented saving zero or negative price in payment info');
+      delete updateData.total_price;
+    }
+    
+    console.log('Updating payment info for submission:', submissionId, 'with data:', updateData);
+    
+    const { error } = await supabase
+      .from('cost_calculator_submissions')
+      .update(updateData)
+      .eq('id', submissionId);
 
-  return { error };
+    if (error) {
+      throw handleDatabaseError(error, 'update payment info');
+    }
+
+    console.log('Updated payment info successfully');
+    return { error: null };
+  });
 };
 
 /**

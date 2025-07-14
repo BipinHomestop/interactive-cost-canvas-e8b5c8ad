@@ -67,7 +67,7 @@ serve(async (req) => {
       .from('cost_calculator_submissions')
       .select('checkout_session_id')
       .eq('id', metadata.submission_id)
-      .single();
+      .maybeSingle();
 
     if (submissionError) {
       console.error("Error checking for existing session:", submissionError);
@@ -142,8 +142,20 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error creating Stripe session:", error);
+    
+    // Enhanced error logging for debugging
+    console.error("Error details:", {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        timestamp: new Date().toISOString()
+      }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,

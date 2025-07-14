@@ -51,7 +51,7 @@ export function useDiscountCode(totalCost: number) {
         .select('*')
         .eq('code', couponCode.trim().toUpperCase())
         .eq('active', true)
-        .single();
+        .maybeSingle();
       
       if (error || !data) {
         console.error('Error fetching coupon:', error);
