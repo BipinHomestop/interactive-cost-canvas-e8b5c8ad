@@ -60,8 +60,6 @@ function App() {
               <Route path="/step/:stepNumber" element={<Index />} />
               <Route path="/success" element={<Success />} />
               <Route path="/analytics" element={<Analytics />} />
-              {/* Only redirect routes that don't match static files */}
-              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             <Toaster />
             <Sonner />
