@@ -2,7 +2,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { baseMetaTags } from './meta-tags';
-import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
+import { getMetaTagsForStep, getCanonicalUrl, type MetaTagsConfig } from './meta-utils';
 
 interface MetaTagsProps {
   step?: number;
@@ -65,6 +65,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:image:alt" content="Free garage floor coating calculator" />
       
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+      <link rel="canonical" href={getCanonicalUrl(step)} />
       
       {/* Favicon Tags */}
       <link rel="apple-touch-icon" sizes="180x180" href="/lovable-uploads/210d3cb0-3572-4b21-8013-1759f55423fa.png" />
