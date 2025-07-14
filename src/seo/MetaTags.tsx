@@ -54,7 +54,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
       <meta property="og:image:alt" content={baseMetaTags.og.imageAlt} />
       <meta property="og:image:width" content={baseMetaTags.og.imageWidth} />
       <meta property="og:image:height" content={baseMetaTags.og.imageHeight} />
-      <meta property="og:url" content={metaTags.og?.url} />
+      <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content={metaTags.og?.type} />
       <meta property="og:site_name" content={metaTags.og?.siteName} />
       <meta property="og:locale" content={metaTags.og?.locale} />
@@ -77,7 +77,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
       <meta name="twitter:image" content={metaTags.twitter?.image} />
       <meta name="twitter:image:alt" content={baseMetaTags.twitter.imageAlt} />
       <meta name="twitter:domain" content="quote.garagefloorcoatingsdfw.com" />
-      <meta name="twitter:url" content={metaTags.og?.url} />
+      <meta name="twitter:url" content={canonicalUrl} />
 
       {/* Technical SEO */}
       <link rel="canonical" href={canonicalUrl} />
@@ -93,7 +93,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
           "@context": "https://schema.org",
           "@type": ["WebSite", "LocalBusiness"],
           "name": "American Concrete Coatings - Garage Floor Coating Calculator",
-          "url": BASE_URL + "/",
+          "url": canonicalUrl,
           "description": metaTags.description,
           "telephone": "817-839-3485",
           "address": {
@@ -134,7 +134,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
           },
           "potentialAction": {
             "@type": "SearchAction",
-            "target": BASE_URL + "/?q={search_term_string}",
+            "target": canonicalUrl + "?q={search_term_string}",
             "query-input": "required name=search_term_string"
           }
         })}

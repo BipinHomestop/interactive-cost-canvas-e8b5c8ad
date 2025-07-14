@@ -72,6 +72,11 @@ const Index = () => {
     };
   }, []);
   
+  useEffect(() => {
+    // Debug logging
+    console.log('Index - location.pathname:', location.pathname);
+  }, [location.pathname]);
+  
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
       <MetaTags step={currentStep} pathname={location.pathname} />
