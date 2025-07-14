@@ -1,5 +1,24 @@
 import { baseMetaTags, stepMetaTags, successMetaTags, analyticsMetaTags } from './meta-tags';
-import { generateDynamicUrl } from './url-utils';
+
+// Hardcoded base URL - replace with your actual domain
+const BASE_URL = 'https://quote.garagefloorcoatingsdfw.com';
+
+// Hardcoded URL generation functions
+function getHomepageUrl(): string {
+  return `${BASE_URL}/`;
+}
+
+function getStepUrl(step: number): string {
+  return `${BASE_URL}/step/${step}`;
+}
+
+function getSuccessUrl(): string {
+  return `${BASE_URL}/success`;
+}
+
+function getAnalyticsUrl(): string {
+  return `${BASE_URL}/analytics`;
+}
 
 export interface MetaTagsConfig {
   title: string;
@@ -36,7 +55,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
         title: baseMetaTags.og.title,
         description: baseMetaTags.og.description,
         image: baseMetaTags.og.image,
-        url: generatePageUrl(),
+        url: getHomepageUrl(),
         type: baseMetaTags.og.type,
         siteName: baseMetaTags.og.siteName,
         locale: baseMetaTags.og.locale
@@ -66,7 +85,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       title: stepData.og.title,
       description: stepData.og.description,
       image: baseMetaTags.og.image,
-      url: generatePageUrl(step),
+      url: getStepUrl(step),
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale
@@ -92,7 +111,7 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
       title: successMetaTags.og.title,
       description: successMetaTags.og.description,
       image: baseMetaTags.og.image,
-      url: generatePageUrl('success'),
+      url: getSuccessUrl(),
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale
@@ -118,7 +137,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
       title: analyticsMetaTags.title,
       description: analyticsMetaTags.description,
       image: baseMetaTags.og.image,
-      url: generatePageUrl('analytics'),
+      url: getAnalyticsUrl(),
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale
@@ -134,16 +153,38 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
   };
 }
 
-// Consolidated URL generation function using dynamic detection
+// URL generation functions using hardcoded URLs
 export function generatePageUrl(path?: string | number): string {
-  return generateDynamicUrl(path);
+  if (!path) {
+    return getHomepageUrl();
+  }
+  
+  if (typeof path === 'number') {
+    return getStepUrl(path);
+  }
+  
+  if (path === 'success') {
+    return getSuccessUrl();
+  }
+  
+  if (path === 'analytics') {
+    return getAnalyticsUrl();
+  }
+  
+  // Default case for other paths
+  return `${BASE_URL}/${path}`;
 }
 
-// Keep existing functions for compatibility, but use dynamic logic
 export function getCanonicalUrl(step?: number): string {
-  return generateDynamicUrl(step);
+  if (!step) {
+    return getHomepageUrl();
+  }
+  return getStepUrl(step);
 }
 
 export function getPageUrl(path: string = ''): string {
-  return generateDynamicUrl(path);
+  if (!path) {
+    return getHomepageUrl();
+  }
+  return `${BASE_URL}/${path}`;
 }
