@@ -14,6 +14,9 @@ interface MetaTagsProps {
 export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
   
+  // Get the current URL for canonical link - this ensures each page has its correct canonical URL
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : BASE_URL;
+  
   return (
     <Helmet>
       {/* Basic Meta Tags - Enhanced for SEO */}
@@ -76,7 +79,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:url" content={metaTags.og?.url} />
 
       {/* Technical SEO */}
-      <link rel="canonical" href={metaTags.og?.url} />
+      <link rel="canonical" href={currentUrl} />
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
