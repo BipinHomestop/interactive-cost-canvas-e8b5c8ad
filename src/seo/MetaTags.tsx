@@ -18,6 +18,12 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
   // Construct canonical URL from base URL and current pathname
   const canonicalUrl = pathname ? `${BASE_URL}${pathname}` : BASE_URL;
   
+  // Debug logging
+  console.log('MetaTags - pathname:', pathname);
+  console.log('MetaTags - canonicalUrl:', canonicalUrl);
+  console.log('MetaTags - window.location.href:', window.location.href);
+  console.log('MetaTags - window.location.pathname:', window.location.pathname);
+  
   return (
     <Helmet>
       {/* Basic Meta Tags - Enhanced for SEO */}
