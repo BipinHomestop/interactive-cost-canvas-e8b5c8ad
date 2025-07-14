@@ -6,8 +6,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
 import { FAQSection } from "@/components/calculator/FAQSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Helmet } from "react-helmet";
 import { useParams, useNavigate } from "react-router-dom";
+import { MetaTags } from "@/seo/MetaTags";
+import { SchemaScript } from "@/seo/SchemaScript";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -16,55 +17,15 @@ const Index = () => {
   const { stepNumber } = useParams<{ stepNumber: string }>();
   
   const currentStep = stepNumber ? parseInt(stepNumber, 10) : 1;
-  const stepTitle = getStepTitle(currentStep);
-  
-  function getStepTitle(step: number): string {
-    const stepTitles = {
-      1: "Garage Floor Concrete Coating Cost Calculator | American Concrete Coatings",
-      2: "Contact Information | American Concrete Coatings",
-      3: "Select Garage Size | American Concrete Coatings",
-      4: "Choose Finish Style | American Concrete Coatings",
-      5: "Stem Wall Options | American Concrete Coatings",
-      6: "House Steps Options | American Concrete Coatings",
-      7: "Additional Square Footage | American Concrete Coatings",
-      8: "Current Floor Condition | American Concrete Coatings",
-      9: "Review & Payment | American Concrete Coatings"
-    };
-    return stepTitles[step as keyof typeof stepTitles] || "Garage Floor Coating Cost Calculator | American Concrete Coatings";
-  }
-  
-  function getStepDescription(step: number): string {
-    const stepDescriptions = {
-      1: "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get an instant quote on durable, long-lasting floor coatings at American Concrete Coatings.",
-      2: "Provide your contact details to receive your customized garage floor coating estimate from American Concrete Coatings.",
-      3: "Select the size of your garage to get an accurate cost calculation for your floor coating project from American Concrete Coatings.",
-      4: "Choose from our premium garage floor coating finishes including Snowfall, Carbon, and Granite at American Concrete Coatings.",
-      5: "Determine if your garage needs stem walls and select the appropriate type for your project with American Concrete Coatings.",
-      6: "Add custom steps between your home and garage if needed for your floor coating project with American Concrete Coatings.",
-      7: "Calculate additional square footage needs for your garage floor coating installation with American Concrete Coatings.",
-      8: "Tell us about your current floor condition to get the most accurate price estimate from American Concrete Coatings.",
-      9: "Review your selections and complete your garage floor coating order with American Concrete Coatings."
-    };
-    return stepDescriptions[step as keyof typeof stepDescriptions] || 
-      "Calculate the cost of garage floor coatings in minutes! Use American Concrete Coatings estimator to get an instant quote on durable, long-lasting floor coatings at American Concrete Coatings.";
-  }
-  
-  const getCanonicalUrl = (step: number): string => {
-    const baseUrl = "https://quote.garagefloorcoatingsdfw.com";
-    return step === 1 ? baseUrl : `${baseUrl}/step/${step}`;
-  };
   
   useEffect(() => {
     if (window.gtag) {
       window.gtag('event', 'page_view', {
-        page_title: stepTitle,
         page_path: stepNumber ? `/step/${stepNumber}` : '/',
         page_location: window.location.href
       });
     }
-    console.log(`Viewing step ${currentStep}: ${stepTitle}`);
-    console.log(`Canonical URL: ${getCanonicalUrl(currentStep)}`);
-  }, [currentStep, stepTitle, stepNumber]);
+  }, [currentStep, stepNumber]);
   
   // Admin password check for analytics access
   const [showAdmin, setShowAdmin] = useState(false);
@@ -112,11 +73,8 @@ const Index = () => {
   
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
-      <Helmet>
-        <title>{stepTitle}</title>
-        <meta name="description" content={getStepDescription(currentStep)} />
-        <link rel="canonical" href={getCanonicalUrl(currentStep)} />
-      </Helmet>
+      <MetaTags step={currentStep} />
+      <SchemaScript />
       <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">
           <img 

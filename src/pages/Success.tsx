@@ -2,8 +2,9 @@
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
 import { Phone } from 'lucide-react';
+import { MetaTags } from '@/seo/MetaTags';
+import { getSuccessPageMetaTags } from '@/seo/meta-utils';
 
 export default function Success() {
   const navigate = useNavigate();
@@ -23,11 +24,7 @@ export default function Success() {
   
   return (
     <>
-      <Helmet>
-        <title>Thank You | Your Quote is Ready | American Concrete Coatings</title>
-        <meta name="description" content="Thank you for submitting your information. An American Concrete Coatings representative will contact you shortly about your garage floor coating project." />
-        <link rel="canonical" href="https://quote.garagefloorcoatingsdfw.com/success" />
-      </Helmet>
+      <MetaTags customMeta={getSuccessPageMetaTags()} />
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50">
         <div className="w-full max-w-md rounded-lg border bg-white p-8 shadow-md">
           <div className="mb-6 flex flex-col items-center">

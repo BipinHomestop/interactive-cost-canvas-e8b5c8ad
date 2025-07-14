@@ -1,19 +1,26 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { metaTags } from './meta-tags';
+import { baseMetaTags } from './meta-tags';
+import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
 
-export const MetaTags: React.FC = () => {
+interface MetaTagsProps {
+  step?: number;
+  customMeta?: Partial<MetaTagsConfig>;
+}
+
+export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
+  const metaTags = customMeta || getMetaTagsForStep(step);
   return (
     <Helmet>
       <title>{metaTags.title}</title>
       <meta name="description" content={metaTags.description} />
-      <meta name="author" content={metaTags.author} />
-      <meta name="google-site-verification" content={metaTags.googleVerification} />
-      <meta name="keywords" content={metaTags.keywords} />
-      <meta name="robots" content={metaTags.robots} />
-      <meta name="revisit-after" content={metaTags.revisitAfter} />
-      <meta name="language" content={metaTags.language} />
+        <meta name="author" content={baseMetaTags.author} />
+        <meta name="google-site-verification" content={baseMetaTags.googleVerification} />
+        <meta name="keywords" content={metaTags.keywords || baseMetaTags.keywords} />
+        <meta name="robots" content={metaTags.robots || baseMetaTags.robots} />
+        <meta name="revisit-after" content={baseMetaTags.revisitAfter} />
+        <meta name="language" content={baseMetaTags.language} />
       
       {/* Enhanced SEO Meta Tags */}
       <meta name="theme-color" content="#1a202c" />
