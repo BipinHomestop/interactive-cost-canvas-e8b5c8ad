@@ -57,7 +57,6 @@ export const MetaTags: React.FC = () => {
       <meta name="twitter:image" content={metaTags.twitter.image} />
       <meta name="twitter:image:alt" content="Free garage floor coating calculator" />
       
-      <link rel="canonical" href="https://quote.garagefloorcoatingsdfw.com/" />
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       
       {/* Favicon Tags */}
