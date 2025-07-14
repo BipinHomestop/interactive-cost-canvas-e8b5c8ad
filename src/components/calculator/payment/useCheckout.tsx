@@ -79,21 +79,8 @@ export function useCheckout(
                               Math.round(finalTotalCost * (1 - discountPercentage / 100)) : 
                               finalTotalCost;
 
-      // Get the breakdown items - first try from function, then from session storage
+      // Get the breakdown items directly from function
       let breakdownItems = getBreakdownItems();
-      
-      // If no items returned from function, try to get from session storage
-      if (!breakdownItems || breakdownItems.length === 0) {
-        try {
-          const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
-          if (cachedItems) {
-            breakdownItems = JSON.parse(cachedItems);
-            console.log('Retrieved breakdown items from session storage', breakdownItems);
-          }
-        } catch (error) {
-          console.error('Error parsing cached breakdown items:', error);
-        }
-      }
       
       // If still no items, create a fallback item
       if (!breakdownItems || breakdownItems.length === 0) {

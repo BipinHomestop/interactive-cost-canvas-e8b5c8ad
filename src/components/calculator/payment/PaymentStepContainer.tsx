@@ -114,27 +114,11 @@ export function PaymentStepContainer({
   const handleBreakdownItemsUpdate = (items: BreakdownItem[]) => {
     console.log('Received breakdown items update:', items);
     setBreakdownItems(items);
-    
-    // Cache the items for checkout
-    sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(items));
   };
 
   // This function is used by the checkout hook to get the current breakdown items
   const getBreakdownItemsForCheckout = () => {
     console.log('Getting breakdown items for checkout:', breakdownItems);
-    
-    // If we don't have items in state, try to get from session storage
-    if (!breakdownItems || breakdownItems.length === 0) {
-      try {
-        const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
-        if (cachedItems) {
-          return JSON.parse(cachedItems);
-        }
-      } catch (error) {
-        console.error('Error getting cached breakdown items:', error);
-      }
-    }
-    
     return breakdownItems;
   };
 

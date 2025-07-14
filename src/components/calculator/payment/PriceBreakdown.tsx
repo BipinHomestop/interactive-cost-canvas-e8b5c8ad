@@ -1,5 +1,5 @@
 
-import { usePriceBreakdown } from "./hooks/usePriceBreakdown";
+import { useConsolidatedPriceBreakdown } from "@/hooks/calculator/use-consolidated-price-breakdown";
 import { PriceBreakdownContainer } from "./components/PriceBreakdownContainer";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../components/LoadingSpinner";
@@ -19,7 +19,7 @@ export function PriceBreakdown({
   discountPercentage, 
   discountedTotal 
 }: PriceBreakdownProps) {
-  const { breakdownItems, isLoading } = usePriceBreakdown({
+  const { breakdownItems, isLoading } = useConsolidatedPriceBreakdown({
     formData,
     totalCost,
     discountPercentage
@@ -57,18 +57,7 @@ export function PriceBreakdown({
       
     setFinalTotal(newFinalTotal);
     
-    // Store the breakdown items in session storage for checkout
-    try {
-      sessionStorage.setItem('cachedBreakdownItems', JSON.stringify(breakdownItems));
-      console.log('Updated cached breakdown items from PriceBreakdown component');
-    } catch (error) {
-      console.error('Error updating cached breakdown items:', error);
-      toast({
-        title: "Warning",
-        description: "There was an issue saving your quote details",
-        variant: "destructive",
-      });
-    }
+    // Removed session storage caching to prevent calculation issues
   }, [breakdownItems, totalCost, discountPercentage, discountedTotal, formData, toast]);
 
   // Show loading state while items are being calculated

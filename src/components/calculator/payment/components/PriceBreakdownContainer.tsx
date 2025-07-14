@@ -17,16 +17,6 @@ export function PriceBreakdownContainer({ items, total }: PriceBreakdownContaine
   useEffect(() => {
     if (!items || items.length === 0) {
       console.warn('PriceBreakdownContainer received empty items array');
-      // Try to recover from session storage
-      try {
-        const cachedItems = sessionStorage.getItem('cachedBreakdownItems');
-        if (cachedItems) {
-          console.log('Attempting to recover from cached breakdown items');
-          // No need to set items here as this should be handled by the parent component
-        }
-      } catch (error) {
-        console.error('Error recovering from cached breakdown items:', error);
-      }
       return;
     }
     
