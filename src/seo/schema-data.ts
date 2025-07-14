@@ -5,8 +5,8 @@ export const schemaData = {
     "@type": "WebPage",
     "@id": "https://quote.garagefloorcoatingsdfw.com/#webpage",
     "url": "https://quote.garagefloorcoatingsdfw.com/",
-    "name": "FREE Garage Floor Coating Calculator | Get Instant Quote & Save up to $500",
-    "description": "Get your FREE garage floor coating estimate in under 60 seconds! Epoxy, Polyurea, Polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
+    "name": "FREE Garage Floor Coating Calculator | Get Instant Quote & Save Up to $500",
+    "description": "Calculate the cost of garage floor coatings and transform your garage in 60 seconds! Get FREE estimate for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
     "inLanguage": "en-US",
     "isPartOf": {
       "@type": "WebSite",
