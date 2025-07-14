@@ -1,10 +1,10 @@
-// Base meta tags for homepage - Optimized for SEO
+// Base meta tags for homepage - Optimized for 2024 SEO best practices
 export const baseMetaTags = {
-  title: "FREE Garage Floor Coating Calculator | Instant Quote & Save $500+ | Dallas-Fort Worth #1 Contractor",
-  description: "Get instant garage floor coating quotes in 60 seconds! FREE estimates for epoxy, polyurea & polyaspartic coatings in Dallas-Fort Worth. 20+ year warranty, same-day quotes, A+ BBB rating. Start your garage transformation today!",
+  title: "Garage Floor Coating Calculator | Free Quote in Dallas-Fort Worth",
+  description: "Get your free garage floor coating quote in 60 seconds. Expert epoxy & polyaspartic installation with 20-year warranty. Serving Dallas-Fort Worth since 2019.",
   author: "American Concrete Coatings",
   googleVerification: "VERIFICATION-CODE",
-  keywords: "garage floor coating calculator Dallas, epoxy floor cost calculator DFW, polyaspartic coating estimate Texas, garage floor coating cost Fort Worth, concrete coating Dallas area, garage floor renovation calculator, epoxy installation cost Texas, garage makeover estimate DFW, floor coating price calculator Dallas Fort Worth, garage transformation cost calculator",
+  keywords: "garage floor coating calculator, epoxy flooring Dallas, polyaspartic coating Fort Worth, garage flooring cost estimate",
   robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
   revisitAfter: "3 days",
   language: "en-US",
@@ -13,10 +13,10 @@ export const baseMetaTags = {
   
   // Open Graph - Enhanced for social sharing
   og: {
-    title: "FREE Garage Floor Coating Calculator | Instant Quote & Save $500+ | Dallas-Fort Worth",
-    description: "Get instant garage floor coating quotes in 60 seconds! FREE estimates for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with A+ BBB rating, 20+ year warranty & same-day quotes.",
+    title: "Free Garage Floor Coating Calculator | Dallas-Fort Worth",
+    description: "Calculate your garage floor coating cost instantly. Professional epoxy & polyaspartic installation with 20-year warranty in DFW.",
     image: "/og-image.png",
-    imageAlt: "Professional garage floor coating calculator showing instant quotes for Dallas-Fort Worth area",
+    imageAlt: "Garage floor coating calculator for Dallas-Fort Worth homeowners",
     imageWidth: "1200",
     imageHeight: "630",
     url: "https://quote.garagefloorcoatingsdfw.com/",
@@ -30,113 +30,113 @@ export const baseMetaTags = {
     card: "summary_large_image",
     site: "@dfwACC",
     creator: "@dfwACC",
-    title: "FREE Garage Floor Coating Calculator | Save $500+ Today | DFW #1 Contractor",
-    description: "Get instant garage coating quotes in 60 seconds! FREE estimates for premium epoxy & polyaspartic coatings. A+ BBB rating, 20+ year warranty, same-day quotes in Dallas-Fort Worth.",
+    title: "Free Garage Floor Coating Calculator | Dallas-Fort Worth",
+    description: "Calculate your garage floor coating cost instantly. Professional installation with 20-year warranty in DFW.",
     image: "/og-image.png",
-    imageAlt: "Professional garage floor coating calculator for Dallas-Fort Worth area"
+    imageAlt: "Garage floor coating calculator for Dallas-Fort Worth"
   }
 };
 
-// Step-specific meta tags optimized for AEO and GEO
+// Step-specific meta tags optimized for 2024 SEO best practices
 export const stepMetaTags = {
   1: {
-    title: "Enter Your Location | Garage Floor Coating Calculator | Dallas-Fort Worth Service Areas",
-    description: "Start your FREE garage floor coating estimate by entering your Dallas-Fort Worth location. Instant pricing for epoxy, polyurea & polyaspartic coatings. Check if we service your area today!",
-    keywords: "garage floor coating Dallas Fort Worth service areas, epoxy coating zip codes, polyaspartic installation locations, concrete coating service areas DFW, garage coating coverage areas Texas",
+    title: "Location Check | Garage Floor Coating | Dallas-Fort Worth",
+    description: "Enter your location to see if we service your area. Professional garage floor coating installation throughout Dallas-Fort Worth.",
+    keywords: "garage floor coating service areas, Dallas Fort Worth installation, epoxy coating locations",
     og: {
-      title: "Check Your Service Area | FREE Garage Floor Coating Calculator | DFW",
-      description: "Enter your Dallas-Fort Worth location to get instant garage floor coating pricing. Professional installation available in your area with 20+ year warranty."
+      title: "Check Service Area | Garage Floor Coating | DFW",
+      description: "Professional garage floor coating installation throughout Dallas-Fort Worth. Enter your location to get started."
     }
   },
   2: {
-    title: "Choose Garage Size | How Much Does Garage Floor Coating Cost? | 1-Car, 2-Car, 3-Car Pricing",
-    description: "Select your garage size to calculate exact coating costs. Get instant pricing for 1-car, 2-car, 3-car, and custom garage floor coatings. Professional epoxy installation in Dallas-Fort Worth with transparent pricing.",
-    keywords: "garage floor coating cost by size, 1 car garage coating price Dallas, 2 car garage coating cost DFW, 3 car garage floor coating Texas, garage size pricing calculator, square footage coating cost",
+    title: "Garage Size Calculator | Floor Coating Cost | Dallas-Fort Worth",
+    description: "Select your garage size for accurate pricing. Transparent costs for 1-car, 2-car, and 3-car garages with professional installation.",
+    keywords: "garage floor coating cost, garage size pricing, 1-car 2-car 3-car garage coating cost Dallas",
     og: {
-      title: "Garage Size & Coating Cost Calculator | Instant Pricing by Square Footage",
-      description: "Calculate exact garage floor coating costs based on your garage size. Professional installation pricing for all garage types in DFW."
+      title: "Garage Size & Coating Cost Calculator | DFW",
+      description: "Calculate exact garage floor coating costs based on your garage size. Professional installation pricing for all garage types."
     }
   },
   3: {
-    title: "Select Garage Floor Finish | Epoxy vs Polyaspartic vs Polyurea Coating Comparison | Best Options 2024",
-    description: "Compare garage floor coating options: Epoxy, Polyaspartic, and Polyurea finishes. Learn which coating lasts longest, costs less, and looks best for your Dallas-Fort Worth garage. Expert recommendations included.",
-    keywords: "epoxy vs polyaspartic coating comparison, polyurea garage floor benefits, best garage floor coating 2024, coating durability comparison Texas, garage floor finish options DFW, long lasting garage coatings",
+    title: "Coating Options | Epoxy vs Polyaspartic | Dallas-Fort Worth",
+    description: "Choose between epoxy, polyaspartic, and polyurea coatings. Compare durability, cost, and appearance for your garage floor.",
+    keywords: "epoxy vs polyaspartic coating, garage floor coating types, best garage flooring options",
     og: {
-      title: "Best Garage Floor Coating Types | Epoxy vs Polyaspartic vs Polyurea Comparison",
-      description: "Expert comparison of garage floor coatings. Choose the best finish for durability, cost, and appearance. Professional installation in DFW."
+      title: "Garage Floor Coating Types | Epoxy vs Polyaspartic",
+      description: "Compare garage floor coating options. Choose the best finish for durability, cost, and appearance."
     }
   },
   4: {
-    title: "Stem Wall Options | What Are Stem Walls in Garage Floor Coating? | Cove Base Installation",
-    description: "Learn about stem wall coating options for your garage. Understand cove base installation, pricing, and benefits. Essential for complete garage floor transformation in Dallas-Fort Worth with professional installation.",
-    keywords: "garage stem walls explained, cove base coating installation, stem wall coating benefits, garage floor cove base Texas, wall base coating options DFW, complete garage protection system",
+    title: "Stem Wall Coating | Cove Base Installation | Dallas-Fort Worth",
+    description: "Add stem wall coating for complete garage protection. Professional cove base installation with your floor coating project.",
+    keywords: "garage stem walls, cove base coating, wall base installation Dallas",
     og: {
-      title: "Garage Stem Wall Coating Options | Complete Floor Protection System",
-      description: "Add stem wall coating for complete garage protection. Professional cove base installation with your floor coating project."
+      title: "Garage Stem Wall Coating | Complete Protection System",
+      description: "Add stem wall coating for complete garage protection. Professional cove base installation available."
     }
   },
   5: {
-    title: "House Steps Coating | Garage Entry Steps Floor Coating | Non-Slip Step Installation",
-    description: "Add professional coating to your garage entry steps. Non-slip, durable step coating that matches your garage floor. Safe, beautiful steps for your Dallas-Fort Worth home with anti-slip protection.",
-    keywords: "garage steps coating installation, house entry steps coating Texas, non-slip step installation DFW, garage step refinishing, step coating options Dallas, anti-slip garage steps",
+    title: "Step Coating | Garage Entry Steps | Dallas-Fort Worth",
+    description: "Add non-slip coating to your garage entry steps. Safe, durable step coating that matches your garage floor.",
+    keywords: "garage steps coating, non-slip step installation, entry steps coating Dallas",
     og: {
-      title: "Professional Garage Entry Steps Coating | Non-Slip Step Installation",
+      title: "Garage Entry Steps Coating | Non-Slip Installation",
       description: "Complete your garage transformation with matching step coating. Safe, durable, and beautiful entry steps."
     }
   },
   6: {
-    title: "Current Floor Condition Assessment | Garage Floor Repair Before Coating | Preparation Requirements",
-    description: "Assess your current garage floor condition for optimal coating results. Learn about floor preparation, repair requirements, and how condition affects your final price. Professional evaluation included.",
-    keywords: "garage floor condition assessment, floor preparation for coating Texas, garage floor repair DFW, coating preparation requirements, floor condition evaluation Dallas, concrete floor assessment",
+    title: "Floor Condition Assessment | Garage Coating | Dallas-Fort Worth",
+    description: "Assess your current garage floor condition. Learn how floor preparation affects your coating quality and final price.",
+    keywords: "garage floor condition, floor preparation coating, concrete floor assessment Dallas",
     og: {
-      title: "Garage Floor Condition Assessment | Preparation for Professional Coating",
-      description: "Proper floor assessment ensures the best coating results. Professional evaluation and preparation for long-lasting floors."
+      title: "Garage Floor Assessment | Professional Evaluation",
+      description: "Proper floor assessment ensures the best coating results. Professional evaluation and preparation included."
     }
   },
   7: {
-    title: "Additional Square Footage | Extra Areas for Garage Floor Coating | Workshop & Storage Areas",
-    description: "Add extra areas to your garage floor coating project. Include workshops, storage areas, and additional square footage. Complete pricing for your entire space with professional installation throughout.",
-    keywords: "additional garage floor coating areas, workshop floor coating Texas, storage area coating DFW, extra square footage pricing Dallas, garage addition coating, complete space transformation",
+    title: "Additional Areas | Workshop Coating | Dallas-Fort Worth",
+    description: "Extend coating to workshops and storage areas. Complete pricing for your entire space with professional installation.",
+    keywords: "workshop floor coating, additional garage areas, storage area coating Dallas",
     og: {
-      title: "Additional Areas for Garage Floor Coating | Workshop & Storage Space Pricing",
-      description: "Extend your garage floor coating to workshops and storage areas. Complete space transformation with professional installation."
+      title: "Additional Areas Coating | Workshop & Storage Space",
+      description: "Extend your garage floor coating to workshops and storage areas. Complete space transformation available."
     }
   },
   8: {
-    title: "Contact Information | Schedule Your FREE Garage Floor Coating Estimate | Dallas-Fort Worth Installation",
-    description: "Schedule your FREE garage floor coating estimate! Get your contact information ready for professional installation scheduling in Dallas-Fort Worth. Same-day quotes available with A+ BBB rating.",
-    keywords: "garage floor coating estimate Dallas, free coating quote DFW, schedule installation Texas, garage coating consultation, professional estimate same day, BBB rated contractor",
+    title: "Contact Info | Free Estimate | Garage Coating Dallas-Fort Worth",
+    description: "Schedule your free garage floor coating estimate. Same-day quotes available with professional installation scheduling.",
+    keywords: "garage floor coating estimate, free quote Dallas, installation scheduling DFW",
     og: {
-      title: "Schedule FREE Garage Floor Coating Estimate | Professional Installation DFW",
-      description: "Get your FREE estimate and schedule professional garage floor coating installation. Same-day quotes available in Dallas-Fort Worth."
+      title: "Schedule Free Estimate | Garage Floor Coating DFW",
+      description: "Get your free estimate and schedule professional garage floor coating installation. Same-day quotes available."
     }
   },
   9: {
-    title: "Secure Payment | Garage Floor Coating Installation Booking | Professional Installation Guarantee",
-    description: "Complete your garage floor coating booking with secure payment. Professional installation guaranteed with 20+ year warranty. Transform your Dallas-Fort Worth garage today with confidence!",
-    keywords: "garage floor coating secure payment, installation booking guarantee, garage coating warranty 20 years, professional installation booking DFW, secure coating purchase",
+    title: "Secure Payment | Book Installation | Dallas-Fort Worth",
+    description: "Complete your garage floor coating booking with secure payment. Professional installation with 20-year warranty included.",
+    keywords: "garage floor coating payment, installation booking, secure coating purchase Dallas",
     og: {
-      title: "Secure Garage Floor Coating Booking | Professional Installation Guarantee",
-      description: "Book your garage floor coating with confidence. Secure payment, professional installation, and 20+ year warranty included."
+      title: "Book Garage Floor Coating | Secure Payment & Warranty",
+      description: "Book your garage floor coating with confidence. Secure payment and 20-year warranty included."
     }
   }
 };
 
-// Success page meta tags
+// Success page meta tags - 2024 SEO optimized
 export const successMetaTags = {
-  title: "Thank You! | Garage Floor Coating Booked Successfully | Installation Scheduled | Dallas-Fort Worth",
-  description: "Your garage floor coating installation has been successfully booked! We'll contact you within 24 hours to confirm your installation date. Thank you for choosing Dallas-Fort Worth's #1 rated garage coating contractor with A+ BBB rating.",
-  keywords: "garage floor coating booked successfully, installation scheduled DFW, garage coating confirmation Texas, professional installation booked, coating project confirmed",
+  title: "Thank You | Installation Scheduled | Dallas-Fort Worth",
+  description: "Your garage floor coating installation is booked! We'll contact you within 24 hours to confirm your installation date in Dallas-Fort Worth.",
+  keywords: "garage floor coating booked, installation scheduled DFW, coating project confirmed",
   og: {
-    title: "Garage Floor Coating Successfully Booked | Installation Scheduled | DFW",
-    description: "Your garage transformation is booked! Professional installation team will contact you within 24 hours to confirm your garage floor coating project."
+    title: "Garage Floor Coating Booked | Installation Scheduled",
+    description: "Your garage transformation is booked! Professional installation team will contact you within 24 hours to confirm your project."
   }
 };
 
-// Analytics page meta tags (for admin)
+// Analytics page meta tags (for admin) - 2024 SEO optimized
 export const analyticsMetaTags = {
-  title: "Analytics Dashboard | Garage Floor Coating Business Insights | Performance Metrics",
-  description: "Comprehensive analytics dashboard for garage floor coating business performance. Track conversions, user locations, and calculator completion rates.",
-  keywords: "garage coating analytics, business performance metrics, conversion tracking, user analytics dashboard",
+  title: "Analytics Dashboard | Business Performance Metrics",
+  description: "Comprehensive analytics dashboard for tracking business performance, conversions, user locations, and calculator completion rates.",
+  keywords: "analytics dashboard, business metrics, conversion tracking",
   robots: "noindex, nofollow"
 };
