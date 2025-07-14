@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { baseMetaTags } from './meta-tags';
-import { getMetaTagsForStep, getCanonicalUrl, type MetaTagsConfig } from './meta-utils';
+import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
 
 interface MetaTagsProps {
   step?: number;
@@ -70,10 +70,10 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:image" content={metaTags.twitter?.image} />
       <meta name="twitter:image:alt" content={baseMetaTags.twitter.imageAlt} />
       <meta name="twitter:domain" content="quote.garagefloorcoatingsdfw.com" />
-      <meta name="twitter:url" content={getCanonicalUrl(step)} />
+      <meta name="twitter:url" content={metaTags.og?.url} />
 
       {/* Technical SEO */}
-      <link rel="canonical" href={getCanonicalUrl(step)} />
+      <link rel="canonical" href={metaTags.og?.url} />
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />

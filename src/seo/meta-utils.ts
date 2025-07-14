@@ -35,7 +35,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
         title: baseMetaTags.og.title,
         description: baseMetaTags.og.description,
         image: baseMetaTags.og.image,
-        url: baseMetaTags.og.url,
+        url: generatePageUrl(),
         type: baseMetaTags.og.type,
         siteName: baseMetaTags.og.siteName,
         locale: baseMetaTags.og.locale
@@ -65,7 +65,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       title: stepData.og.title,
       description: stepData.og.description,
       image: baseMetaTags.og.image,
-      url: `${baseMetaTags.og.url}step/${step}`,
+      url: generatePageUrl(step),
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale
@@ -91,7 +91,7 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
       title: successMetaTags.og.title,
       description: successMetaTags.og.description,
       image: baseMetaTags.og.image,
-      url: `${baseMetaTags.og.url}success`,
+      url: generatePageUrl('success'),
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale
@@ -117,7 +117,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
       title: analyticsMetaTags.title,
       description: analyticsMetaTags.description,
       image: baseMetaTags.og.image,
-      url: `${baseMetaTags.og.url}analytics`,
+      url: generatePageUrl('analytics'),
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale
@@ -133,21 +133,28 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
   };
 }
 
-export function getCanonicalUrl(step?: number): string {
+// Consolidated URL generation function
+export function generatePageUrl(path?: string | number): string {
   const baseUrl = baseMetaTags.og.url;
+  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
   
-  if (!step) {
-    return baseUrl;
+  if (!path) {
+    return baseUrl; // Homepage with trailing slash
   }
   
-  // Ensure proper URL formatting
-  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-  return `${cleanBaseUrl}/step/${step}`;
+  if (typeof path === 'number') {
+    return `${cleanBaseUrl}/step/${path}`;
+  }
+  
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${cleanBaseUrl}${cleanPath}`;
+}
+
+// Keep existing functions for compatibility, but use consolidated logic
+export function getCanonicalUrl(step?: number): string {
+  return generatePageUrl(step);
 }
 
 export function getPageUrl(path: string = ''): string {
-  const baseUrl = baseMetaTags.og.url;
-  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `${cleanBaseUrl}${cleanPath}`;
+  return generatePageUrl(path);
 }
