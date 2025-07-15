@@ -136,7 +136,7 @@ export function getCanonicalUrl(step?: number): string {
     return baseUrl;
   }
   
-  return `${baseUrl}/${step}`;
+  return `${baseUrl}/step/${step}`;
 }
 
 export function getSuccessPageCanonicalUrl(): string {
