@@ -37,7 +37,8 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
         image: baseMetaTags.og.image,
         type: baseMetaTags.og.type,
         siteName: baseMetaTags.og.siteName,
-        locale: baseMetaTags.og.locale
+        locale: baseMetaTags.og.locale,
+        url: baseMetaTags.og.url
       },
       twitter: {
         card: baseMetaTags.twitter.card,
@@ -52,8 +53,16 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
 
   const stepData = stepMetaTags[step as keyof typeof stepMetaTags];
   if (!stepData) {
+    console.warn(`No meta tags found for step ${step}, falling back to base tags`);
     return getMetaTagsForStep(); // Fallback to base tags
   }
+
+  // Debug logging for URL generation
+  console.log(`Generating meta tags for step ${step}:`, {
+    title: stepData.title,
+    ogUrl: stepData.og.url,
+    canonicalUrl: getCanonicalUrl(step)
+  });
 
   return {
     title: stepData.title,
@@ -66,7 +75,8 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       image: baseMetaTags.og.image,
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
-      locale: baseMetaTags.og.locale
+      locale: baseMetaTags.og.locale,
+      url: stepData.og.url
     },
     twitter: {
       card: baseMetaTags.twitter.card,
@@ -80,6 +90,12 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
 }
 
 export function getSuccessPageMetaTags(): MetaTagsConfig {
+  console.log('Generating success page meta tags:', {
+    title: successMetaTags.title,
+    ogUrl: successMetaTags.og.url,
+    canonicalUrl: getSuccessPageCanonicalUrl()
+  });
+
   return {
     title: successMetaTags.title,
     description: successMetaTags.description,
@@ -91,7 +107,8 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
       image: baseMetaTags.og.image,
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
-      locale: baseMetaTags.og.locale
+      locale: baseMetaTags.og.locale,
+      url: successMetaTags.og.url
     },
     twitter: {
       card: baseMetaTags.twitter.card,
@@ -105,6 +122,11 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
 }
 
 export function getAnalyticsPageMetaTags(): MetaTagsConfig {
+  console.log('Generating analytics page meta tags:', {
+    title: analyticsMetaTags.title,
+    canonicalUrl: getAnalyticsPageCanonicalUrl()
+  });
+
   return {
     title: analyticsMetaTags.title,
     description: analyticsMetaTags.description,
@@ -116,7 +138,8 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
       image: baseMetaTags.og.image,
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
-      locale: baseMetaTags.og.locale
+      locale: baseMetaTags.og.locale,
+      url: getAnalyticsPageCanonicalUrl()
     },
     twitter: {
       card: baseMetaTags.twitter.card,
