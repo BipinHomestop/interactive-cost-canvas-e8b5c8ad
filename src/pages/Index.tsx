@@ -9,6 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { MetaTags } from "@/seo/MetaTags";
 import { SchemaScript } from "@/seo/SchemaScript";
+import { getCanonicalUrl } from "@/seo/meta-utils";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -79,7 +80,7 @@ const Index = () => {
   
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
-      <MetaTags step={currentStep} />
+      <MetaTags step={currentStep} canonical={getCanonicalUrl(currentStep)} />
       <SchemaScript />
       <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">

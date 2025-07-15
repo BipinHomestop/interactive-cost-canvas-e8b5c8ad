@@ -6,9 +6,10 @@ import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
 interface MetaTagsProps {
   step?: number;
   customMeta?: Partial<MetaTagsConfig>;
+  canonical?: string;
 }
 
-export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
+export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, canonical }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
   
   return (
@@ -72,7 +73,8 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:domain" content="quote.garagefloorcoatingsdfw.com" />
       <meta name="twitter:url" content={metaTags.og?.url} />
 
-      {/* Technical SEO - NO CANONICAL URL */}
+      {/* Technical SEO */}
+      {canonical && <link rel="canonical" href={canonical} />}
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />

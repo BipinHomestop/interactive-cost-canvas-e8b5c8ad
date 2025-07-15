@@ -128,3 +128,21 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
     }
   };
 }
+
+export function getCanonicalUrl(step?: number): string {
+  const baseUrl = 'https://quote.garagefloorcoatingsdfw.com';
+  
+  if (!step) {
+    return baseUrl;
+  }
+  
+  return `${baseUrl}/${step}`;
+}
+
+export function getSuccessPageCanonicalUrl(): string {
+  return 'https://quote.garagefloorcoatingsdfw.com/success';
+}
+
+export function getAnalyticsPageCanonicalUrl(): string {
+  return 'https://quote.garagefloorcoatingsdfw.com/analytics';
+}
