@@ -11,6 +11,8 @@ interface MetaTagsProps {
 
 export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, canonical }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
+  // Use canonical from meta configuration, fallback to prop if provided
+  const canonicalUrl = metaTags.canonical || canonical;
   
   return (
     <Helmet>
@@ -74,7 +76,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, canonical 
       <meta name="twitter:url" content={metaTags.og?.url} />
 
       {/* Technical SEO */}
-      {canonical && <link rel="canonical" href={canonical} />}
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />

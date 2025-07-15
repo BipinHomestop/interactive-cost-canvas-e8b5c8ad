@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { AnalyticsContainer } from '@/components/analytics/AnalyticsContainer';
 import { MetaTags } from '@/seo/MetaTags';
-import { getAnalyticsPageMetaTags, getAnalyticsPageCanonicalUrl } from '@/seo/meta-utils';
+import { getAnalyticsPageMetaTags } from '@/seo/meta-utils';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -85,7 +85,7 @@ export default function Analytics() {
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <MetaTags customMeta={getAnalyticsPageMetaTags()} canonical={getAnalyticsPageCanonicalUrl()} />
+      <MetaTags customMeta={getAnalyticsPageMetaTags()} />
       
       {/* Admin Header */}
       <div className="bg-white shadow-sm border-b">

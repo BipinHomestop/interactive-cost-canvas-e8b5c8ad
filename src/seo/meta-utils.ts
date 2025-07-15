@@ -5,6 +5,7 @@ export interface MetaTagsConfig {
   description: string;
   keywords?: string;
   robots?: string;
+  canonical?: string;
   og?: {
     title: string;
     description: string;
@@ -31,6 +32,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       description: baseMetaTags.description,
       keywords: baseMetaTags.keywords,
       robots: baseMetaTags.robots,
+      canonical: baseMetaTags.canonical,
       og: {
         title: baseMetaTags.og.title,
         description: baseMetaTags.og.description,
@@ -57,18 +59,12 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
     return getMetaTagsForStep(); // Fallback to base tags
   }
 
-  // Debug logging for URL generation
-  console.log(`Generating meta tags for step ${step}:`, {
-    title: stepData.title,
-    ogUrl: stepData.og.url,
-    canonicalUrl: getCanonicalUrl(step)
-  });
-
   return {
     title: stepData.title,
     description: stepData.description,
     keywords: stepData.keywords,
     robots: baseMetaTags.robots,
+    canonical: stepData.canonical,
     og: {
       title: stepData.og.title,
       description: stepData.og.description,
@@ -90,17 +86,12 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
 }
 
 export function getSuccessPageMetaTags(): MetaTagsConfig {
-  console.log('Generating success page meta tags:', {
-    title: successMetaTags.title,
-    ogUrl: successMetaTags.og.url,
-    canonicalUrl: getSuccessPageCanonicalUrl()
-  });
-
   return {
     title: successMetaTags.title,
     description: successMetaTags.description,
     keywords: successMetaTags.keywords,
     robots: baseMetaTags.robots,
+    canonical: successMetaTags.canonical,
     og: {
       title: successMetaTags.og.title,
       description: successMetaTags.og.description,
@@ -122,16 +113,12 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
 }
 
 export function getAnalyticsPageMetaTags(): MetaTagsConfig {
-  console.log('Generating analytics page meta tags:', {
-    title: analyticsMetaTags.title,
-    canonicalUrl: getAnalyticsPageCanonicalUrl()
-  });
-
   return {
     title: analyticsMetaTags.title,
     description: analyticsMetaTags.description,
     keywords: analyticsMetaTags.keywords,
     robots: analyticsMetaTags.robots,
+    canonical: analyticsMetaTags.canonical,
     og: {
       title: analyticsMetaTags.title,
       description: analyticsMetaTags.description,
@@ -139,7 +126,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale,
-      url: getAnalyticsPageCanonicalUrl()
+      url: analyticsMetaTags.canonical
     },
     twitter: {
       card: baseMetaTags.twitter.card,
@@ -153,19 +140,18 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
 }
 
 export function getCanonicalUrl(step?: number): string {
-  const baseUrl = 'https://quote.garagefloorcoatingsdfw.com';
-  
   if (!step) {
-    return baseUrl;
+    return baseMetaTags.canonical;
   }
   
-  return `${baseUrl}/step/${step}`;
+  const stepData = stepMetaTags[step as keyof typeof stepMetaTags];
+  return stepData?.canonical || baseMetaTags.canonical;
 }
 
 export function getSuccessPageCanonicalUrl(): string {
-  return 'https://quote.garagefloorcoatingsdfw.com/success';
+  return successMetaTags.canonical;
 }
 
 export function getAnalyticsPageCanonicalUrl(): string {
-  return 'https://quote.garagefloorcoatingsdfw.com/analytics';
+  return analyticsMetaTags.canonical;
 }
