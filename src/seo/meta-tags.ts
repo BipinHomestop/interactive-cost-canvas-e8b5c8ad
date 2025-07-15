@@ -1,7 +1,7 @@
 // Base meta tags for homepage - Optimized for 2024 SEO best practices
 export const baseMetaTags = {
-  title: "Garage Floor Coating Calculator | Free Quote in Dallas-Fort Worth",
-  description: "Get your free garage floor coating quote in 60 seconds. Expert epoxy & polyaspartic installation with 20-year warranty. Serving Dallas-Fort Worth since 2019.",
+  title: "FREE Garage Floor Coating Calculator | Get Instant Quote & Save Upto $500",
+  description: "Calculate the cost of garage floor coatings and transform your garage in 60 seconds! Get FREE estimate for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
   author: "American Concrete Coatings",
   googleVerification: "VERIFICATION-CODE",
   keywords: "garage floor coating calculator, epoxy flooring Dallas, polyaspartic coating Fort Worth, garage flooring cost estimate",
@@ -13,8 +13,8 @@ export const baseMetaTags = {
   
   // Open Graph - Enhanced for social sharing
   og: {
-    title: "Free Garage Floor Coating Calculator | Dallas-Fort Worth",
-    description: "Calculate your garage floor coating cost instantly. Professional epoxy & polyaspartic installation with 20-year warranty in DFW.",
+    title: "FREE Garage Floor Coating Calculator | Get Instant Quote & Save Upto $500",
+    description: "Calculate the cost of garage floor coatings and transform your garage in 60 seconds! Get FREE estimate for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
     image: "/og-image.png",
     imageAlt: "Garage floor coating calculator for Dallas-Fort Worth homeowners",
     imageWidth: "1200",
@@ -30,8 +30,8 @@ export const baseMetaTags = {
     card: "summary_large_image",
     site: "@dfwACC",
     creator: "@dfwACC",
-    title: "Free Garage Floor Coating Calculator | Dallas-Fort Worth",
-    description: "Calculate your garage floor coating cost instantly. Professional installation with 20-year warranty in DFW.",
+    title: "FREE Garage Floor Coating Calculator | Get Instant Quote & Save Upto $500",
+    description: "Calculate the cost of garage floor coatings and transform your garage in 60 seconds! Get FREE estimate for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
     image: "/og-image.png",
     imageAlt: "Garage floor coating calculator for Dallas-Fort Worth"
   }
