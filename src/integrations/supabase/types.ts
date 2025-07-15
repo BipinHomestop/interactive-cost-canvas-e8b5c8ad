@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_login: string | null
+          password_hash: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          password_hash: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          password_hash?: string
+        }
+        Relationships: []
+      }
       analytics_location_visits: {
         Row: {
           city: string | null
@@ -260,6 +287,36 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_log: {
+        Row: {
+          created_at: string
+          details: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       service_area_zipcodes: {
         Row: {
           city: string | null
@@ -295,6 +352,16 @@ export type Database = {
       is_valid_us_zipcode: {
         Args: { zipcode: string }
         Returns: boolean
+      }
+      log_security_event: {
+        Args: {
+          event_type: string
+          user_id?: string
+          ip_address?: string
+          user_agent?: string
+          details?: Json
+        }
+        Returns: undefined
       }
     }
     Enums: {

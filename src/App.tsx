@@ -8,9 +8,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
 import Index from "./pages/Index";
 import Success from "./pages/Success";
 import Analytics from "./pages/Analytics";
+import AdminAuth from "./pages/AdminAuth";
 import { useUserLocation } from "./hooks/analytics/use-user-location";
 
 // Create a client
@@ -48,6 +50,8 @@ const AnalyticsTracker = () => {
 };
 
 function App() {
+  useSecurityHeaders();
+  
   return (
     <>
       <SchemaScript />
@@ -59,6 +63,7 @@ function App() {
               <Route path="/" element={<Index />} />
               <Route path="/step/:stepNumber" element={<Index />} />
               <Route path="/success" element={<Success />} />
+              <Route path="/admin" element={<AdminAuth />} />
               <Route path="/analytics" element={<Analytics />} />
             </Routes>
             <Toaster />

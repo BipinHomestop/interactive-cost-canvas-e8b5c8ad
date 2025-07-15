@@ -3,11 +3,11 @@ import { UserLocationData } from '../../types/location-types';
 
 export const fetchUserLocation = async (): Promise<UserLocationData> => {
   try {
-    // Try multiple location APIs for redundancy
+    // Try multiple location APIs for redundancy (using free APIs without tokens)
     const apis = [
       'https://ipapi.co/json/',
-      'https://ipinfo.io/json?token=ce8a5473d4c202', // Demo token, for production use a proper token
-      'https://geolocation-db.com/json/'
+      'https://geolocation-db.com/json/',
+      'https://api.ipgeolocation.io/ipgeo?apiKey=free' // Free tier API
     ];
     
     // Try each API until one works

@@ -10,6 +10,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { MetaTags } from "@/seo/MetaTags";
 import { SchemaScript } from "@/seo/SchemaScript";
 import { getCanonicalUrl } from "@/seo/meta-utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -29,48 +30,45 @@ const Index = () => {
     }
   }, [currentStep, stepNumber]);
   
-  // Admin password check for analytics access
+  // Admin authentication check
   const [showAdmin, setShowAdmin] = useState(false);
   
   useEffect(() => {
-    // Check if user has admin access in session storage
-    const hasAdminAccess = sessionStorage.getItem('adminAccess') === 'true';
-    setShowAdmin(hasAdminAccess);
-    
-    // Double-click event listener for admin access
-    let clickCount = 0;
-    let clickTimer: ReturnType<typeof setTimeout>;
-    
-    const handleLogoClick = () => {
-      clickCount++;
-      
-      if (clickCount === 5) {
-        const password = prompt("Enter admin password:");
-        if (password === "ACC2024admin") { // Simple password for demo
-          sessionStorage.setItem('adminAccess', 'true');
-          setShowAdmin(true);
-          alert("Admin access granted");
+    // Check if user is authenticated as admin
+    const checkAdminAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          // Check if user is an admin
+          const { data: adminData } = await supabase
+            .from('admin_users')
+            .select('id')
+            .eq('email', session.user.email)
+            .eq('is_active', true)
+            .single();
+          
+          setShowAdmin(!!adminData);
         }
-        clickCount = 0;
+      } catch (error) {
+        console.error('Error checking admin auth:', error);
+        setShowAdmin(false);
       }
-      
-      clearTimeout(clickTimer);
-      clickTimer = setTimeout(() => {
-        clickCount = 0;
-      }, 2000);
     };
-    
-    const logoElement = document.querySelector('nav img');
-    if (logoElement) {
-      logoElement.addEventListener('click', handleLogoClick);
-    }
-    
-    return () => {
-      if (logoElement) {
-        logoElement.removeEventListener('click', handleLogoClick);
+
+    checkAdminAuth();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === 'SIGNED_OUT') {
+          setShowAdmin(false);
+        } else if (event === 'SIGNED_IN' && session) {
+          checkAdminAuth();
+        }
       }
-      clearTimeout(clickTimer);
-    };
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
   
   useEffect(() => {
@@ -95,9 +93,9 @@ const Index = () => {
                 variant="outline" 
                 size="sm"
                 className="h-9 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5"
-                onClick={() => navigate('/analytics')}
+                onClick={() => navigate('/admin')}
               >
-                <span className="text-xs">Analytics</span>
+                <span className="text-xs">Admin</span>
               </Button>
             )}
             {isMobile && (
