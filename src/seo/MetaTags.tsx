@@ -18,11 +18,16 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
   // Construct canonical URL from base URL and current pathname
   const canonicalUrl = pathname ? `${BASE_URL}${pathname}` : BASE_URL;
   
-  // Debug logging
-  console.log('MetaTags - pathname:', pathname);
-  console.log('MetaTags - canonicalUrl:', canonicalUrl);
-  console.log('MetaTags - window.location.href:', window.location.href);
-  console.log('MetaTags - window.location.pathname:', window.location.pathname);
+  // Debug logging - more prominent
+  console.log('🔍 MetaTags DEBUG - pathname:', pathname);
+  console.log('🔍 MetaTags DEBUG - canonicalUrl:', canonicalUrl);
+  console.log('🔍 MetaTags DEBUG - window.location.href:', window.location.href);
+  console.log('🔍 MetaTags DEBUG - window.location.pathname:', window.location.pathname);
+  
+  // Force alert to see what's happening
+  if (typeof window !== 'undefined') {
+    console.log('🚨 ALERT: pathname=' + pathname + ', canonicalUrl=' + canonicalUrl);
+  }
   
   return (
     <Helmet>
