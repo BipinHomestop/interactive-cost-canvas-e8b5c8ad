@@ -53,6 +53,14 @@ const AnalyticsTracker = () => {
 function App() {
   useSecurityHeaders();
   
+  // Check if request is for static files that should be served directly
+  const currentPath = window.location.pathname;
+  if (currentPath === '/sitemap.xml' || currentPath === '/robots.txt') {
+    // Let the server handle these static files
+    window.location.href = currentPath;
+    return null;
+  }
+  
   return (
     <>
       <SchemaScript />
