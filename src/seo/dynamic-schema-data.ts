@@ -1,528 +1,367 @@
 /**
- * Static schema data with hardcoded URLs for consistency
+ * Schema data generation disabled to prevent URL references
  */
 export function generateSchemaData() {
-  const baseUrl = 'https://quote.garagefloorcoatingsdfw.com';
-  const websiteUrl = baseUrl;
-  const organizationId = `${baseUrl}/#organization`;
-  const websiteId = `${baseUrl}/#website`;
-  const localBusinessId = `${baseUrl}/#localbusiness`;
-  const searchUrl = `${baseUrl}/?q={search_term_string}`;
-  
   return {
-    // Enhanced WebPage Schema for better indexing
-    webpage: {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "@id": `${baseUrl}/#webpage`,
-      "url": websiteUrl,
-      "name": "FREE Garage Floor Coating Calculator | Get Instant Quote & Save Up to $500",
-      "description": "Calculate the cost of garage floor coatings and transform your garage in 60 seconds! Get FREE estimate for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
-      "inLanguage": "en-US",
-      "isPartOf": {
-        "@type": "WebSite",
-        "@id": websiteId
-      },
-      "about": {
-        "@type": "Thing",
-        "name": "Garage Floor Coating Calculator"
-      },
-      "breadcrumb": {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": websiteUrl
-          }
-        ]
-      },
-      "mainEntity": {
-        "@type": "SoftwareApplication",
-        "name": "Garage Floor Coating Cost Calculator",
-        "applicationCategory": "UtilitiesApplication",
-        "operatingSystem": "Web Browser",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        }
-      }
-    },
-
-    // Enhanced Website Schema
-    website: {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "@id": websiteId,
-      "url": websiteUrl,
-      "name": "American Concrete Coatings - Garage Floor Coating Calculator",
-      "description": "Professional garage floor coating services and instant cost calculator for the Dallas-Fort Worth area.",
-      "publisher": {
-        "@id": organizationId
-      },
-      "potentialAction": [
-        {
-          "@type": "SearchAction",
-          "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": searchUrl
-          },
-          "query-input": "required name=search_term_string"
-        }
-      ],
-      "inLanguage": "en-US"
-    },
-
-    // Calculator Software Application Schema
-    softwareApplication: {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Garage Floor Coating Cost Calculator",
-      "description": "Free online calculator to estimate garage floor coating costs including epoxy, polyurea, and polyaspartic systems.",
-      "url": websiteUrl,
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "Web Browser",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD",
-        "name": "Free Calculator Tool"
-      },
-      "author": {
-        "@type": "Organization",
-        "@id": organizationId
-      },
-      "featureList": [
-        "Instant cost estimates",
-        "Multiple coating options",
-        "Customizable garage sizes",
-        "Professional consultation booking"
-      ]
-    },
-
-    organization: {
-      "@context": "https://schema.org",
-      "@type": ["Organization", "LocalBusiness", "HomeAndConstructionBusiness"],
-      "@id": organizationId,
-      "name": "American Concrete Coatings",
-      "alternateName": ["ACC DFW", "Garage Floor Coatings DFW"],
-      "legalName": "American Concrete Coatings LLC",
-      "url": websiteUrl,
-      "logo": {
-        "@type": "ImageObject",
-        "url": `${baseUrl}/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png`,
-        "width": "300",
-        "height": "100"
-      },
-      "image": `${baseUrl}/og-image.png`,
-      "description": "Premier garage floor coating contractor in Dallas-Fort Worth specializing in epoxy, polyurea, and polyaspartic concrete coatings with over 15 years of experience.",
-      "foundingDate": "2008",
-      "slogan": "Transform Your Garage, Transform Your Home",
-      "address": {
-        "@type": "PostalAddress",
-        "addressRegion": "TX",
-        "addressCountry": "US",
-        "addressLocality": "Dallas-Fort Worth Metroplex"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "32.7767",
-        "longitude": "-96.7970"
-      },
-      "contactPoint": [
-        {
-          "@type": "ContactPoint",
-          "telephone": "817-839-3485",
-          "contactType": "customer service",
-          "areaServed": ["TX", "Dallas", "Fort Worth", "Arlington", "Plano", "Irving"],
-          "availableLanguage": ["English", "Spanish"],
-          "hoursAvailable": {
-            "@type": "OpeningHoursSpecification",
-            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            "opens": "08:00",
-            "closes": "18:00"
-          }
-        },
-        {
-          "@type": "ContactPoint",
-          "contactType": "sales",
-          "telephone": "817-839-3485",
-          "areaServed": "US"
-        }
-      ],
-      "sameAs": [
-        "https://www.instagram.com/americanconcretecoatings/",
-        "https://www.facebook.com/americanconcretecoatingsdfw",
-        "https://www.pinterest.com/americanconcretecoatings/",
-        "https://x.com/dfwACC",
-        "https://www.tiktok.com/@acc_dfw",
-        "https://www.youtube.com/channel/UCGMQa-wnfPo-gdQl013ZQrg",
-        "https://birdeye.com/american-concrete-coatings-152165460731942",
-        "https://www.bbb.org/us/tx/arlington/profile/concrete-contractors/american-concrete-coatings-0825-1000196267"
-      ],
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "284",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "award": [
-        "BBB A+ Rating",
-        "Angie's List Super Service Award",
-        "Best of HomeAdvisor"
-      ]
-    },
-
-    localBusiness: {
-      "@context": "https://schema.org",
-      "@type": ["LocalBusiness", "HomeAndConstructionBusiness", "Contractor"],
-      "@id": localBusinessId,
-      "name": "American Concrete Coatings",
-      "image": [
-        `${baseUrl}/og-image.png`,
-        `${baseUrl}/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png`
-      ],
-      "url": websiteUrl,
-      "description": "Premier garage floor coating contractor in Dallas-Fort Worth. Professional installation of epoxy, polyurea, and polyaspartic concrete coatings for residential and commercial properties. Free estimates and 20+ year warranties.",
-      "address": {
-        "@type": "PostalAddress",
-        "addressRegion": "TX",
-        "addressCountry": "US",
-        "addressLocality": "Dallas-Fort Worth Metroplex"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "32.7767",
-        "longitude": "-96.7970"
-      },
-      "areaServed": [
-        {
-          "@type": "GeoCircle",
-          "geoMidpoint": {
-            "@type": "GeoCoordinates",
-            "latitude": "32.7767",
-            "longitude": "-96.7970"
-          },
-          "geoRadius": "80"
-        }
-      ],
-      "priceRange": "$$-$$$",
-      "telephone": "817-839-3485",
-      "currenciesAccepted": "USD",
-      "paymentAccepted": ["Cash", "Credit Card", "Check", "PayPal"],
-      "openingHoursSpecification": [
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-          "opens": "08:00",
-          "closes": "18:00"
-        },
-        {
-          "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Saturday"],
-          "opens": "09:00",
-          "closes": "16:00"
-        }
-      ],
-      "sameAs": [
-        "https://www.facebook.com/americanconcretecoatingsdfw",
-        "https://www.instagram.com/americanconcretecoatings",
-        "https://www.pinterest.com/americanconcretecoatings/",
-        "https://x.com/dfwACC",
-        "https://www.tiktok.com/@acc_dfw",
-        "https://www.youtube.com/channel/UCGMQa-wnfPo-gdQl013ZQrg"
-      ],
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "284",
-        "bestRating": "5"
-      },
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Garage Floor Coating Services",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Epoxy Floor Coating"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Polyaspartic Floor Coating"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Polyurea Floor Coating"
-            }
-          }
-        ]
-      }
-    },
-
-    product: {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": "Professional Garage Floor Coating Systems",
-      "image": [
-        `${baseUrl}/og-image.png`,
-        `${baseUrl}/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png`
-      ],
-      "description": "Premium garage floor coating systems including epoxy, polyurea, and polyaspartic coatings. Professional installation with lifetime warranty options for residential and commercial properties in Dallas-Fort Worth.",
-      "brand": {
-        "@type": "Brand",
-        "name": "American Concrete Coatings",
-        "logo": `${baseUrl}/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png`
-      },
-      "manufacturer": {
-        "@type": "Organization",
-        "name": "American Concrete Coatings"
-      },
-      "category": "Home Improvement > Flooring > Concrete Coating",
-      "model": "Professional Grade Coating Systems",
-      "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "USD",
-        "lowPrice": "800",
-        "highPrice": "8000",
-        "offerCount": "12",
-        "availability": "https://schema.org/InStock",
-        "offers": [
-          {
-            "@type": "Offer",
-            "name": "Basic Epoxy Coating",
-            "priceCurrency": "USD",
-            "price": "1200",
-            "itemCondition": "https://schema.org/NewCondition",
-            "availability": "https://schema.org/InStock",
-            "url": websiteUrl,
-            "priceValidUntil": "2025-12-31",
-            "warranty": {
-              "@type": "WarrantyPromise",
-              "durationOfWarranty": "P10Y"
-            }
-          },
-          {
-            "@type": "Offer",
-            "name": "Premium Polyaspartic Coating",
-            "priceCurrency": "USD",
-            "price": "2800",
-            "itemCondition": "https://schema.org/NewCondition",
-            "availability": "https://schema.org/InStock",
-            "url": websiteUrl,
-            "priceValidUntil": "2025-12-31",
-            "warranty": {
-              "@type": "WarrantyPromise",
-              "durationOfWarranty": "P20Y"
-            }
-          }
-        ]
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "284",
-        "bestRating": "5"
-      },
-      "additionalProperty": [
-        {
-          "@type": "PropertyValue",
-          "name": "Installation Time",
-          "value": "1-3 days"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "Cure Time",
-          "value": "24-48 hours"
-        },
-        {
-          "@type": "PropertyValue",
-          "name": "Warranty",
-          "value": "Up to 20 years"
-        }
-      ]
-    },
-
-    service: {
-      "@context": "https://schema.org",
-      "@type": "Service",
-      "serviceType": "Garage Floor Coating Installation",
-      "name": "Professional Garage Floor Coating Services",
-      "description": "Expert installation of premium garage floor coatings including epoxy, polyurea, and polyaspartic systems. Serving Dallas-Fort Worth with industry-leading warranties and same-day estimates.",
-      "provider": {
-        "@type": "LocalBusiness",
-        "@id": localBusinessId
-      },
-      "areaServed": [
-        {
-          "@type": "State",
-          "name": "Texas"
-        },
-        {
-          "@type": "City",
-          "name": "Dallas"
-        },
-        {
-          "@type": "City",
-          "name": "Fort Worth"
-        },
-        {
-          "@type": "City",
-          "name": "Arlington"
-        },
-        {
-          "@type": "City",
-          "name": "Plano"
-        },
-        {
-          "@type": "City",
-          "name": "Irving"
-        }
-      ],
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Garage Floor Coating Services",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Epoxy Floor Coating Installation",
-              "description": "Durable epoxy coating system with decorative flakes"
-            },
-            "price": "1200-3500",
-            "priceCurrency": "USD"
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Polyaspartic Floor Coating Installation",
-              "description": "Premium fast-cure polyaspartic coating system"
-            },
-            "price": "2500-6000",
-            "priceCurrency": "USD"
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
-              "name": "Polyurea Floor Coating Installation",
-              "description": "Industrial-grade polyurea coating system"
-            },
-            "price": "2000-5000",
-            "priceCurrency": "USD"
-          }
-        ]
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.9",
-        "reviewCount": "284"
-      }
-    },
-
-    faq: {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What locations do you serve?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "We currently serve major cities across Texas, including Houston, Dallas, Austin, and San Antonio."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do you offer services outside Texas?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Currently, we are focused on providing our services within Texas to ensure the highest quality of service."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How long does installation typically take?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Installation time varies based on the project scope, but typically takes 2-5 business days."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do you offer free consultations?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, we offer free initial consultations to discuss your project needs and provide accurate estimates."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How will you use my contact information?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Your information is used solely to communicate about your project and will never be shared with third parties."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "When will someone contact me?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Our team typically reaches out within 1 business day of receiving your information."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I specify preferred contact methods?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, just let us know your preferred method of contact when filling out the form."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is my information secure?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, we use industry-standard encryption to protect your personal information."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How many cars can fit in different garage sizes?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "A single car garage typically fits one car, a double garage fits two cars, and so on. Consider extra space for storage or workspace when choosing."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What's the recommended size for my needs?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Consider your vehicle sizes, storage needs, and available space. We can help you determine the best size during consultation."
-          }
-        }
-      ]
-    },
-
-    speakable: {
-      "@context": "https://schema.org",
-      "@type": "SpeakableSpecification",
-      "cssSelector": ["h1", "h2", ".intro-text"]
-    }
+    // All schema data disabled to prevent canonical URL references
+    webpage: null,
+    website: null,
+    softwareApplication: null,
+    organization: null,
+    localBusiness: null,
+    product: null,
+    service: null,
+    faq: null,
+    breadcrumb: null,
+    calculator: null,
+    howTo: null,
+    review: null,
+    person: null,
+    place: null,
+    article: null,
+    businessPosting: null,
+    localBusinessPosting: null,
+    jobPosting: null,
+    event: null,
+    videoObject: null,
+    audioObject: null,
+    dataDownload: null,
+    dataset: null,
+    course: null,
+    recipe: null,
+    techArticle: null,
+    qaPage: null,
+    contactPage: null,
+    aboutPage: null,
+    collectionPage: null,
+    checkoutPage: null,
+    itemPage: null,
+    medicalWebPage: null,
+    profilePage: null,
+    searchResultsPage: null,
+    realEstateListing: null,
+    menuSection: null,
+    menuItem: null,
+    restaurant: null,
+    foodEstablishment: null,
+    breadcrumbList: null,
+    webPageElement: null,
+    siteNavigationElement: null,
+    searchAction: null,
+    potentialAction: null,
+    readAction: null,
+    interactionCounter: null,
+    comment: null,
+    question: null,
+    answer: null,
+    claim: null,
+    creativework: null,
+    mediaObject: null,
+    softwareSourceCode: null,
+    webApplication: null,
+    mobileApplication: null,
+    gameApplication: null,
+    downloadAction: null,
+    installAction: null,
+    useAction: null,
+    consumeAction: null,
+    achieveAction: null,
+    action: null,
+    intangible: null,
+    quantity: null,
+    propertyValue: null,
+    rating: null,
+    aggregateRating: null,
+    brand: null,
+    offer: null,
+    demand: null,
+    priceSpecification: null,
+    unitPriceSpecification: null,
+    paymentChargeSpecification: null,
+    deliveryChargeSpecification: null,
+    businessFunction: null,
+    warranty: null,
+    warrantypromise: null,
+    warrantyScope: null,
+    typeAndQuantityNode: null,
+    ownershipInfo: null,
+    vehicle: null,
+    car: null,
+    truck: null,
+    motorcycle: null,
+    engine: null,
+    engineSpecification: null,
+    individual: null,
+    itemList: null,
+    offerCatalog: null,
+    listItem: null,
+    accommodation: null,
+    lodgingBusiness: null,
+    governmentOrganization: null,
+    ngO: null,
+    corporateOffice: null,
+    educationalOrganization: null,
+    medicalOrganization: null,
+    performingGroup: null,
+    sportsOrganization: null,
+    sportsTeam: null,
+    postalAddress: null,
+    contactPoint: null,
+    geo: null,
+    geoCoordinates: null,
+    geoCircle: null,
+    geoShape: null,
+    map: null,
+    openingHoursSpecification: null,
+    priceRange: null,
+    aggregateOffer: null,
+    businessEntityType: null,
+    paymentMethod: null,
+    deliveryMethod: null,
+    contactPointOption: null,
+    hoursAvailable: null,
+    serviceChannel: null,
+    serviceArea: null,
+    audience: null,
+    businessAudience: null,
+    peopleAudience: null,
+    residenceAudience: null,
+    parentAudience: null,
+    childCareAudience: null,
+    educationalAudience: null,
+    medicalAudience: null,
+    programMembership: null,
+    membership: null,
+    businessEvent: null,
+    childEvent: null,
+    deliveryEvent: null,
+    educationEvent: null,
+    exhibitionEvent: null,
+    festival: null,
+    foodEvent: null,
+    literaryEvent: null,
+    musicEvent: null,
+    publicationEvent: null,
+    saleEvent: null,
+    screeningEvent: null,
+    socialEvent: null,
+    sportsEvent: null,
+    theaterEvent: null,
+    visualArtsEvent: null,
+    userInteraction: null,
+    userBlocks: null,
+    userCheckins: null,
+    userComments: null,
+    userDownloads: null,
+    userLikes: null,
+    userPageVisits: null,
+    userPlays: null,
+    userPlusOnes: null,
+    userTweets: null,
+    thing: null,
+    enumeration: null,
+    class: null,
+    property: null,
+    dataType: null,
+    text: null,
+    url: null,
+    boolean: null,
+    date: null,
+    dateTime: null,
+    time: null,
+    number: null,
+    integer: null,
+    float: null,
+    energy: null,
+    mass: null,
+    distance: null,
+    duration: null,
+    structuredValue: null,
+    monetaryAmount: null,
+    nutritionInformation: null,
+    propertyValueSpecification: null,
+    quantitativeValue: null,
+    role: null,
+    organizationRole: null,
+    performanceRole: null,
+    linkRole: null,
+    definedTerm: null,
+    definedTermSet: null,
+    categoryCode: null,
+    categoryCodeSet: null,
+    reservation: null,
+    reservationPackage: null,
+    reservationStatusType: null,
+    ticket: null,
+    seat: null,
+    invoice: null,
+    order: null,
+    orderStatus: null,
+    orderItem: null,
+    orderDelivery: null,
+    parcelDelivery: null,
+    paymentCard: null,
+    paymentService: null,
+    paymentStatusType: null,
+    permit: null,
+    governmentPermit: null,
+    schedule: null,
+    alignmentObject: null,
+    courseInstance: null,
+    educationalOccupationalCredential: null,
+    educationalOccupationalProgram: null,
+    syllabus: null,
+    quiz: null,
+    choiceQuestion: null,
+    trueFalseQuestion: null,
+    healthCondition: null,
+    medicalCondition: null,
+    medicalGuideline: null,
+    medicalIndication: null,
+    medicalContraindication: null,
+    medicalCause: null,
+    medicalRiskEstimator: null,
+    medicalRiskFactor: null,
+    medicalRiskScore: null,
+    medicalSignOrSymptom: null,
+    medicalSign: null,
+    medicalSymptom: null,
+    medicalTest: null,
+    medicalTestPanel: null,
+    medicalProcedure: null,
+    medicalDevice: null,
+    medicalEntity: null,
+    medicalBusiness: null,
+    diagnosticLab: null,
+    hospital: null,
+    medicalClinic: null,
+    pharmacy: null,
+    physician: null,
+    dietNutrition: null,
+    drug: null,
+    substance: null,
+    drugClass: null,
+    drugLegalStatus: null,
+    drugPregnancyCategory: null,
+    drugPrescriptionStatus: null,
+    drugStrength: null,
+    doseSchedule: null,
+    maximumDoseSchedule: null,
+    recommendedDoseSchedule: null,
+    reportedDoseSchedule: null,
+    drugCost: null,
+    drugCostCategory: null,
+    medicalDevicePurpose: null,
+    medicalEnumeration: null,
+    medicalEvidenceLevel: null,
+    medicalGuidelineContraindication: null,
+    medicalGuidelineRecommendation: null,
+    medicalIntangible: null,
+    medicalLifestyleModification: null,
+    medicalObservationalStudy: null,
+    medicalObservationalStudyDesign: null,
+    medicalProcedureType: null,
+    medicalScholarlyArticle: null,
+    medicalSpecialty: null,
+    medicalStudy: null,
+    medicalStudyStatus: null,
+    medicalTrial: null,
+    medicalTrialDesign: null,
+    medicineSystem: null,
+    physicalActivityCategory: null,
+    physicalExam: null,
+    physicalTherapy: null,
+    preventionIndication: null,
+    superficialAnatomy: null,
+    treatmentIndication: null,
+    vitalSign: null,
+    webContent: null,
+    faqPage: null,
+    webSite: null,
+    advertiserContentArticle: null,
+    newsArticle: null,
+    analysisNewsArticle: null,
+    askPublicNewsArticle: null,
+    backgroundNewsArticle: null,
+    opinionNewsArticle: null,
+    reportageNewsArticle: null,
+    reviewNewsArticle: null,
+    report: null,
+    scholarlyArticle: null,
+    socialMediaPosting: null,
+    blogPosting: null,
+    liveBlogPosting: null,
+    discussionForumPosting: null,
+    aPIReference: null,
+    book: null,
+    audiobook: null,
+    chapter: null,
+    collection: null,
+    comicStory: null,
+    conversation: null,
+    creativeWorkSeries: null,
+    bookSeries: null,
+    movieSeries: null,
+    periodicSeries: null,
+    podcastSeries: null,
+    radioSeries: null,
+    tVSeries: null,
+    videoGameSeries: null,
+    creativeWorkSeason: null,
+    podcastSeason: null,
+    radioSeason: null,
+    tVSeason: null,
+    digitalDocument: null,
+    digitalDocumentPermission: null,
+    digitalDocumentPermissionType: null,
+    episode: null,
+    podcastEpisode: null,
+    radioEpisode: null,
+    tVEpisode: null,
+    game: null,
+    videoGame: null,
+    howToDirection: null,
+    howToSection: null,
+    howToStep: null,
+    howToSupply: null,
+    howToTip: null,
+    howToTool: null,
+    legislation: null,
+    legislationObject: null,
+    manifest: null,
+    imageObject: null,
+    musicVideoObject: null,
+    message: null,
+    emailMessage: null,
+    movie: null,
+    musicComposition: null,
+    musicPlaylist: null,
+    musicAlbum: null,
+    musicRecording: null,
+    musicRelease: null,
+    painting: null,
+    photograph: null,
+    play: null,
+    publicationIssue: null,
+    publicationVolume: null,
+    quotation: null,
+    criticReview: null,
+    employerReview: null,
+    mediaReview: null,
+    recommendationReview: null,
+    userReview: null,
+    sculpture: null,
+    season: null,
+    shortStory: null,
+    thesis: null,
+    visualArtwork: null,
+    coverArt: null,
+    drawing: null,
+    workOfArt: null,
+    workBasedOn: null,
+    workExample: null,
+    workTranslation: null,
+    writtenWork: null,
+    speakable: null,
   };
 }

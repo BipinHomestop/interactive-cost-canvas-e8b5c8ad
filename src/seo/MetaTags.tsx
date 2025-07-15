@@ -79,7 +79,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link rel="dns-prefetch" href="//quote.garagefloorcoatingsdfw.com" />
+      
       
       {/* Structured Data for Local Business */}
       <script type="application/ld+json">
