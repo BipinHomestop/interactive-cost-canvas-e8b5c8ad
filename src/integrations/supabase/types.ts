@@ -349,6 +349,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_admin_users: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       is_valid_us_zipcode: {
         Args: { zipcode: string }
         Returns: boolean

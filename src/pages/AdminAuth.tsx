@@ -14,6 +14,17 @@ const AdminAuth: React.FC = () => {
 
   const checkAuthStatus = async () => {
     try {
+      // First check if any admin users exist
+      const { data: hasAdmins, error: adminCheckError } = await supabase.rpc('has_admin_users');
+      
+      if (adminCheckError) {
+        console.error('Admin check error:', adminCheckError);
+      } else if (!hasAdmins) {
+        // No admin users exist, redirect to setup
+        navigate('/admin/setup');
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         // Check if user is an admin

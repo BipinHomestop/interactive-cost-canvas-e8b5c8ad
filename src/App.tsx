@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 import Success from "./pages/Success";
 import Analytics from "./pages/Analytics";
 import AdminAuth from "./pages/AdminAuth";
+import AdminSetup from "./pages/AdminSetup";
 import { useUserLocation } from "./hooks/analytics/use-user-location";
 
 // Create a client
@@ -64,6 +65,7 @@ function App() {
               <Route path="/step/:stepNumber" element={<Index />} />
               <Route path="/success" element={<Success />} />
               <Route path="/admin" element={<AdminAuth />} />
+              <Route path="/admin/setup" element={<AdminSetup />} />
               <Route path="/analytics" element={<Analytics />} />
             </Routes>
             <Toaster />
