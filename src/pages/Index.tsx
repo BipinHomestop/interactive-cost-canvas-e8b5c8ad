@@ -79,7 +79,7 @@ const Index = () => {
   
   return (
     <div className="h-screen flex flex-col bg-card-DEFAULT overflow-hidden">
-      <MetaTags step={currentStep} pathname={location.pathname} />
+      <MetaTags step={currentStep} />
       <SchemaScript />
       <nav className="bg-white shadow-lg py-3 px-4 z-50 sticky top-0">
         <div className="flex justify-between items-center">

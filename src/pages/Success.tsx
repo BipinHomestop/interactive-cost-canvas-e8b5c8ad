@@ -25,7 +25,7 @@ export default function Success() {
   
   return (
     <>
-      <MetaTags customMeta={getSuccessPageMetaTags()} pathname={location.pathname} />
+      <MetaTags customMeta={getSuccessPageMetaTags()} />
       <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50">
         <div className="w-full max-w-md rounded-lg border bg-white p-8 shadow-md">
           <div className="mb-6 flex flex-col items-center">

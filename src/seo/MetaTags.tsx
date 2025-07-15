@@ -1,39 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import { baseMetaTags } from './meta-tags';
 import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
 
-// Hardcoded base URL for canonical URLs and structured data
-const BASE_URL = 'https://quote.garagefloorcoatingsdfw.com';
-
 interface MetaTagsProps {
   step?: number;
   customMeta?: Partial<MetaTagsConfig>;
-  pathname?: string;
 }
 
-export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }) => {
+export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
-  
-  // State to track the current pathname and ensure proper canonical URL generation
-  const [currentPathname, setCurrentPathname] = useState<string>('');
-  
-  useEffect(() => {
-    // Get the actual pathname, prioritizing the prop but falling back to window location
-    const actualPathname = pathname || (typeof window !== 'undefined' ? window.location.pathname : '/');
-    setCurrentPathname(actualPathname);
-    
-    console.log('🔍 MetaTags - pathname prop:', pathname);
-    console.log('🔍 MetaTags - window.location.pathname:', typeof window !== 'undefined' ? window.location.pathname : 'SSR');
-    console.log('🔍 MetaTags - final pathname:', actualPathname);
-  }, [pathname]);
-  
-  // Construct canonical URL ensuring proper formatting
-  // Clean up the pathname to avoid double slashes
-  const cleanPathname = currentPathname === '/' ? '' : currentPathname;
-  const canonicalUrl = `${BASE_URL}${cleanPathname}`;
-  
-  console.log('🔍 MetaTags - canonical URL:', canonicalUrl);
   
   return (
     <Helmet>
@@ -71,7 +47,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
       <meta property="og:image:alt" content={baseMetaTags.og.imageAlt} />
       <meta property="og:image:width" content={baseMetaTags.og.imageWidth} />
       <meta property="og:image:height" content={baseMetaTags.og.imageHeight} />
-      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:url" content={metaTags.og?.url} />
       <meta property="og:type" content={metaTags.og?.type} />
       <meta property="og:site_name" content={metaTags.og?.siteName} />
       <meta property="og:locale" content={metaTags.og?.locale} />
@@ -94,10 +70,9 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
       <meta name="twitter:image" content={metaTags.twitter?.image} />
       <meta name="twitter:image:alt" content={baseMetaTags.twitter.imageAlt} />
       <meta name="twitter:domain" content="quote.garagefloorcoatingsdfw.com" />
-      <meta name="twitter:url" content={canonicalUrl} />
+      <meta name="twitter:url" content={metaTags.og?.url} />
 
-      {/* CANONICAL URL - HIGHEST PRIORITY */}
-      <link rel="canonical" href={canonicalUrl} key="canonical-url" />
+      {/* Technical SEO - NO CANONICAL URL */}
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -110,7 +85,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
           "@context": "https://schema.org",
           "@type": ["WebSite", "LocalBusiness"],
           "name": "American Concrete Coatings - Garage Floor Coating Calculator",
-          "url": canonicalUrl,
+          "url": "https://quote.garagefloorcoatingsdfw.com",
           "description": metaTags.description,
           "telephone": "817-839-3485",
           "address": {
@@ -151,7 +126,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
           },
           "potentialAction": {
             "@type": "SearchAction",
-            "target": canonicalUrl + "?q={search_term_string}",
+            "target": "https://quote.garagefloorcoatingsdfw.com?q={search_term_string}",
             "query-input": "required name=search_term_string"
           }
         })}

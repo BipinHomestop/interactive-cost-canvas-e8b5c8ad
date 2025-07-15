@@ -1,13 +1,9 @@
-// Hardcoded base URL
-const BASE_URL = 'https://quote.garagefloorcoatingsdfw.com';
-
 /**
- * Generates dynamic schema data using the hardcoded base URL
- * This provides consistent canonical URLs for SEO
+ * Static schema data with hardcoded URLs for consistency
  */
 export function generateSchemaData() {
-  const baseUrl = BASE_URL;
-  const websiteUrl = `${baseUrl}/`;
+  const baseUrl = 'https://quote.garagefloorcoatingsdfw.com';
+  const websiteUrl = baseUrl;
   const organizationId = `${baseUrl}/#organization`;
   const websiteId = `${baseUrl}/#website`;
   const localBusinessId = `${baseUrl}/#localbusiness`;
