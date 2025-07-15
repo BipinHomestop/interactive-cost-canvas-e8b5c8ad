@@ -5,7 +5,6 @@ export interface MetaTagsConfig {
   description: string;
   keywords?: string;
   robots?: string;
-  canonical?: string;
   og?: {
     title: string;
     description: string;
@@ -32,7 +31,6 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       description: baseMetaTags.description,
       keywords: baseMetaTags.keywords,
       robots: baseMetaTags.robots,
-      canonical: baseMetaTags.canonical,
       og: {
         title: baseMetaTags.og.title,
         description: baseMetaTags.og.description,
@@ -64,7 +62,6 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
     description: stepData.description,
     keywords: stepData.keywords,
     robots: baseMetaTags.robots,
-    canonical: stepData.canonical,
     og: {
       title: stepData.og.title,
       description: stepData.og.description,
@@ -91,7 +88,6 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
     description: successMetaTags.description,
     keywords: successMetaTags.keywords,
     robots: baseMetaTags.robots,
-    canonical: successMetaTags.canonical,
     og: {
       title: successMetaTags.og.title,
       description: successMetaTags.og.description,
@@ -118,7 +114,6 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
     description: analyticsMetaTags.description,
     keywords: analyticsMetaTags.keywords,
     robots: analyticsMetaTags.robots,
-    canonical: analyticsMetaTags.canonical,
     og: {
       title: analyticsMetaTags.title,
       description: analyticsMetaTags.description,
@@ -126,7 +121,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
       locale: baseMetaTags.og.locale,
-      url: analyticsMetaTags.canonical
+      url: baseMetaTags.og.url
     },
     twitter: {
       card: baseMetaTags.twitter.card,
@@ -137,21 +132,4 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
       image: baseMetaTags.twitter.image
     }
   };
-}
-
-export function getCanonicalUrl(step?: number): string {
-  if (!step) {
-    return baseMetaTags.canonical;
-  }
-  
-  const stepData = stepMetaTags[step as keyof typeof stepMetaTags];
-  return stepData?.canonical || baseMetaTags.canonical;
-}
-
-export function getSuccessPageCanonicalUrl(): string {
-  return successMetaTags.canonical;
-}
-
-export function getAnalyticsPageCanonicalUrl(): string {
-  return analyticsMetaTags.canonical;
 }

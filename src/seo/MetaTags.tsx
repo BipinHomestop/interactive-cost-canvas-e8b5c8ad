@@ -6,13 +6,10 @@ import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
 interface MetaTagsProps {
   step?: number;
   customMeta?: Partial<MetaTagsConfig>;
-  canonical?: string;
 }
 
-export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, canonical }) => {
+export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
-  // Use canonical from meta configuration, fallback to prop if provided
-  const canonicalUrl = metaTags.canonical || canonical;
   
   return (
     <Helmet>
@@ -76,7 +73,6 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, canonical 
       <meta name="twitter:url" content={metaTags.og?.url} />
 
       {/* Technical SEO */}
-      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
