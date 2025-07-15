@@ -9,7 +9,6 @@ export interface MetaTagsConfig {
     title: string;
     description: string;
     image?: string;
-    url?: string;
     type?: string;
     siteName?: string;
     locale?: string;
@@ -37,8 +36,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
         image: baseMetaTags.og.image,
         type: baseMetaTags.og.type,
         siteName: baseMetaTags.og.siteName,
-        locale: baseMetaTags.og.locale,
-        url: baseMetaTags.og.url
+        locale: baseMetaTags.og.locale
       },
       twitter: {
         card: baseMetaTags.twitter.card,
@@ -68,8 +66,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       image: baseMetaTags.og.image,
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
-      locale: baseMetaTags.og.locale,
-      url: stepData.og.url
+      locale: baseMetaTags.og.locale
     },
     twitter: {
       card: baseMetaTags.twitter.card,
@@ -94,8 +91,7 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
       image: baseMetaTags.og.image,
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
-      locale: baseMetaTags.og.locale,
-      url: successMetaTags.og.url
+      locale: baseMetaTags.og.locale
     },
     twitter: {
       card: baseMetaTags.twitter.card,
@@ -120,8 +116,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
       image: baseMetaTags.og.image,
       type: baseMetaTags.og.type,
       siteName: baseMetaTags.og.siteName,
-      locale: baseMetaTags.og.locale,
-      url: baseMetaTags.og.url
+      locale: baseMetaTags.og.locale
     },
     twitter: {
       card: baseMetaTags.twitter.card,

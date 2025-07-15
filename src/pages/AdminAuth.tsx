@@ -83,7 +83,6 @@ const AdminAuth: React.FC = () => {
           og: {
             title: "Admin Login",
             description: "Admin login page",
-            url: "https://quote.garagefloorcoatingsdfw.com/admin",
             type: "website",
             siteName: "American Concrete Coatings",
             locale: "en_US"

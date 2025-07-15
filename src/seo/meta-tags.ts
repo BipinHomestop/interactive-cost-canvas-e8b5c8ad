@@ -20,7 +20,6 @@ export const baseMetaTags = {
     imageAlt: "Garage floor coating calculator for Dallas-Fort Worth homeowners",
     imageWidth: "1200",
     imageHeight: "630",
-    url: "https://quote.garagefloorcoatingsdfw.com/",
     type: "website",
     siteName: "American Concrete Coatings - Dallas Fort Worth",
     locale: "en_US"
@@ -47,8 +46,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Check Service Area | Garage Floor Coating | DFW",
-      description: "Professional garage floor coating installation throughout Dallas-Fort Worth. Enter your location to get started.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/1"
+      description: "Professional garage floor coating installation throughout Dallas-Fort Worth. Enter your location to get started."
     }
   },
   2: {
@@ -58,8 +56,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Garage Size & Coating Cost Calculator | DFW",
-      description: "Calculate exact garage floor coating costs based on your garage size. Professional installation pricing for all garage types.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/2"
+      description: "Calculate exact garage floor coating costs based on your garage size. Professional installation pricing for all garage types."
     }
   },
   3: {
@@ -69,8 +66,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Garage Floor Coating Types | Epoxy vs Polyaspartic",
-      description: "Compare garage floor coating options. Choose the best finish for durability, cost, and appearance.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/3"
+      description: "Compare garage floor coating options. Choose the best finish for durability, cost, and appearance."
     }
   },
   4: {
@@ -80,8 +76,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Garage Stem Wall Coating | Complete Protection System",
-      description: "Add stem wall coating for complete garage protection. Professional cove base installation available.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/4"
+      description: "Add stem wall coating for complete garage protection. Professional cove base installation available."
     }
   },
   5: {
@@ -91,8 +86,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Garage Entry Steps Coating | Non-Slip Installation",
-      description: "Complete your garage transformation with matching step coating. Safe, durable, and beautiful entry steps.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/5"
+      description: "Complete your garage transformation with matching step coating. Safe, durable, and beautiful entry steps."
     }
   },
   6: {
@@ -102,8 +96,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Garage Floor Assessment | Professional Evaluation",
-      description: "Proper floor assessment ensures the best coating results. Professional evaluation and preparation included.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/6"
+      description: "Proper floor assessment ensures the best coating results. Professional evaluation and preparation included."
     }
   },
   7: {
@@ -113,8 +106,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Additional Areas Coating | Workshop & Storage Space",
-      description: "Extend your garage floor coating to workshops and storage areas. Complete space transformation available.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/7"
+      description: "Extend your garage floor coating to workshops and storage areas. Complete space transformation available."
     }
   },
   8: {
@@ -124,8 +116,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Schedule Free Estimate | Garage Floor Coating DFW",
-      description: "Get your free estimate and schedule professional garage floor coating installation. Same-day quotes available.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/8"
+      description: "Get your free estimate and schedule professional garage floor coating installation. Same-day quotes available."
     }
   },
   9: {
@@ -135,8 +126,7 @@ export const stepMetaTags = {
     
     og: {
       title: "Book Garage Floor Coating | Secure Payment & Warranty",
-      description: "Book your garage floor coating with confidence. Secure payment and 20-year warranty included.",
-      url: "https://quote.garagefloorcoatingsdfw.com/step/9"
+      description: "Book your garage floor coating with confidence. Secure payment and 20-year warranty included."
     }
   }
 };
@@ -149,8 +139,7 @@ export const successMetaTags = {
   
   og: {
     title: "Garage Floor Coating Booked | Installation Scheduled",
-    description: "Your garage transformation is booked! Professional installation team will contact you within 24 hours to confirm your project.",
-    url: "https://quote.garagefloorcoatingsdfw.com/success"
+    description: "Your garage transformation is booked! Professional installation team will contact you within 24 hours to confirm your project."
   }
 };
 

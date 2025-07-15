@@ -47,7 +47,7 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta property="og:image:alt" content={baseMetaTags.og.imageAlt} />
       <meta property="og:image:width" content={baseMetaTags.og.imageWidth} />
       <meta property="og:image:height" content={baseMetaTags.og.imageHeight} />
-      <meta property="og:url" content={metaTags.og?.url} />
+      
       <meta property="og:type" content={metaTags.og?.type} />
       <meta property="og:site_name" content={metaTags.og?.siteName} />
       <meta property="og:locale" content={metaTags.og?.locale} />
@@ -69,8 +69,8 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:description" content={metaTags.twitter?.description} />
       <meta name="twitter:image" content={metaTags.twitter?.image} />
       <meta name="twitter:image:alt" content={baseMetaTags.twitter.imageAlt} />
-      <meta name="twitter:domain" content="quote.garagefloorcoatingsdfw.com" />
-      <meta name="twitter:url" content={metaTags.og?.url} />
+      
+      
 
       {/* Technical SEO */}
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
@@ -85,7 +85,6 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
           "@context": "https://schema.org",
           "@type": ["WebSite", "LocalBusiness"],
           "name": "American Concrete Coatings - Garage Floor Coating Calculator",
-          "url": "https://quote.garagefloorcoatingsdfw.com",
           "description": metaTags.description,
           "telephone": "817-839-3485",
           "address": {
@@ -126,7 +125,6 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
           },
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://quote.garagefloorcoatingsdfw.com?q={search_term_string}",
             "query-input": "required name=search_term_string"
           }
         })}

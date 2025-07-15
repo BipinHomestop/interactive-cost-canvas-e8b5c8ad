@@ -129,7 +129,6 @@ const AdminSetup: React.FC = () => {
           og: {
             title: "Admin Setup",
             description: "Admin setup page",
-            url: "https://quote.garagefloorcoatingsdfw.com/admin/setup",
             type: "website",
             siteName: "American Concrete Coatings",
             locale: "en_US"
