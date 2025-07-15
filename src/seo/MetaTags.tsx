@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { baseMetaTags } from './meta-tags';
 import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
@@ -15,19 +15,25 @@ interface MetaTagsProps {
 export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
   
-  // Construct canonical URL from base URL and current pathname
-  const canonicalUrl = pathname ? `${BASE_URL}${pathname}` : BASE_URL;
+  // State to track the current pathname and ensure proper canonical URL generation
+  const [currentPathname, setCurrentPathname] = useState<string>('');
   
-  // Debug logging - more prominent
-  console.log('🔍 MetaTags DEBUG - pathname:', pathname);
-  console.log('🔍 MetaTags DEBUG - canonicalUrl:', canonicalUrl);
-  console.log('🔍 MetaTags DEBUG - window.location.href:', window.location.href);
-  console.log('🔍 MetaTags DEBUG - window.location.pathname:', window.location.pathname);
+  useEffect(() => {
+    // Get the actual pathname, prioritizing the prop but falling back to window location
+    const actualPathname = pathname || (typeof window !== 'undefined' ? window.location.pathname : '/');
+    setCurrentPathname(actualPathname);
+    
+    console.log('🔍 MetaTags - pathname prop:', pathname);
+    console.log('🔍 MetaTags - window.location.pathname:', typeof window !== 'undefined' ? window.location.pathname : 'SSR');
+    console.log('🔍 MetaTags - final pathname:', actualPathname);
+  }, [pathname]);
   
-  // Force alert to see what's happening
-  if (typeof window !== 'undefined') {
-    console.log('🚨 ALERT: pathname=' + pathname + ', canonicalUrl=' + canonicalUrl);
-  }
+  // Construct canonical URL ensuring proper formatting
+  // Clean up the pathname to avoid double slashes
+  const cleanPathname = currentPathname === '/' ? '' : currentPathname;
+  const canonicalUrl = `${BASE_URL}${cleanPathname}`;
+  
+  console.log('🔍 MetaTags - canonical URL:', canonicalUrl);
   
   return (
     <Helmet>
@@ -90,8 +96,8 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta, pathname }
       <meta name="twitter:domain" content="quote.garagefloorcoatingsdfw.com" />
       <meta name="twitter:url" content={canonicalUrl} />
 
-      {/* Technical SEO */}
-      <link rel="canonical" href={canonicalUrl} />
+      {/* CANONICAL URL - HIGHEST PRIORITY */}
+      <link rel="canonical" href={canonicalUrl} key="canonical-url" />
       <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
