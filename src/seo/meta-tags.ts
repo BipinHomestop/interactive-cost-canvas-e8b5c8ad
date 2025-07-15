@@ -1,15 +1,18 @@
-// Base meta tags for homepage - Optimized for 2024 SEO best practices
+// Base meta tags for homepage - CANONICAL-FREE 2024 SEO best practices
+// NO CANONICAL URLS - HARDENED AGAINST CANONICAL GENERATION
 export const baseMetaTags = {
   title: "FREE Garage Floor Coating Calculator | Get Instant Quote & Save Upto $500",
   description: "Calculate the cost of garage floor coatings and transform your garage in 60 seconds! Get FREE estimate for premium epoxy, polyurea & polyaspartic coatings. DFW's #1 rated contractor with 20+ year warranty.",
   author: "American Concrete Coatings",
   googleVerification: "VERIFICATION-CODE",
   keywords: "garage floor coating calculator, epoxy flooring Dallas, polyaspartic coating Fort Worth, garage flooring cost estimate",
-  robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+  robots: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1, noarchive",
   revisitAfter: "3 days",
   language: "en-US",
   viewport: "width=device-width, initial-scale=1.0",
   charset: "UTF-8",
+  // CANONICAL BLOCKING - No canonical URLs allowed
+  canonicalBlocked: true,
   
   
   // Open Graph - Enhanced for social sharing

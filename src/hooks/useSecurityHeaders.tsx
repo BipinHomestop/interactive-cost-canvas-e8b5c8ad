@@ -2,9 +2,55 @@ import { useEffect } from 'react';
 
 /**
  * Hook to set security headers and CSP policies
+ * Enhanced with canonical tag blocking
  */
 export const useSecurityHeaders = () => {
   useEffect(() => {
+    // CANONICAL TAG SECURITY BLOCKER
+    const blockCanonicalTags = () => {
+      // Remove any existing canonical tags immediately
+      const existingCanonical = document.querySelectorAll('link[rel="canonical"]');
+      existingCanonical.forEach(tag => {
+        console.warn('Security: Canonical tag blocked and removed:', tag);
+        tag.remove();
+      });
+
+      // Set up continuous monitoring for canonical tags
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                const element = node as Element;
+                
+                // Block canonical links
+                if (element.tagName === 'LINK' && element.getAttribute('rel') === 'canonical') {
+                  console.error('SECURITY ALERT: Canonical tag blocked:', element);
+                  element.remove();
+                }
+                
+                // Check for canonical links within added elements
+                const canonicalLinks = element.querySelectorAll('link[rel="canonical"]');
+                canonicalLinks.forEach(link => {
+                  console.error('SECURITY ALERT: Canonical tag blocked:', link);
+                  link.remove();
+                });
+              }
+            });
+          }
+        });
+      });
+
+      observer.observe(document.head, {
+        childList: true,
+        subtree: true
+      });
+
+      return () => observer.disconnect();
+    };
+
+    const canonicalBlocker = blockCanonicalTags();
+
     // Set Content Security Policy via meta tag
     const existingCSP = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
     if (!existingCSP) {
@@ -50,5 +96,16 @@ export const useSecurityHeaders = () => {
       referrerMeta.setAttribute('content', 'strict-origin-when-cross-origin');
       document.head.appendChild(referrerMeta);
     }
+
+    // Add anti-canonical meta tag
+    const antiCanonical = document.createElement('meta');
+    antiCanonical.setAttribute('name', 'canonical-blocked');
+    antiCanonical.setAttribute('content', 'true');
+    document.head.appendChild(antiCanonical);
+
+    // Cleanup function
+    return () => {
+      canonicalBlocker();
+    };
   }, []);
 };
