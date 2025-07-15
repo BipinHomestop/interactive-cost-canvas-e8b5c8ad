@@ -133,11 +133,11 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       </script>
       
       {/* Favicon Tags */}
-      <link rel="apple-touch-icon" sizes="180x180" href="/lovable-uploads/210d3cb0-3572-4b21-8013-1759f55423fa.png" />
-      <link rel="icon" type="image/png" sizes="32x32" href="/lovable-uploads/210d3cb0-3572-4b21-8013-1759f55423fa.png" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/lovable-uploads/210d3cb0-3572-4b21-8013-1759f55423fa.png" />
+      <link rel="apple-touch-icon" sizes="180x180" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
+      <link rel="icon" type="image/png" sizes="32x32" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
+      <link rel="icon" type="image/png" sizes="16x16" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
       <link rel="manifest" href="/site.webmanifest" />
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
     </Helmet>
   );
 };
