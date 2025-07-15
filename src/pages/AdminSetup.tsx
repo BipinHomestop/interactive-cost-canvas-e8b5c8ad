@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
+import { MetaTags } from '@/seo/MetaTags';
 
 const AdminSetup: React.FC = () => {
   const navigate = useNavigate();
@@ -118,14 +119,38 @@ const AdminSetup: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Admin Setup</CardTitle>
-          <CardDescription>
-            Create the first admin user to access the analytics dashboard
-          </CardDescription>
-        </CardHeader>
+    <>
+      <MetaTags 
+        customMeta={{
+          title: "Admin Setup - American Concrete Coatings",
+          description: "Admin setup page for American Concrete Coatings dashboard",
+          keywords: "admin, setup, dashboard",
+          robots: "noindex, nofollow",
+          og: {
+            title: "Admin Setup",
+            description: "Admin setup page",
+            url: "https://quote.garagefloorcoatingsdfw.com/admin/setup",
+            type: "website",
+            siteName: "American Concrete Coatings",
+            locale: "en_US"
+          },
+          twitter: {
+            card: "summary",
+            site: "@dfwACC",
+            creator: "@dfwACC",
+            title: "Admin Setup",
+            description: "Admin setup page"
+          }
+        }}
+      />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle>Admin Setup</CardTitle>
+            <CardDescription>
+              Create the first admin user to access the analytics dashboard
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           <form onSubmit={handleSetup} className="space-y-4">
             <div className="space-y-2">
@@ -192,6 +217,7 @@ const AdminSetup: React.FC = () => {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 };
 

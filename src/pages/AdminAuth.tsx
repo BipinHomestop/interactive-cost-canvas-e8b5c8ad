@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AdminLogin } from '@/components/auth/AdminLogin';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { MetaTags } from '@/seo/MetaTags';
 
 const AdminAuth: React.FC = () => {
   const navigate = useNavigate();
@@ -71,7 +72,34 @@ const AdminAuth: React.FC = () => {
     return null; // Will redirect to analytics
   }
 
-  return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
+  return (
+    <>
+      <MetaTags 
+        customMeta={{
+          title: "Admin Login - American Concrete Coatings",
+          description: "Admin login page for American Concrete Coatings dashboard",
+          keywords: "admin, login, dashboard",
+          robots: "noindex, nofollow",
+          og: {
+            title: "Admin Login",
+            description: "Admin login page",
+            url: "https://quote.garagefloorcoatingsdfw.com/admin",
+            type: "website",
+            siteName: "American Concrete Coatings",
+            locale: "en_US"
+          },
+          twitter: {
+            card: "summary",
+            site: "@dfwACC",
+            creator: "@dfwACC",
+            title: "Admin Login",
+            description: "Admin login page"
+          }
+        }}
+      />
+      <AdminLogin onLoginSuccess={handleLoginSuccess} />
+    </>
+  );
 };
 
 export default AdminAuth;
