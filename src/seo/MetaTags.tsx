@@ -73,7 +73,6 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       
 
       {/* Technical SEO */}
-      <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
       <link rel="robots" href="/robots.txt" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
