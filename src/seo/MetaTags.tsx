@@ -70,7 +70,10 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:image" content={metaTags.twitter?.image} />
       <meta name="twitter:image:alt" content={baseMetaTags.twitter.imageAlt} />
       
-      
+      {/* Cache Control - Prevent caching during canonical cleanup */}
+      <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+      <meta httpEquiv="Pragma" content="no-cache" />
+      <meta httpEquiv="Expires" content="0" />
 
       {/* Technical SEO */}
       <link rel="robots" href="/robots.txt" />
@@ -133,7 +136,6 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <link rel="apple-touch-icon" sizes="180x180" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
       <link rel="icon" type="image/png" sizes="32x32" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
       <link rel="icon" type="image/png" sizes="16x16" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
-      <link rel="manifest" href="/site.webmanifest" />
       <link rel="icon" href="/lovable-uploads/2801dcc9-420d-47df-a608-349956012150.png" />
     </Helmet>
   );
