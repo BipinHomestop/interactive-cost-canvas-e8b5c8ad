@@ -1,10 +1,12 @@
 import { baseMetaTags, stepMetaTags, successMetaTags, analyticsMetaTags } from './meta-tags';
+import { getCanonicalUrlForStep, CANONICAL_URLS } from './canonical-urls';
 
 export interface MetaTagsConfig {
   title: string;
   description: string;
   keywords?: string;
   robots?: string;
+  canonical?: string;
   og?: {
     title: string;
     description: string;
@@ -30,6 +32,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       description: baseMetaTags.description,
       keywords: baseMetaTags.keywords,
       robots: baseMetaTags.robots,
+      canonical: getCanonicalUrlForStep(),
       og: {
         title: baseMetaTags.og.title,
         description: baseMetaTags.og.description,
@@ -60,6 +63,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
     description: stepData.description,
     keywords: stepData.keywords,
     robots: baseMetaTags.robots,
+    canonical: getCanonicalUrlForStep(step),
     og: {
       title: stepData.og.title,
       description: stepData.og.description,
@@ -85,6 +89,7 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
     description: successMetaTags.description,
     keywords: successMetaTags.keywords,
     robots: baseMetaTags.robots,
+    canonical: CANONICAL_URLS.SUCCESS,
     og: {
       title: successMetaTags.og.title,
       description: successMetaTags.og.description,
@@ -110,6 +115,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
     description: analyticsMetaTags.description,
     keywords: analyticsMetaTags.keywords,
     robots: analyticsMetaTags.robots,
+    canonical: CANONICAL_URLS.ANALYTICS,
     og: {
       title: analyticsMetaTags.title,
       description: analyticsMetaTags.description,

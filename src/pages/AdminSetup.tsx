@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
 import { MetaTags } from '@/seo/MetaTags';
+import { CANONICAL_URLS } from '@/seo/canonical-urls';
 
 const AdminSetup: React.FC = () => {
   const navigate = useNavigate();
@@ -126,6 +127,7 @@ const AdminSetup: React.FC = () => {
           description: "Admin setup page for American Concrete Coatings dashboard",
           keywords: "admin, setup, dashboard",
           robots: "noindex, nofollow",
+          canonical: CANONICAL_URLS.ADMIN_SETUP,
           og: {
             title: "Admin Setup",
             description: "Admin setup page",
