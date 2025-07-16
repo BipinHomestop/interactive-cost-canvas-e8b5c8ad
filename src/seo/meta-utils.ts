@@ -1,5 +1,5 @@
 import { baseMetaTags, stepMetaTags, successMetaTags, analyticsMetaTags } from './meta-tags';
-import { getCanonicalUrlForStep, CANONICAL_URLS } from './canonical-urls';
+import { getCanonicalUrlForStep, getCanonicalUrls } from './canonical-urls';
 
 export interface MetaTagsConfig {
   title: string;
@@ -89,7 +89,7 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
     description: successMetaTags.description,
     keywords: successMetaTags.keywords,
     robots: baseMetaTags.robots,
-    canonical: CANONICAL_URLS.SUCCESS,
+    canonical: getCanonicalUrls().SUCCESS,
     og: {
       title: successMetaTags.og.title,
       description: successMetaTags.og.description,
@@ -115,7 +115,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
     description: analyticsMetaTags.description,
     keywords: analyticsMetaTags.keywords,
     robots: analyticsMetaTags.robots,
-    canonical: CANONICAL_URLS.ANALYTICS,
+    canonical: getCanonicalUrls().ANALYTICS,
     og: {
       title: analyticsMetaTags.title,
       description: analyticsMetaTags.description,

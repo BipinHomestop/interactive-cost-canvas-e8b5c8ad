@@ -3,7 +3,7 @@ import { AdminLogin } from '@/components/auth/AdminLogin';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { MetaTags } from '@/seo/MetaTags';
-import { CANONICAL_URLS } from '@/seo/canonical-urls';
+import { getCanonicalUrls } from '@/seo/canonical-urls';
 
 const AdminAuth: React.FC = () => {
   const navigate = useNavigate();
@@ -81,7 +81,7 @@ const AdminAuth: React.FC = () => {
           description: "Admin login page for American Concrete Coatings dashboard",
           keywords: "admin, login, dashboard",
           robots: "noindex, nofollow",
-          canonical: CANONICAL_URLS.ADMIN,
+          canonical: getCanonicalUrls().ADMIN,
           og: {
             title: "Admin Login",
             description: "Admin login page",

@@ -1,62 +1,85 @@
 /**
  * Canonical URL Configuration
- * Base domain: https://quote.garagefloorcoatingsdfw.com
+ * Dynamically detects the current domain for canonical URLs
  */
 
-export const BASE_DOMAIN = 'https://quote.garagefloorcoatingsdfw.com';
+/**
+ * Get the current base domain dynamically
+ */
+export function getBaseDomain(): string {
+  if (typeof window !== 'undefined') {
+    const { protocol, hostname, port } = window.location;
+    const portSuffix = port && port !== '80' && port !== '443' ? `:${port}` : '';
+    return `${protocol}//${hostname}${portSuffix}`;
+  }
+  
+  // Fallback for SSR or when window is not available
+  return 'https://quote.garagefloorcoatingsdfw.com';
+}
 
-export const CANONICAL_URLS = {
-  // Main calculator page (home)
-  HOME: `${BASE_DOMAIN}/`,
+/**
+ * Get canonical URLs dynamically based on current domain
+ */
+export function getCanonicalUrls() {
+  const baseDomain = getBaseDomain();
   
-  // Calculator steps
-  STEP_1: `${BASE_DOMAIN}/step/1`,
-  STEP_2: `${BASE_DOMAIN}/step/2`,
-  STEP_3: `${BASE_DOMAIN}/step/3`,
-  STEP_4: `${BASE_DOMAIN}/step/4`,
-  STEP_5: `${BASE_DOMAIN}/step/5`,
-  STEP_6: `${BASE_DOMAIN}/step/6`,
-  STEP_7: `${BASE_DOMAIN}/step/7`,
-  STEP_8: `${BASE_DOMAIN}/step/8`,
-  STEP_9: `${BASE_DOMAIN}/step/9`,
-  
-  // Other pages
-  SUCCESS: `${BASE_DOMAIN}/success`,
-  ANALYTICS: `${BASE_DOMAIN}/analytics`,
-  ADMIN: `${BASE_DOMAIN}/admin`,
-  ADMIN_SETUP: `${BASE_DOMAIN}/admin/setup`,
-} as const;
+  return {
+    // Main calculator page (home)
+    HOME: `${baseDomain}/`,
+    
+    // Calculator steps
+    STEP_1: `${baseDomain}/step/1`,
+    STEP_2: `${baseDomain}/step/2`,
+    STEP_3: `${baseDomain}/step/3`,
+    STEP_4: `${baseDomain}/step/4`,
+    STEP_5: `${baseDomain}/step/5`,
+    STEP_6: `${baseDomain}/step/6`,
+    STEP_7: `${baseDomain}/step/7`,
+    STEP_8: `${baseDomain}/step/8`,
+    STEP_9: `${baseDomain}/step/9`,
+    
+    // Other pages
+    SUCCESS: `${baseDomain}/success`,
+    ANALYTICS: `${baseDomain}/analytics`,
+    ADMIN: `${baseDomain}/admin`,
+    ADMIN_SETUP: `${baseDomain}/admin/setup`,
+  } as const;
+}
 
 /**
  * Get canonical URL for a given step number
  */
 export function getCanonicalUrlForStep(step?: number): string {
+  const urls = getCanonicalUrls();
+  
   if (!step) {
-    return CANONICAL_URLS.HOME;
+    return urls.HOME;
   }
   
-  const stepKey = `STEP_${step}` as keyof typeof CANONICAL_URLS;
-  return CANONICAL_URLS[stepKey] || CANONICAL_URLS.HOME;
+  const stepKey = `STEP_${step}` as keyof typeof urls;
+  return urls[stepKey] || urls.HOME;
 }
 
 /**
  * Get canonical URL for a given route path
  */
 export function getCanonicalUrlForRoute(pathname: string): string {
+  const urls = getCanonicalUrls();
+  
   // Remove trailing slash for consistency
   const cleanPath = pathname.replace(/\/$/, '') || '/';
   
   switch (cleanPath) {
     case '/':
-      return CANONICAL_URLS.HOME;
+      return urls.HOME;
     case '/success':
-      return CANONICAL_URLS.SUCCESS;
+      return urls.SUCCESS;
     case '/analytics':
-      return CANONICAL_URLS.ANALYTICS;
+      return urls.ANALYTICS;
     case '/admin':
-      return CANONICAL_URLS.ADMIN;
+      return urls.ADMIN;
     case '/admin/setup':
-      return CANONICAL_URLS.ADMIN_SETUP;
+      return urls.ADMIN_SETUP;
     default:
       // Handle step URLs like /step/1, /step/2, etc.
       const stepMatch = cleanPath.match(/^\/step\/(\d+)$/);
@@ -66,6 +89,6 @@ export function getCanonicalUrlForRoute(pathname: string): string {
       }
       
       // Fallback to home for unknown routes
-      return CANONICAL_URLS.HOME;
+      return urls.HOME;
   }
 }
