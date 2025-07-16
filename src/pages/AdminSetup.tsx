@@ -126,6 +126,7 @@ const AdminSetup: React.FC = () => {
           description: "Admin setup page for American Concrete Coatings dashboard",
           keywords: "admin, setup, dashboard",
           robots: "noindex, nofollow",
+          canonical: "https://costcalculator.americanconcretecoatings.com/admin/setup",
           og: {
             title: "Admin Setup",
             description: "Admin setup page",

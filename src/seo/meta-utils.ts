@@ -5,6 +5,7 @@ export interface MetaTagsConfig {
   description: string;
   keywords?: string;
   robots?: string;
+  canonical?: string;
   og?: {
     title: string;
     description: string;
@@ -23,6 +24,9 @@ export interface MetaTagsConfig {
   };
 }
 
+// Base domain for canonical URLs
+const BASE_DOMAIN = "https://costcalculator.americanconcretecoatings.com";
+
 export function getMetaTagsForStep(step?: number): MetaTagsConfig {
   if (!step) {
     return {
@@ -30,6 +34,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
       description: baseMetaTags.description,
       keywords: baseMetaTags.keywords,
       robots: baseMetaTags.robots,
+      canonical: BASE_DOMAIN,
       og: {
         title: baseMetaTags.og.title,
         description: baseMetaTags.og.description,
@@ -60,6 +65,7 @@ export function getMetaTagsForStep(step?: number): MetaTagsConfig {
     description: stepData.description,
     keywords: stepData.keywords,
     robots: baseMetaTags.robots,
+    canonical: `${BASE_DOMAIN}/step/${step}`,
     og: {
       title: stepData.og.title,
       description: stepData.og.description,
@@ -85,6 +91,7 @@ export function getSuccessPageMetaTags(): MetaTagsConfig {
     description: successMetaTags.description,
     keywords: successMetaTags.keywords,
     robots: baseMetaTags.robots,
+    canonical: `${BASE_DOMAIN}/success`,
     og: {
       title: successMetaTags.og.title,
       description: successMetaTags.og.description,
@@ -110,6 +117,7 @@ export function getAnalyticsPageMetaTags(): MetaTagsConfig {
     description: analyticsMetaTags.description,
     keywords: analyticsMetaTags.keywords,
     robots: analyticsMetaTags.robots,
+    canonical: `${BASE_DOMAIN}/analytics`,
     og: {
       title: analyticsMetaTags.title,
       description: analyticsMetaTags.description,
