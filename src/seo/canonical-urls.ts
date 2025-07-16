@@ -4,45 +4,43 @@
  */
 
 /**
- * Get the current base domain dynamically
+ * Hardcoded base domain for consistent SEO
+ * This ensures canonical URLs match the sitemap exactly
+ */
+export const BASE_DOMAIN = 'https://quote.garagefloorcoatingsdfw.com';
+
+/**
+ * Get the current base domain - now hardcoded for SEO consistency
  */
 export function getBaseDomain(): string {
-  if (typeof window !== 'undefined') {
-    const { protocol, hostname, port } = window.location;
-    const portSuffix = port && port !== '80' && port !== '443' ? `:${port}` : '';
-    return `${protocol}//${hostname}${portSuffix}`;
-  }
-  
-  // Return empty string for SSR - canonical URLs will be set client-side
-  return '';
+  return BASE_DOMAIN;
 }
 
 /**
- * Get canonical URLs dynamically based on current domain
+ * Hardcoded canonical URLs for consistent SEO
+ * These URLs match exactly with the sitemap.xml
  */
 export function getCanonicalUrls() {
-  const baseDomain = getBaseDomain();
-  
   return {
     // Main calculator page (home)
-    HOME: `${baseDomain}/`,
+    HOME: `${BASE_DOMAIN}/`,
     
     // Calculator steps
-    STEP_1: `${baseDomain}/step/1`,
-    STEP_2: `${baseDomain}/step/2`,
-    STEP_3: `${baseDomain}/step/3`,
-    STEP_4: `${baseDomain}/step/4`,
-    STEP_5: `${baseDomain}/step/5`,
-    STEP_6: `${baseDomain}/step/6`,
-    STEP_7: `${baseDomain}/step/7`,
-    STEP_8: `${baseDomain}/step/8`,
-    STEP_9: `${baseDomain}/step/9`,
+    STEP_1: `${BASE_DOMAIN}/step/1`,
+    STEP_2: `${BASE_DOMAIN}/step/2`,
+    STEP_3: `${BASE_DOMAIN}/step/3`,
+    STEP_4: `${BASE_DOMAIN}/step/4`,
+    STEP_5: `${BASE_DOMAIN}/step/5`,
+    STEP_6: `${BASE_DOMAIN}/step/6`,
+    STEP_7: `${BASE_DOMAIN}/step/7`,
+    STEP_8: `${BASE_DOMAIN}/step/8`,
+    STEP_9: `${BASE_DOMAIN}/step/9`,
     
     // Other pages
-    SUCCESS: `${baseDomain}/success`,
-    ANALYTICS: `${baseDomain}/analytics`,
-    ADMIN: `${baseDomain}/admin`,
-    ADMIN_SETUP: `${baseDomain}/admin/setup`,
+    SUCCESS: `${BASE_DOMAIN}/success`,
+    ANALYTICS: `${BASE_DOMAIN}/analytics`,
+    ADMIN: `${BASE_DOMAIN}/admin`,
+    ADMIN_SETUP: `${BASE_DOMAIN}/admin/setup`,
   } as const;
 }
 

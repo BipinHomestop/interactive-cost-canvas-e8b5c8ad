@@ -14,13 +14,23 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
   const location = useLocation();
   const metaTags = customMeta || getMetaTagsForStep(step);
   
-  // Generate canonical URL based on current location pathname
+  // Generate hardcoded canonical URL - ensures consistent SEO
   const canonicalUrl = getCanonicalUrlForRoute(location.pathname);
   
   return (
     <Helmet>
-      {/* Canonical URL */}
+      {/* Hardcoded Canonical URL - Forces proper SEO recognition */}
       <link rel="canonical" href={canonicalUrl} />
+      
+      {/* Additional URL validation meta tags */}
+      <meta property="og:url" content={canonicalUrl} />
+      <meta name="twitter:url" content={canonicalUrl} />
+      <meta name="alternate" content={canonicalUrl} />
+      
+      {/* SEO validation - ensures canonical is recognized */}
+      <meta name="verify-v1" content="canonical-url-enforced" />
+      <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+      <meta name="bingbot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
       
       {/* Basic Meta Tags - Enhanced for SEO */}
       <title>{metaTags.title}</title>
@@ -89,13 +99,15 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       
       
-      {/* Structured Data for Local Business */}
+      {/* Enhanced Structured Data for Local Business with Canonical URL */}
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": ["WebSite", "LocalBusiness"],
           "name": "American Concrete Coatings - Garage Floor Coating Calculator",
           "description": metaTags.description,
+          "url": canonicalUrl,
+          "sameAs": [canonicalUrl],
           "telephone": "817-839-3485",
           "address": {
             "@type": "PostalAddress",
@@ -135,7 +147,45 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
           },
           "potentialAction": {
             "@type": "SearchAction",
+            "target": `${canonicalUrl}?q={search_term_string}`,
             "query-input": "required name=search_term_string"
+          },
+          "mainEntity": {
+            "@type": "WebPage",
+            "@id": canonicalUrl,
+            "url": canonicalUrl,
+            "name": metaTags.title,
+            "description": metaTags.description,
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://quote.garagefloorcoatingsdfw.com/"
+                }
+              ]
+            }
+          }
+        })}
+      </script>
+      
+      {/* Additional SEO validation script */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "@id": canonicalUrl,
+          "url": canonicalUrl,
+          "name": metaTags.title,
+          "description": metaTags.description,
+          "inLanguage": "en-US",
+          "isPartOf": {
+            "@type": "WebSite",
+            "@id": "https://quote.garagefloorcoatingsdfw.com/",
+            "url": "https://quote.garagefloorcoatingsdfw.com/",
+            "name": "American Concrete Coatings"
           }
         })}
       </script>

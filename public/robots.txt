@@ -1,7 +1,34 @@
 
+# Robots.txt for American Concrete Coatings - Garage Floor Coating Calculator
+# Enhanced for SEO optimization and proper crawler guidance
+
 User-agent: *
 Allow: /
+Allow: /step/
+Allow: /success
+Disallow: /admin
+Disallow: /analytics
+Disallow: /api/
 
+# Crawl delay to prevent server overload
+Crawl-delay: 1
+
+# Sitemap location - matches canonical URLs
 Sitemap: https://quote.garagefloorcoatingsdfw.com/sitemap.xml
 
-# Test - robots.txt working
+# Additional SEO directives
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: *
+Disallow: /private/
+Disallow: *.json$
+Disallow: *.log$
+
+# Force canonical URL recognition
+# All pages should use https://quote.garagefloorcoatingsdfw.com as base domain
