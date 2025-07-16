@@ -13,8 +13,8 @@ export function getBaseDomain(): string {
     return `${protocol}//${hostname}${portSuffix}`;
   }
   
-  // Fallback for SSR or when window is not available
-  return 'https://quote.garagefloorcoatingsdfw.com';
+  // Return empty string for SSR - canonical URLs will be set client-side
+  return '';
 }
 
 /**
