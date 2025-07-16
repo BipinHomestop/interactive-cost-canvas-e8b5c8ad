@@ -9,6 +9,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useSecurityHeaders } from "@/hooks/useSecurityHeaders";
+import { useCanonicalBlocker } from "@/hooks/useCanonicalBlocker";
+import { canonicalBlocker } from "@/seo/canonicalBlocker";
 import Index from "./pages/Index";
 import Success from "./pages/Success";
 import Analytics from "./pages/Analytics";
@@ -52,6 +54,12 @@ const AnalyticsTracker = () => {
 
 function App() {
   useSecurityHeaders();
+  useCanonicalBlocker();
+  
+  // Additional protection - Force canonical blocker activation
+  useEffect(() => {
+    canonicalBlocker.forceCleanup();
+  }, []);
   
   return (
     <>

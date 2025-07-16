@@ -80,7 +80,6 @@ const AdminAuth: React.FC = () => {
           description: "Admin login page for American Concrete Coatings dashboard",
           keywords: "admin, login, dashboard",
           robots: "noindex, nofollow",
-          canonical: "https://costcalculator.americanconcretecoatings.com/admin",
           og: {
             title: "Admin Login",
             description: "Admin login page",

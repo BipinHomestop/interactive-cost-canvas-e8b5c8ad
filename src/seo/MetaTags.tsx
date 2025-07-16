@@ -10,19 +10,62 @@ interface MetaTagsProps {
 
 export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
   const metaTags = customMeta || getMetaTagsForStep(step);
+
+  // Runtime canonical tag blocker
+  useEffect(() => {
+    const blockCanonicalTags = () => {
+      // Remove any existing canonical tags
+      const existingCanonical = document.querySelectorAll('link[rel="canonical"]');
+      existingCanonical.forEach(tag => tag.remove());
+
+      // Block future canonical tag additions
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                const element = node as Element;
+                
+                // Check if the added element is a canonical link
+                if (element.tagName === 'LINK' && element.getAttribute('rel') === 'canonical') {
+                  console.warn('Canonical tag blocked and removed:', element);
+                  element.remove();
+                }
+                
+                // Check for canonical links within added elements
+                const canonicalLinks = element.querySelectorAll('link[rel="canonical"]');
+                canonicalLinks.forEach(link => {
+                  console.warn('Canonical tag blocked and removed:', link);
+                  link.remove();
+                });
+              }
+            });
+          }
+        });
+      });
+
+      observer.observe(document.head, {
+        childList: true,
+        subtree: true
+      });
+
+      return () => observer.disconnect();
+    };
+
+    const cleanup = blockCanonicalTags();
+    return cleanup;
+  }, []);
   
   return (
     <Helmet>
+      {/* CANONICAL TAG BLOCKER - Explicitly prevent any canonical references */}
+      {/* This component will NEVER render canonical tags */}
+      
       {/* Basic Meta Tags - Enhanced for SEO */}
       <title>{metaTags.title}</title>
       <meta name="description" content={metaTags.description} />
       <meta name="keywords" content={metaTags.keywords} />
-      <meta name="robots" content={metaTags.robots || "index, follow"} />
-      
-      {/* Canonical URL */}
-      {metaTags.canonical && (
-        <link rel="canonical" href={metaTags.canonical} />
-      )}
+      <meta name="robots" content={metaTags.robots} />
       <meta name="author" content="American Concrete Coatings" />
       <meta name="language" content="en-US" />
       <meta name="revisit-after" content="3 days" />
@@ -75,6 +118,10 @@ export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
       <meta name="twitter:image" content={metaTags.twitter?.image} />
       <meta name="twitter:image:alt" content={baseMetaTags.twitter.imageAlt} />
       
+      {/* Cache Control - Prevent caching during canonical cleanup */}
+      <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+      <meta httpEquiv="Pragma" content="no-cache" />
+      <meta httpEquiv="Expires" content="0" />
 
       {/* Technical SEO */}
       <link rel="robots" href="/robots.txt" />
