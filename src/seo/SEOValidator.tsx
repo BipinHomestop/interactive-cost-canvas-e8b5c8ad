@@ -63,21 +63,7 @@ export const SEOValidator: React.FC = () => {
       }
     }
 
-    // Force canonical URL recognition for SEO tools
-    if (typeof window !== 'undefined' && window.location.href !== canonicalUrl) {
-      // Add additional meta tag to ensure SEO tools recognize the canonical
-      const metaCanonical = document.createElement('meta');
-      metaCanonical.setAttribute('name', 'canonical-url');
-      metaCanonical.setAttribute('content', canonicalUrl);
-      
-      // Remove existing if present
-      const existingMeta = document.querySelector('meta[name="canonical-url"]');
-      if (existingMeta) {
-        existingMeta.remove();
-      }
-      
-      document.head.appendChild(metaCanonical);
-    }
+    // No additional meta tag manipulation - respect hardcoded canonical tags only
   }, [location.pathname]);
 
   return null; // This component doesn't render anything
