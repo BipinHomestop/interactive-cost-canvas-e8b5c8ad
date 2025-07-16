@@ -1,7 +1,9 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
+import { useLocation } from 'react-router-dom';
 import { baseMetaTags } from './meta-tags';
 import { getMetaTagsForStep, type MetaTagsConfig } from './meta-utils';
+import { getCanonicalUrlForRoute } from './canonical-urls';
 
 interface MetaTagsProps {
   step?: number;
@@ -9,14 +11,16 @@ interface MetaTagsProps {
 }
 
 export const MetaTags: React.FC<MetaTagsProps> = ({ step, customMeta }) => {
+  const location = useLocation();
   const metaTags = customMeta || getMetaTagsForStep(step);
+  
+  // Generate canonical URL based on current location pathname
+  const canonicalUrl = getCanonicalUrlForRoute(location.pathname);
   
   return (
     <Helmet>
       {/* Canonical URL */}
-      {metaTags.canonical && (
-        <link rel="canonical" href={metaTags.canonical} />
-      )}
+      <link rel="canonical" href={canonicalUrl} />
       
       {/* Basic Meta Tags - Enhanced for SEO */}
       <title>{metaTags.title}</title>
