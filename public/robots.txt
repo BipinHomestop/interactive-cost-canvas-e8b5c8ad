@@ -3,3 +3,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://quote.garagefloorcoatingsdfw.com/sitemap.xml
+
+# Test - robots.txt working
