@@ -92,6 +92,14 @@ export const AnalyticsHeader: React.FC<AnalyticsHeaderProps> = ({
             >
               90 Days
             </Button>
+            <Button 
+              variant={timeRange === 'all' ? 'default' : 'ghost'} 
+              size="sm"
+              className={timeRange === 'all' ? 'bg-primary' : 'text-gray-600'}
+              onClick={() => setTimeRange('all')}
+            >
+              All Data
+            </Button>
           </div>
         </div>
       </div>

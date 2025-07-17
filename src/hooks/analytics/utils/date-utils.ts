@@ -21,6 +21,8 @@ export const getStartDateFromRange = (timeRange: string): Date => {
       return subDays(today, 30);
     case '90d':
       return subDays(today, 90);
+    case 'all':
+      return new Date('2020-01-01'); // Start from a very early date to get all data
     default:
       return subDays(today, 30); // default to 30 days
   }
