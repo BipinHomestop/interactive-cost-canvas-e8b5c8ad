@@ -55,6 +55,16 @@ const NotFound = () => {
   const location = useLocation();
   
   useEffect(() => {
+    // Don't handle static files - let them be served by the server
+    if (location.pathname === '/sitemap.xml' || 
+        location.pathname === '/robots.txt' || 
+        location.pathname.startsWith('/sitemap.xml') || 
+        location.pathname.startsWith('/robots.txt')) {
+      // Force a hard refresh to let the server handle these static files
+      window.location.href = location.pathname;
+      return;
+    }
+    
     // Redirect calculator/* paths to the main calculator
     if (location.pathname.startsWith('/calculator/')) {
       window.location.replace('/');
