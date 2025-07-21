@@ -1,3 +1,4 @@
+
 {
   "headers": [
     {
@@ -26,6 +27,13 @@
           "value": "text/xsl; charset=utf-8"
         }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/calculator/:path*",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "rewrites": [

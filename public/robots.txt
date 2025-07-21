@@ -9,6 +9,7 @@ Allow: /success
 Disallow: /admin
 Disallow: /analytics
 Disallow: /api/
+Disallow: /calculator/
 
 # Crawl delay to prevent server overload
 Crawl-delay: 1
@@ -19,14 +20,19 @@ Sitemap: https://quote.garagefloorcoatingsdfw.com/sitemap.xml
 # Additional SEO directives
 User-agent: Googlebot
 Allow: /
+Allow: /step/
+Disallow: /calculator/
 Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Allow: /step/
+Disallow: /calculator/
 Crawl-delay: 1
 
 User-agent: *
 Disallow: /private/
+Disallow: /calculator/
 Disallow: *.json$
 Disallow: *.log$
 

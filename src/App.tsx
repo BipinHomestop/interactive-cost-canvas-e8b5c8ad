@@ -50,6 +50,33 @@ const AnalyticsTracker = () => {
   return null;
 };
 
+// 404 Component for non-existent calculator paths
+const NotFound = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Redirect calculator/* paths to the main calculator
+    if (location.pathname.startsWith('/calculator/')) {
+      window.location.replace('/');
+    }
+  }, [location]);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">404 - Page Not Found</h1>
+        <p className="text-gray-600 mb-8">The page you're looking for doesn't exist.</p>
+        <a 
+          href="/" 
+          className="bg-[#1A3174] text-white px-6 py-3 rounded-lg hover:bg-[#1A3174]/90 transition-colors"
+        >
+          Go to Calculator
+        </a>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   useSecurityHeaders();
   
@@ -67,6 +94,10 @@ function App() {
               <Route path="/admin" element={<AdminAuth />} />
               <Route path="/admin/setup" element={<AdminSetup />} />
               <Route path="/analytics" element={<Analytics />} />
+              {/* Redirect any calculator/* paths to home */}
+              <Route path="/calculator/*" element={<Navigate to="/" replace />} />
+              {/* Catch all other routes */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
             <Sonner />

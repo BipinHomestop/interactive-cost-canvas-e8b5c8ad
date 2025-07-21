@@ -39,22 +39,25 @@ export const useCalculator = () => {
     console.log('Current totalCost:', totalCost);
     console.log('Current submissionId:', submissionId || sessionStorage.getItem('calculatorSubmissionId') || 'none');
     
-    // Track step progression for analytics
+    // Track step progression for analytics using proper URL format
     if (typeof window !== 'undefined' && window.gtag) {
+      const actualPagePath = step === 1 ? '/' : `/step/${step}`;
+      
       window.gtag('event', 'calculator_step', {
         'step_number': step,
         'step_name': getStepName(step),
         'current_total': totalCost,
-        'has_submission_id': !!submissionId || !!sessionStorage.getItem('calculatorSubmissionId')
+        'has_submission_id': !!submissionId || !!sessionStorage.getItem('calculatorSubmissionId'),
+        'page_path': actualPagePath
       });
       
-      // Track event in our own database
-      logCalculatorStep(step, getStepName(step), totalCost);
+      // Track event in our own database with proper page format
+      logCalculatorStep(step, getStepName(step), totalCost, actualPagePath);
     }
   }, [formValues, totalCost, step, submissionId]);
   
   // Helper function to log calculator steps to our database
-  const logCalculatorStep = async (stepNumber: number, stepName: string, currentTotal: number) => {
+  const logCalculatorStep = async (stepNumber: number, stepName: string, currentTotal: number, pagePath: string) => {
     try {
       // Create a basic IP hash for user identification
       const ipResponse = await fetch('https://ipapi.co/json/');
@@ -67,7 +70,7 @@ export const useCalculator = () => {
       const ipHash = Array.from(new Uint8Array(hashBuffer))
         .map(b => b.toString(16).padStart(2, '0')).join('');
       
-      // Insert into analytics_location_visits
+      // Insert into analytics_location_visits with proper page path
       const { error, data: insertData } = await supabase
         .from('analytics_location_visits')
         .insert({
@@ -78,12 +81,12 @@ export const useCalculator = () => {
           ip_hash: ipHash,
           visit_date: new Date().toISOString().split('T')[0],
           visit_time: new Date().toTimeString().split(' ')[0],
-          page_visited: `calculator-step-${stepNumber}-${stepName}`,
+          page_visited: pagePath, // Use actual URL path instead of descriptive name
           time_range: '30d' // Default time range
         })
         .select();
       
-      console.log(`Step ${stepNumber} (${stepName}) logged to analytics`, insertData);
+      console.log(`Step ${stepNumber} (${stepName}) logged to analytics with path: ${pagePath}`, insertData);
     } catch (error) {
       console.error('Error logging calculator step:', error);
     }
