@@ -1,7 +1,6 @@
 
 import React, { useEffect } from 'react';
 import { MetaTags } from './seo/MetaTags';
-import { SchemaScript } from './seo/SchemaScript';
 import './App.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -92,7 +91,6 @@ function App() {
   
   return (
     <>
-      <SchemaScript />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter basename="/">
           <TooltipProvider>
