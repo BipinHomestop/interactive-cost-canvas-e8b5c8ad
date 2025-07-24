@@ -46,6 +46,7 @@ export const stepMetaTags = {
     title: "Step 1: Enter your ZIP code to get your garage renovation estimate",
     description: "Take the first step to get a cost estimate for your garage coating project. It's quick, easy, and tailored to your needs.",
     keywords: "garage floor coating service areas, Dallas Fort Worth installation, epoxy coating locations",
+    robots: "noindex, nofollow",
     
     og: {
       title: "Step 1: Enter your ZIP code to get your garage renovation estimate",
