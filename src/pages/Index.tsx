@@ -110,10 +110,10 @@ const Index = () => {
               variant="outline" 
               size="sm"
               className={`${isMobile ? 'h-9' : 'h-12'} border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5`}
-              onClick={() => window.location.href = "tel:+18175882055"}
+              onClick={() => window.location.href = "tel:+18178393485"}
             >
               <Phone className="w-4 h-4 mr-1" />
-              {!isMobile && <span>Call +1 (817) 588-2055</span>}
+              {!isMobile && <span>Call +1 (817) 839-3485</span>}
               {isMobile && <span className="text-xs">Call Us</span>}
             </Button>
           </div>
