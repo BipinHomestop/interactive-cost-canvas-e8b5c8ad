@@ -109,7 +109,7 @@ const Index = () => {
             <Button 
               variant="outline" 
               size="sm"
-              className={`${isMobile ? 'h-9' : 'h-12'} border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5`}
+              className={`${isMobile ? 'h-9' : 'h-12'} border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 hover:text-[#1A3174]`}
               onClick={() => window.location.href = "tel:+18178393485"}
             >
               <Phone className="w-4 h-4 mr-1" />
