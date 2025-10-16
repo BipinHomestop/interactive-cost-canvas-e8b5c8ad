@@ -13,8 +13,14 @@ export const createSubmission = async (
   discountPercentage?: number
 ) => {
   return withRetry(async () => {
+    // Generate an id client-side so we don't need SELECT privileges to retrieve it
+    const newId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+      ? (crypto as any).randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
     // Build sanitized data object - only sanitize fields that exist
     const submissionData: any = {
+      id: newId,
       garage_capacity: formValues.garageCapacity || null,
       garage_finish: formValues.garageFinish || 'snowfall',
       need_stem_walls: formValues.needStemWalls || 'no',
@@ -76,18 +82,19 @@ export const createSubmission = async (
     if (discountCode) submissionData.discount_code = discountCode;
     if (discountPercentage) submissionData.discount_percentage = discountPercentage;
     
-    console.log('Creating submission with sanitized data');
+    console.log('Creating submission with sanitized data (no select)');
     
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('cost_calculator_submissions')
-      .insert([submissionData])
-      .select();
+      .insert([submissionData]);
 
     if (error) {
       throw handleDatabaseError(error, 'create submission');
     }
 
-    console.log('Created submission successfully');
+    console.log('Created submission successfully with client id:', newId);
+    // Fabricate a minimal data response containing the id for the caller
+    const data = [{ id: newId }];
     return { data, error: null };
   });
 };
