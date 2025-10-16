@@ -1,7 +1,7 @@
-
 import { useToast } from "@/components/ui/use-toast";
 import { getPreservedCalculationData } from "./utils/submission-db";
 import { updatePaymentInfo as updatePaymentInfoDb } from "./utils/submission-db";
+import { InputSanitizer } from "@/components/security/InputSanitizer";
 
 export const usePaymentSubmission = (submissionId: string | null) => {
   const { toast } = useToast();
@@ -38,10 +38,15 @@ export const usePaymentSubmission = (submissionId: string | null) => {
             .toISOString().split('T')[0]
         : undefined;
       
+      // Sanitize checkout session ID if provided
+      const sanitizedCheckoutSessionId = checkoutSessionId 
+        ? InputSanitizer.sanitizeText(checkoutSessionId)
+        : undefined;
+      
       const updateData: Record<string, any> = {};
       
       if (formattedDate) updateData.preferred_installation_date = formattedDate;
-      if (checkoutSessionId) updateData.checkout_session_id = checkoutSessionId;
+      if (sanitizedCheckoutSessionId) updateData.checkout_session_id = sanitizedCheckoutSessionId;
       if (paymentStatus) updateData.payment_status = paymentStatus;
       
       // Ensure we have a valid price when updating payment info

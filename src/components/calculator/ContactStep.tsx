@@ -6,6 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
 import { Flag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { InputSanitizer } from "@/components/security/InputSanitizer";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -74,34 +75,36 @@ export function ContactStep({
     
     setIsSending(true);
     try {
-      console.log("Sending contact email with data:", {
-        name: nameValue,
-        email: emailValue,
-        phone: phoneValue,
-        location: locationValue
-      });
+      // Sanitize inputs before sending to edge function
+      const sanitizedName = InputSanitizer.sanitizeName(nameValue);
+      const sanitizedEmail = InputSanitizer.sanitizeEmail(emailValue);
+      const sanitizedPhone = InputSanitizer.sanitizePhone(phoneValue);
+      const sanitizedLocation = InputSanitizer.sanitizeZipCode(locationValue);
+      
+      // Validate sanitized inputs
+      if (!sanitizedName || !sanitizedEmail || !sanitizedPhone) {
+        console.error('Invalid contact information after sanitization');
+        return;
+      }
       
       const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: {
-          name: nameValue,
-          email: emailValue,
-          phone: phoneValue,
-          location: locationValue
+          name: sanitizedName,
+          email: sanitizedEmail,
+          phone: sanitizedPhone,
+          location: sanitizedLocation
         }
       });
 
       console.log("Edge function response:", data, error);
 
       if (error) {
-        console.error("Error sending contact email:", error);
+        console.error("Failed to send contact email");
       } else if (data && data.success) {
-        console.log("Contact email sent successfully:", data);
         setEmailSent(true);
-      } else {
-        console.warn("Unexpected response:", data);
       }
     } catch (err) {
-      console.error("Exception sending contact email:", err);
+      console.error("Failed to send contact email");
     } finally {
       setIsSending(false);
     }

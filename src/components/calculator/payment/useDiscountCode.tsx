@@ -45,16 +45,27 @@ export function useDiscountCode(totalCost: number) {
     setIsLoading(true);
     
     try {
-      // Query the discount_codes table with explicit type declaration
+      // Use secure validation function instead of direct table query
       const { data, error } = await supabase
-        .from('discount_codes')
-        .select('*')
-        .eq('code', couponCode.trim().toUpperCase())
-        .eq('active', true)
-        .maybeSingle();
+        .rpc('validate_discount_code', { 
+          code_to_check: couponCode.trim().toUpperCase() 
+        });
       
-      if (error || !data) {
-        console.error('Error fetching coupon:', error);
+      if (error) {
+        console.error('Error validating coupon');
+        toast({
+          title: "Error",
+          description: "Failed to validate coupon. Please try again.",
+          variant: "destructive",
+        });
+        setDiscountPercentage(0);
+        return;
+      }
+      
+      // Check if the code is valid (RPC returns array with one row)
+      const validationResult = Array.isArray(data) && data.length > 0 ? data[0] : null;
+      
+      if (!validationResult || !validationResult.is_valid) {
         toast({
           title: "Invalid Coupon",
           description: "This coupon code is invalid or expired",
@@ -66,35 +77,22 @@ export function useDiscountCode(totalCost: number) {
         return;
       }
       
-      // Type check and process discount
-      const discountData = data as DiscountCode;
-      
-      // Check if the coupon has expired
-      if (discountData.expires_at && new Date(discountData.expires_at) < new Date()) {
-        toast({
-          title: "Expired Coupon",
-          description: "This coupon code has expired",
-          variant: "destructive",
-        });
-        setDiscountPercentage(0);
-        return;
-      }
-      
       // Apply the discount
-      setDiscountPercentage(discountData.discount_percentage);
+      const discountValue = validationResult.discount_percentage;
+      setDiscountPercentage(discountValue);
       
       // Save to session storage
-      sessionStorage.setItem('cachedDiscountPercentage', discountData.discount_percentage.toString());
+      sessionStorage.setItem('cachedDiscountPercentage', discountValue.toString());
       sessionStorage.setItem('cachedCouponCode', couponCode);
       
       toast({
         title: "Coupon Applied",
-        description: `${discountData.discount_percentage}% discount applied to your order`,
+        description: `${discountValue}% discount applied to your order`,
         className: "bg-green-500 text-white border-none",
       });
       
     } catch (error) {
-      console.error('Error applying coupon:', error);
+      console.error('Error applying coupon');
       toast({
         title: "Error",
         description: "Failed to apply coupon. Please try again.",

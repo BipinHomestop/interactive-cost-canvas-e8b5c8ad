@@ -1,7 +1,7 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { CalculatorInputs } from "@/components/calculator/types";
 import { withRetry, handleDatabaseError } from "./database-retry";
+import { InputSanitizer } from "@/components/security/InputSanitizer";
 
 /**
  * Creates a new submission in the database
@@ -13,22 +13,29 @@ export const createSubmission = async (
   discountPercentage?: number
 ) => {
   return withRetry(async () => {
+    // Sanitize user inputs before database insertion
+    const sanitizedName = InputSanitizer.sanitizeName(formValues.name || '');
+    const sanitizedEmail = InputSanitizer.sanitizeEmail(formValues.email || '');
+    const sanitizedPhone = InputSanitizer.sanitizePhone(formValues.phone || '');
+    const sanitizedLocation = InputSanitizer.sanitizeZipCode(formValues.location || '');
+    
+    // Validate sanitized inputs
+    if (!sanitizedName || !sanitizedEmail || !sanitizedPhone || !sanitizedLocation) {
+      throw new Error('Invalid input data after sanitization');
+    }
+    
     // Ensure we never save a zero or negative price to the database
     const finalPrice = totalPrice && totalPrice > 0 ? totalPrice : null;
     
-    console.log('Creating submission with data:', {
-      location: formValues.location,
-      garage_capacity: formValues.garageCapacity,
-      total_price: finalPrice
-    });
+    console.log('Creating sanitized submission');
     
     const { data, error } = await supabase
       .from('cost_calculator_submissions')
       .insert([{
-        location: formValues.location || '',
-        name: formValues.name || '',
-        phone: formValues.phone || '',
-        email: formValues.email || '',
+        location: sanitizedLocation,
+        name: sanitizedName,
+        phone: sanitizedPhone,
+        email: sanitizedEmail,
         garage_capacity: formValues.garageCapacity || null,
         garage_finish: formValues.garageFinish || 'snowfall', // Default value
         need_stem_walls: formValues.needStemWalls || 'no',
@@ -94,6 +101,24 @@ export const buildUpdateObject = (
 ): Record<string, any> => {
   const updateData: Record<string, any> = {};
   
+  // Sanitize user inputs before building update object
+  if (formValues.name !== undefined) {
+    const sanitized = InputSanitizer.sanitizeName(formValues.name);
+    if (sanitized) updateData.name = sanitized;
+  }
+  if (formValues.email !== undefined) {
+    const sanitized = InputSanitizer.sanitizeEmail(formValues.email);
+    if (sanitized) updateData.email = sanitized;
+  }
+  if (formValues.phone !== undefined) {
+    const sanitized = InputSanitizer.sanitizePhone(formValues.phone);
+    if (sanitized) updateData.phone = sanitized;
+  }
+  if (formValues.location !== undefined) {
+    const sanitized = InputSanitizer.sanitizeZipCode(formValues.location);
+    if (sanitized) updateData.location = sanitized;
+  }
+  
   // Only include fields that have values
   if (formValues.garageCapacity !== undefined) updateData.garage_capacity = formValues.garageCapacity;
   if (formValues.garageFinish !== undefined) updateData.garage_finish = formValues.garageFinish;
@@ -103,10 +128,6 @@ export const buildUpdateObject = (
   if (formValues.needExtraFootage !== undefined) updateData.need_extra_footage = formValues.needExtraFootage;
   if (formValues.extraFootage !== undefined) updateData.extra_footage = formValues.extraFootage;
   if (formValues.currentCondition !== undefined) updateData.current_condition = formValues.currentCondition;
-  if (formValues.location !== undefined) updateData.location = formValues.location;
-  if (formValues.name !== undefined) updateData.name = formValues.name;
-  if (formValues.phone !== undefined) updateData.phone = formValues.phone;
-  if (formValues.email !== undefined) updateData.email = formValues.email;
   
   // Add optional fields - ensuring totalPrice is valid
   if (totalPrice !== undefined && totalPrice > 0) updateData.total_price = totalPrice;

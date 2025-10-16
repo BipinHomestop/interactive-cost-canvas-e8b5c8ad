@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { InputSanitizer } from "@/components/security/InputSanitizer";
 
 interface LocationStepProps {
   onLocationChange: (value: string) => void;
@@ -22,9 +23,10 @@ export function LocationStep({
   const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
   
   const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 5);
-    setZipCode(value);
+    const rawValue = e.target.value.replace(/\D/g, '').slice(0, 5);
+    const sanitizedValue = InputSanitizer.sanitizeZipCode(rawValue);
     
+    setZipCode(sanitizedValue);
     setError(null);
     setIsValid(false);
     
@@ -32,9 +34,9 @@ export function LocationStep({
       clearTimeout(typingTimeout);
     }
     
-    if (value.length === 5) {
+    if (sanitizedValue.length === 5) {
       const timeout = setTimeout(() => {
-        validateZipCode(value);
+        validateZipCode(sanitizedValue);
       }, 300);
       
       setTypingTimeout(timeout);
