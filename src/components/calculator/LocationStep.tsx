@@ -24,9 +24,8 @@ export function LocationStep({
   
   const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/\D/g, '').slice(0, 5);
-    const sanitizedValue = InputSanitizer.sanitizeZipCode(rawValue);
     
-    setZipCode(sanitizedValue);
+    setZipCode(rawValue);
     setError(null);
     setIsValid(false);
     
@@ -34,9 +33,9 @@ export function LocationStep({
       clearTimeout(typingTimeout);
     }
     
-    if (sanitizedValue.length === 5) {
+    if (rawValue.length === 5) {
       const timeout = setTimeout(() => {
-        validateZipCode(sanitizedValue);
+        validateZipCode(rawValue);
       }, 300);
       
       setTypingTimeout(timeout);
@@ -44,7 +43,9 @@ export function LocationStep({
   };
   
   const validateZipCode = async (value: string = zipCode) => {
-    if (value.length !== 5) {
+    const sanitizedValue = InputSanitizer.sanitizeZipCode(value);
+    
+    if (!sanitizedValue || sanitizedValue.length !== 5) {
       setError("Please enter a valid 5-digit ZIP code");
       return false;
     }
@@ -56,7 +57,7 @@ export function LocationStep({
         await supabase
           .from('analytics_location_visits')
           .insert({
-            zipcode: value,
+            zipcode: sanitizedValue,
             page_visited: 'location-zipcode-search',
             time_range: '30d'
           });
@@ -67,7 +68,7 @@ export function LocationStep({
       const { data, error: queryError } = await supabase
         .from('service_area_zipcodes')
         .select('zipcode')
-        .eq('zipcode', value)
+        .eq('zipcode', sanitizedValue)
         .eq('is_active', true)
         .maybeSingle();
       
@@ -87,7 +88,7 @@ export function LocationStep({
           await supabase
             .from('analytics_location_visits')
             .insert({
-              zipcode: value,
+              zipcode: sanitizedValue,
               page_visited: 'location-zipcode-not-served',
               time_range: '30d'
             });
@@ -106,7 +107,7 @@ export function LocationStep({
         await supabase
           .from('analytics_location_visits')
           .insert({
-            zipcode: value,
+            zipcode: sanitizedValue,
             page_visited: 'location-zipcode-valid',
             time_range: '30d'
           });
@@ -114,7 +115,7 @@ export function LocationStep({
         console.error('Error logging valid zipcode:', analyticsError);
       }
       
-      onLocationChange(value);
+      onLocationChange(sanitizedValue);
       
       return true;
     } catch (err) {
