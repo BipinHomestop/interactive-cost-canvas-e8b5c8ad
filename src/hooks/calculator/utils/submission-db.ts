@@ -13,49 +13,81 @@ export const createSubmission = async (
   discountPercentage?: number
 ) => {
   return withRetry(async () => {
-    // Sanitize user inputs before database insertion
-    const sanitizedName = InputSanitizer.sanitizeName(formValues.name || '');
-    const sanitizedEmail = InputSanitizer.sanitizeEmail(formValues.email || '');
-    const sanitizedPhone = InputSanitizer.sanitizePhone(formValues.phone || '');
-    const sanitizedLocation = InputSanitizer.sanitizeZipCode(formValues.location || '');
+    // Build sanitized data object - only sanitize fields that exist
+    const submissionData: any = {
+      garage_capacity: formValues.garageCapacity || null,
+      garage_finish: formValues.garageFinish || 'snowfall',
+      need_stem_walls: formValues.needStemWalls || 'no',
+      stem_wall_type: formValues.stemWallType,
+      need_steps: formValues.needSteps,
+      need_extra_footage: formValues.needExtraFootage,
+      extra_footage: formValues.extraFootage,
+      current_condition: formValues.currentCondition,
+      payment_status: 'incomplete'
+    };
     
-    // Validate sanitized inputs
-    if (!sanitizedName || !sanitizedEmail || !sanitizedPhone || !sanitizedLocation) {
-      throw new Error('Invalid input data after sanitization');
+    // Sanitize and validate contact fields only if they are provided
+    if (formValues.location) {
+      const sanitizedLocation = InputSanitizer.sanitizeZipCode(formValues.location);
+      if (!sanitizedLocation) {
+        throw new Error('Invalid ZIP code format');
+      }
+      submissionData.location = sanitizedLocation;
+    } else {
+      // Location is required at minimum for new submissions
+      throw new Error('Location (ZIP code) is required');
     }
     
-    // Ensure we never save a zero or negative price to the database
-    const finalPrice = totalPrice && totalPrice > 0 ? totalPrice : null;
+    if (formValues.name) {
+      const sanitizedName = InputSanitizer.sanitizeName(formValues.name);
+      if (!sanitizedName) {
+        throw new Error('Invalid name format');
+      }
+      submissionData.name = sanitizedName;
+    } else {
+      submissionData.name = ''; // Will be filled later
+    }
     
-    console.log('Creating sanitized submission');
+    if (formValues.email) {
+      const sanitizedEmail = InputSanitizer.sanitizeEmail(formValues.email);
+      if (!sanitizedEmail) {
+        throw new Error('Invalid email format');
+      }
+      submissionData.email = sanitizedEmail;
+    } else {
+      submissionData.email = ''; // Will be filled later
+    }
+    
+    if (formValues.phone) {
+      const sanitizedPhone = InputSanitizer.sanitizePhone(formValues.phone);
+      if (!sanitizedPhone) {
+        throw new Error('Invalid phone format');
+      }
+      submissionData.phone = sanitizedPhone;
+    } else {
+      submissionData.phone = ''; // Will be filled later
+    }
+    
+    // Ensure we never save a zero or negative price
+    if (totalPrice && totalPrice > 0) {
+      submissionData.total_price = totalPrice;
+    }
+    
+    if (discountCode) submissionData.discount_code = discountCode;
+    if (discountPercentage) submissionData.discount_percentage = discountPercentage;
+    
+    console.log('Creating submission with sanitized data');
     
     const { data, error } = await supabase
       .from('cost_calculator_submissions')
-      .insert([{
-        location: sanitizedLocation,
-        name: sanitizedName,
-        phone: sanitizedPhone,
-        email: sanitizedEmail,
-        garage_capacity: formValues.garageCapacity || null,
-        garage_finish: formValues.garageFinish || 'snowfall', // Default value
-        need_stem_walls: formValues.needStemWalls || 'no',
-        stem_wall_type: formValues.stemWallType,
-        need_steps: formValues.needSteps,
-        need_extra_footage: formValues.needExtraFootage,
-        extra_footage: formValues.extraFootage,
-        current_condition: formValues.currentCondition,
-        total_price: finalPrice,
-        discount_code: discountCode,
-        discount_percentage: discountPercentage,
-        payment_status: 'incomplete' // Mark as incomplete until payment step
-      }])
+      .insert([submissionData])
       .select();
 
     if (error) {
       throw handleDatabaseError(error, 'create submission');
     }
 
-    console.log('Created submission successfully with price:', finalPrice);
+    console.log('Created submission successfully');
     return { data, error: null };
   });
 };
