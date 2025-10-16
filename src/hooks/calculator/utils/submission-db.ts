@@ -112,19 +112,18 @@ export const updateSubmission = async (
       console.warn('Prevented saving zero or negative price to database');
       delete updateData.total_price;
     }
-    
-    console.log('Updating submission:', submissionId, 'with data:', updateData);
-    
-    const { error } = await supabase
-      .from('cost_calculator_submissions')
-      .update(updateData)
-      .eq('id', submissionId);
+
+    console.log('Updating submission via edge function:', submissionId, 'with data:', updateData);
+
+    const { data, error } = await supabase.functions.invoke('update-submission', {
+      body: { id: submissionId, update: updateData }
+    });
 
     if (error) {
       throw handleDatabaseError(error, 'update submission');
     }
 
-    console.log('Updated submission successfully');
+    console.log('Updated submission successfully via edge function');
     return { error: null };
   });
 };
