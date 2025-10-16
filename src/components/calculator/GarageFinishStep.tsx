@@ -143,12 +143,12 @@ export function GarageFinishStep({
           key={finish.value}
           onClick={() => onFinishChange(finish.value)}
           className={`
-            flex items-center gap-3 p-3 border transition-all w-full
+            flex items-center gap-3 p-3 border-2 transition-all duration-200 w-full rounded-lg
+            hover:shadow-md active:scale-[0.98]
             ${selectedFinish === finish.value 
-              ? "bg-[#1A3174] text-white border-[#1A3174]" 
-              : "bg-white text-[#0A0B3B] border-gray-200 hover:border-[#1A3174]/30"
+              ? "bg-[#1A3174] text-white border-[#1A3174] shadow-sm" 
+              : "bg-white text-[#0A0B3B] border-gray-200 hover:border-[#1A3174]/50"
             }
-            ${isMobile ? 'rounded-md' : ''}
           `}
         >
           <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0 relative">

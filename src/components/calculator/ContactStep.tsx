@@ -138,7 +138,7 @@ export function ContactStep({
           <Input 
             id="name" 
             type="text" 
-            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${isMobile ? 'h-12' : ''}`} 
+            className={`w-full focus-visible:ring-2 focus-visible:ring-[#1A3174]/20 focus-visible:border-[#1A3174] transition-all duration-200 ${isMobile ? 'h-12' : ''}`} 
             {...register("name")} 
             placeholder="Enter your full name" 
           />
@@ -158,7 +158,7 @@ export function ContactStep({
             <Input 
               id="phone" 
               type="tel" 
-              className={`w-full pl-16 focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${phoneError ? 'border-red-500' : ''} ${isMobile ? 'h-12' : ''}`} 
+              className={`w-full pl-16 focus-visible:ring-2 focus-visible:ring-[#1A3174]/20 focus-visible:border-[#1A3174] transition-all duration-200 ${phoneError ? 'border-red-500 focus-visible:ring-red-500/20' : ''} ${isMobile ? 'h-12' : ''}`} 
               {...register("phone")} 
               placeholder="(555) 123-4567" 
             />
@@ -175,7 +175,7 @@ export function ContactStep({
           <Input 
             id="email" 
             type="email" 
-            className={`w-full focus-visible:ring-1 focus-visible:ring-[#1A3174] focus-visible:border-[#1A3174] ${isMobile ? 'h-12' : ''}`} 
+            className={`w-full focus-visible:ring-2 focus-visible:ring-[#1A3174]/20 focus-visible:border-[#1A3174] transition-all duration-200 ${isMobile ? 'h-12' : ''}`} 
             {...register("email")} 
             placeholder="Enter your email address" 
           />

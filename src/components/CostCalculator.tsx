@@ -11,6 +11,7 @@ import { PaymentStep } from "./calculator/PaymentStep";
 import { ImageDisplay } from "./calculator/ImageDisplay";
 import { FormNavigation } from "./calculator/FormNavigation";
 import { FAQSection } from "./calculator/FAQSection";
+import { ProgressIndicator } from "./calculator/ProgressIndicator";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
@@ -132,6 +133,9 @@ export function CostCalculator() {
 
   const formContent = (
     <div className={`${isMobile ? 'pb-16' : ''}`}>
+      {step < 9 && !isMobile && (
+        <ProgressIndicator currentStep={step} totalSteps={8} />
+      )}
       {renderStep()}
     </div>
   );

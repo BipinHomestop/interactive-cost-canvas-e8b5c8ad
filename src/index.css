@@ -27,6 +27,15 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.75rem;
+    
+    /* Enhanced shadows for depth */
+    --shadow-soft: 0 2px 8px -2px hsl(var(--primary) / 0.08);
+    --shadow-medium: 0 4px 16px -4px hsl(var(--primary) / 0.12);
+    --shadow-strong: 0 8px 24px -6px hsl(var(--primary) / 0.16);
+    
+    /* Smooth transitions */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 }
 
@@ -78,31 +87,49 @@
 
 @layer components {
   .input-modern {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all duration-200;
+    @apply w-full px-4 py-3 border border-input bg-background rounded-lg 
+           focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary 
+           transition-all duration-200 placeholder:text-muted-foreground;
   }
-  
+
   .btn-primary {
-    @apply bg-primary hover:bg-primary-light text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200;
+    @apply bg-primary text-primary-foreground px-6 py-3 rounded-lg 
+           hover:bg-primary/90 active:scale-[0.98] 
+           transition-all duration-200 font-medium shadow-sm hover:shadow-md;
   }
-  
+
   .btn-outline {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200;
+    @apply border-2 border-primary text-primary px-6 py-3 rounded-lg 
+           hover:bg-primary/10 active:scale-[0.98]
+           transition-all duration-200 font-medium;
   }
 
   .card-modern {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:shadow-md;
+    @apply bg-card text-card-foreground rounded-xl shadow-sm p-6 
+           transition-all duration-200 hover:shadow-md border border-border;
   }
 
   .accordion-item {
-    @apply rounded-lg border border-gray-200 mb-3 overflow-hidden;
+    @apply border border-border rounded-lg mb-2 overflow-hidden bg-card;
   }
 
   .accordion-trigger {
-    @apply w-full p-4 text-left font-medium text-gray-800 hover:bg-gray-50 transition-colors duration-200;
+    @apply flex items-center justify-between w-full px-4 py-3 text-left font-medium 
+           hover:bg-accent transition-colors duration-200;
   }
 
   .accordion-content {
-    @apply p-4 text-gray-600 bg-gray-50/50;
+    @apply px-4 py-3 text-muted-foreground;
+  }
+  
+  /* Option card with enhanced interactions */
+  .option-card {
+    @apply flex items-center gap-3 p-3 border-2 rounded-lg transition-all duration-200
+           cursor-pointer hover:shadow-md active:scale-[0.98];
+  }
+  
+  .option-card-selected {
+    @apply border-primary shadow-sm;
   }
 }
 

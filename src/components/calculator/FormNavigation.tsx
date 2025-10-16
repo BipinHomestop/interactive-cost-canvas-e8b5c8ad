@@ -17,8 +17,9 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
           variant="outline" 
           onClick={onPrev}
           className={`
-            w-full border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10
-            ${isMobile ? 'h-12 rounded-full' : ''}
+            w-full border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10 hover:text-[#1A3174]
+            transition-all duration-200 hover:shadow-md
+            ${isMobile ? 'h-12 rounded-full' : 'rounded-lg'}
           `}
         >
           Back
@@ -30,8 +31,10 @@ export function FormNavigation({ step, onNext, onPrev, isLastStep, isNextDisable
         <Button
           type="button"
           className={`
-            w-full bg-[#1A3174] hover:bg-[#1A3174]/90
-            ${isMobile ? 'h-12 rounded-full' : ''}
+            w-full bg-[#1A3174] hover:bg-[#1A3174]/90 text-white
+            transition-all duration-200 shadow-sm hover:shadow-lg
+            ${isMobile ? 'h-12 rounded-full' : 'rounded-lg'}
+            ${isNextDisabled ? 'opacity-50 cursor-not-allowed' : ''}
           `}
           onClick={onNext}
           disabled={isNextDisabled}

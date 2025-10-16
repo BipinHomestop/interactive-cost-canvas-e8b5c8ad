@@ -21,13 +21,13 @@ export function PaymentNavigation({
           <Button 
             variant="outline" 
             onClick={onBack}
-            className="flex-1 h-12 rounded-full bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 text-sm"
+            className="flex-1 h-12 rounded-full bg-white border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10 hover:text-[#1A3174] text-sm transition-all duration-200 hover:shadow-md"
             disabled={isLoading}
           >
             Back
           </Button>
           <Button 
-            className="flex-1 h-12 rounded-full bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm"
+            className="flex-1 h-12 rounded-full bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm transition-all duration-200 shadow-md hover:shadow-lg"
             onClick={onCheckout}
             disabled={isLoading}
           >
@@ -44,13 +44,13 @@ export function PaymentNavigation({
         <Button 
           variant="outline" 
           onClick={onBack}
-          className="flex-1 h-12 sm:h-14 rounded-lg bg-white border border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/5 text-sm sm:text-base"
+          className="flex-1 h-12 sm:h-14 rounded-lg bg-white border-2 border-[#1A3174] text-[#1A3174] hover:bg-[#1A3174]/10 hover:text-[#1A3174] text-sm sm:text-base transition-all duration-200 hover:shadow-md"
           disabled={isLoading}
         >
           Back
         </Button>
         <Button 
-          className="flex-1 h-12 sm:h-14 rounded-lg bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm sm:text-base"
+          className="flex-1 h-12 sm:h-14 rounded-lg bg-[#1A3174] text-white hover:bg-[#1A3174]/90 text-sm sm:text-base transition-all duration-200 shadow-md hover:shadow-lg"
           onClick={onCheckout}
           disabled={isLoading}
         >
