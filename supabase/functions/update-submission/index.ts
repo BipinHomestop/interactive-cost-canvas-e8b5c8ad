@@ -110,6 +110,32 @@ function sanitizeUpdate(input: Record<string, any>): Record<string, any> {
 interface Payload {
   id: string;
   update: Record<string, any>;
+  sessionToken?: string; // Client passes a session token to prove ownership
+}
+
+// Simple in-memory session store (tokens expire after 30 minutes)
+const sessionTokens = new Map<string, { submissionId: string; expiresAt: number }>();
+
+function validateSessionToken(token: string | undefined, submissionId: string): boolean {
+  if (!token) return false;
+  const session = sessionTokens.get(token);
+  if (!session) return false;
+  if (Date.now() > session.expiresAt) {
+    sessionTokens.delete(token);
+    return false;
+  }
+  return session.submissionId === submissionId;
+}
+
+function createSessionToken(submissionId: string): string {
+  const token = crypto.randomUUID();
+  // Token expires in 30 minutes
+  sessionTokens.set(token, { submissionId, expiresAt: Date.now() + 30 * 60 * 1000 });
+  // Clean up expired tokens periodically
+  for (const [key, value] of sessionTokens.entries()) {
+    if (Date.now() > value.expiresAt) sessionTokens.delete(key);
+  }
+  return token;
 }
 
 serve(async (req: Request) => {
@@ -118,9 +144,27 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { id, update }: Payload = await req.json();
+    const body = await req.json();
+    const { id, update, sessionToken }: Payload = body;
+    
+    // Check if this is a request to create a session token (for initial submission)
+    if (body.action === 'create_session' && body.submissionId) {
+      if (!isUuid(body.submissionId)) {
+        return new Response(JSON.stringify({ error: 'Invalid submission ID' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      }
+      const token = createSessionToken(body.submissionId);
+      console.log('update-submission: created session token for', body.submissionId);
+      return new Response(JSON.stringify({ sessionToken: token }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    }
+    
     if (!id || !isUuid(id)) {
       return new Response(JSON.stringify({ error: 'Invalid or missing id' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    }
+
+    // Validate ownership via session token
+    if (!validateSessionToken(sessionToken, id)) {
+      console.warn('update-submission: invalid or missing session token for', id);
+      return new Response(JSON.stringify({ error: 'Unauthorized: invalid session token' }), { status: 403, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }
 
     const updateData = sanitizeUpdate(update);

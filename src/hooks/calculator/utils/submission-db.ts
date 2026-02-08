@@ -3,6 +3,41 @@ import { CalculatorInputs } from "@/components/calculator/types";
 import { withRetry, handleDatabaseError } from "./database-retry";
 import { InputSanitizer } from "@/components/security/InputSanitizer";
 
+// Store session token for the current submission
+let currentSessionToken: string | null = null;
+let currentSubmissionId: string | null = null;
+
+/**
+ * Creates a session token for a submission to prove ownership for future updates
+ */
+const createSessionToken = async (submissionId: string): Promise<string | null> => {
+  try {
+    const { data, error } = await supabase.functions.invoke('update-submission', {
+      body: { action: 'create_session', submissionId }
+    });
+    if (error) {
+      console.error('Failed to create session token:', error);
+      return null;
+    }
+    return data?.sessionToken || null;
+  } catch (err) {
+    console.error('Error creating session token:', err);
+    return null;
+  }
+};
+
+/**
+ * Gets or creates a session token for the given submission
+ */
+const getSessionToken = async (submissionId: string): Promise<string | null> => {
+  if (currentSubmissionId === submissionId && currentSessionToken) {
+    return currentSessionToken;
+  }
+  currentSessionToken = await createSessionToken(submissionId);
+  currentSubmissionId = submissionId;
+  return currentSessionToken;
+};
+
 /**
  * Creates a new submission in the database
  */
@@ -93,6 +128,15 @@ export const createSubmission = async (
     }
 
     console.log('Created submission successfully with client id:', newId);
+    
+    // Create a session token for this new submission to enable secure updates
+    const token = await createSessionToken(newId);
+    if (token) {
+      currentSessionToken = token;
+      currentSubmissionId = newId;
+      console.log('Session token created for new submission');
+    }
+    
     // Fabricate a minimal data response containing the id for the caller
     const data = [{ id: newId }];
     return { data, error: null };
@@ -113,10 +157,16 @@ export const updateSubmission = async (
       delete updateData.total_price;
     }
 
+    // Get session token for secure update
+    const sessionToken = await getSessionToken(submissionId);
+    if (!sessionToken) {
+      console.warn('No session token available for update - update may fail');
+    }
+
     console.log('Updating submission via edge function:', submissionId, 'with data:', updateData);
 
     const { data, error } = await supabase.functions.invoke('update-submission', {
-      body: { id: submissionId, update: updateData }
+      body: { id: submissionId, update: updateData, sessionToken }
     });
 
     if (error) {
@@ -194,10 +244,16 @@ export const updatePaymentInfo = async (
       delete updateData.total_price;
     }
     
+    // Get session token for secure update
+    const sessionToken = await getSessionToken(submissionId);
+    if (!sessionToken) {
+      console.warn('No session token available for payment update - update may fail');
+    }
+    
     console.log('Updating payment info via edge function:', submissionId, 'with data:', updateData);
 
     const { data, error } = await supabase.functions.invoke('update-submission', {
-      body: { id: submissionId, update: updateData }
+      body: { id: submissionId, update: updateData, sessionToken }
     });
 
     if (error) {
