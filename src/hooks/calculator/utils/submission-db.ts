@@ -194,18 +194,17 @@ export const updatePaymentInfo = async (
       delete updateData.total_price;
     }
     
-    console.log('Updating payment info for submission:', submissionId, 'with data:', updateData);
-    
-    const { error } = await supabase
-      .from('cost_calculator_submissions')
-      .update(updateData)
-      .eq('id', submissionId);
+    console.log('Updating payment info via edge function:', submissionId, 'with data:', updateData);
+
+    const { data, error } = await supabase.functions.invoke('update-submission', {
+      body: { id: submissionId, update: updateData }
+    });
 
     if (error) {
       throw handleDatabaseError(error, 'update payment info');
     }
 
-    console.log('Updated payment info successfully');
+    console.log('Updated payment info successfully via edge function');
     return { error: null };
   });
 };
