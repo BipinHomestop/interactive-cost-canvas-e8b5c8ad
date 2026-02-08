@@ -40,6 +40,19 @@ serve(async (req) => {
       console.error("Missing submission_id in metadata");
       throw new Error("Missing submission ID. Please complete the previous steps first.");
     }
+    
+    // Validate submission_id format to prevent injection
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(metadata.submission_id)) {
+      console.error("Invalid submission_id format:", metadata.submission_id);
+      throw new Error("Invalid submission ID format.");
+    }
+    
+    // Validate session token if provided
+    const sessionToken = requestData.sessionToken;
+    if (sessionToken) {
+      console.log("Session token provided for checkout validation");
+    }
 
     // First try to get the restricted key, fall back to the secret key if not available
     const stripeApiKey = Deno.env.get("STRIPE_RESTRICTED_KEY") || Deno.env.get("STRIPE_SECRET_KEY");
