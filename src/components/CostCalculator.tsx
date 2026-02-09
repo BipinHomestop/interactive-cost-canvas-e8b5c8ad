@@ -16,6 +16,7 @@ import { ProgressIndicator } from "./calculator/ProgressIndicator";
 import { StepTransition } from "./calculator/StepTransition";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useImagePreloader } from "@/hooks/calculator/use-image-preloader";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -42,6 +43,9 @@ export function CostCalculator() {
     handleNextStep,
     handlePrevStep
   } = useCalculator();
+  
+  // Preload images for smoother transitions
+  useImagePreloader(step, formValues.garageFinish);
 
   const getStepOptions = () => {
     switch (step) {

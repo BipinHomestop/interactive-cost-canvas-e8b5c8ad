@@ -1,81 +1,109 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { CalculatorInputs } from "../types";
 import * as db from "./utils/databaseQueries";
 import * as imageUtils from "./utils/imageUtils";
 import { supabase } from "@/integrations/supabase/client";
+import { getCachedImage, setCachedImage } from "@/hooks/calculator/use-image-preloader";
+
+// Simple in-memory cache for database queries
+const queryCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const getCachedQuery = (key: string) => {
+  const cached = queryCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+  return null;
+};
+
+const setCachedQuery = (key: string, data: any) => {
+  queryCache.set(key, { data, timestamp: Date.now() });
+};
 
 export function useCalculatorImage(step: number, options?: Partial<CalculatorInputs>) {
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [currentImageSrc, setCurrentImageSrc] = useState<string>("");
   const { toast } = useToast();
+  const abortController = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    // Cancel any pending request
+    if (abortController.current) {
+      abortController.current.abort();
+    }
+    abortController.current = new AbortController();
+    
     let isMounted = true;
 
     const loadImage = async () => {
       if (!isMounted) return;
       
-      console.log('Loading image for step:', step, 'with options:', options);
+      // Check cache first for quick display
+      const cacheKey = `step-${step}-${JSON.stringify(options)}`;
+      const cachedSrc = getCachedImage(cacheKey);
+      if (cachedSrc) {
+        setCurrentImageSrc(cachedSrc);
+        setIsLoading(false);
+        return;
+      }
+      
       setIsLoading(true);
       setImageError(false);
-      setCurrentImageSrc(""); // Reset the image source before loading new one
       
       try {
         let imageData = null;
         
         if (step === 8 && options?.currentCondition) {
-          console.log('Step 8 - Loading image for condition:', options.currentCondition);
+          // Check query cache
+          const queryCacheKey = `step8-${options.currentCondition}`;
+          const cached = getCachedQuery(queryCacheKey);
           
-          const { data, error } = await supabase
-            .from('calculator_step_images')
-            .select('image_path')
-            .eq('step_number', 8)
-            .eq('image_type', options.currentCondition)
-            .maybeSingle();
-          
-          if (error) {
-            console.error('Error fetching condition image:', error);
-            throw error;
-          }
-          
-          if (data) {
-            imageData = data;
-            console.log('Found image for condition:', data);
+          if (cached) {
+            imageData = cached;
+          } else {
+            const { data, error } = await supabase
+              .from('calculator_step_images')
+              .select('image_path')
+              .eq('step_number', 8)
+              .eq('image_type', options.currentCondition)
+              .maybeSingle();
+            
+            if (error) throw error;
+            if (data) {
+              imageData = data;
+              setCachedQuery(queryCacheKey, data);
+            }
           }
         } else if (step === 7) {
-          console.log('Step 7 - Loading image for extra footage:', options?.extraFootage);
-          
           let imageType = 'default';
           if (options?.needExtraFootage === 'no') {
             imageType = 'no';
           } else if (options?.needExtraFootage === 'yes') {
-            if (options?.extraFootage) {
-              imageType = options.extraFootage;
-            } else {
-              imageType = 'yes';
+            imageType = options?.extraFootage || 'yes';
+          }
+          
+          const queryCacheKey = `step7-${imageType}`;
+          const cached = getCachedQuery(queryCacheKey);
+          
+          if (cached) {
+            imageData = cached;
+          } else {
+            const { data, error } = await supabase
+              .from('calculator_step_images')
+              .select('image_path')
+              .eq('step_number', 7)
+              .eq('image_type', imageType)
+              .maybeSingle();
+            
+            if (error) throw error;
+            if (data) {
+              imageData = data;
+              setCachedQuery(queryCacheKey, data);
             }
-          }
-          
-          console.log('Using image type for step 7:', imageType);
-          
-          const { data, error } = await supabase
-            .from('calculator_step_images')
-            .select('image_path')
-            .eq('step_number', 7)
-            .eq('image_type', imageType)
-            .maybeSingle();
-          
-          if (error) {
-            console.error('Error fetching extra footage image:', error);
-            throw error;
-          }
-          
-          if (data) {
-            imageData = data;
-            console.log('Found image for extra footage:', data);
           }
         } else if ((step === 5 || step === 6) && options?.garageFinish) {
           const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
@@ -95,22 +123,29 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         } else if (step === 9) {
           imageData = await db.getLastSelectedImage(5);
         } else {
-          // For all other steps, get the default image
+          // Check for default image in cache
+          const defaultCacheKey = `step-${step}-default`;
+          const cachedDefault = getCachedImage(defaultCacheKey);
+          if (cachedDefault) {
+            if (isMounted) {
+              setCurrentImageSrc(cachedDefault);
+              setIsLoading(false);
+            }
+            return;
+          }
           imageData = await db.getStepImage(step, 'default');
         }
 
         if (!isMounted) return;
 
         if (imageData?.image_path) {
-          console.log('Setting new image source:', imageData.image_path);
           setCurrentImageSrc(imageData.image_path);
+          setCachedImage(cacheKey, imageData.image_path);
         } else {
-          console.log('No image path found for step:', step);
           setImageError(true);
         }
       } catch (error) {
         if (!isMounted) return;
-        console.error('Error in loadImage:', error);
         setImageError(true);
       } finally {
         if (isMounted) {
@@ -126,7 +161,7 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
     };
   }, [step, options?.garageFinish, options?.needStemWalls, options?.stemWallType, 
       options?.needSteps, options?.currentCondition, options?.needExtraFootage, 
-      options?.extraFootage, toast]);
+      options?.extraFootage]);
 
   return { isLoading, imageError, currentImageSrc, setImageError };
 }
