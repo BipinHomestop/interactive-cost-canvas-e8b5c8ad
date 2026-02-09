@@ -344,6 +344,38 @@ export type Database = {
         }
         Relationships: []
       }
+      submission_session_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          submission_id: string
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          submission_id: string
+          token: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          submission_id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_submission"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "cost_calculator_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
