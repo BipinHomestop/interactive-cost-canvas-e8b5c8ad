@@ -1,12 +1,12 @@
-
 import { Input } from "@/components/ui/input";
 import { UseFormRegister, UseFormSetError, UseFormWatch } from "react-hook-form";
 import { CalculatorInputs } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState, useEffect } from "react";
-import { Flag } from "lucide-react";
+import { Flag, Check, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { InputSanitizer } from "@/components/security/InputSanitizer";
+import { cn } from "@/lib/utils";
 
 interface ContactStepProps {
   register: UseFormRegister<CalculatorInputs>;
@@ -124,64 +124,109 @@ export function ContactStep({
     }
   }, [nameValue, emailValue, phoneValue, emailSent, isSending]);
   
+  // Validation states
+  const isNameValid = nameValue && nameValue.trim().length >= 2;
+  const isEmailValid = emailValue && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+  const isPhoneValid = phoneValue && validatePhoneNumber(phoneValue);
+  
   return (
-    <div className={`space-y-4 ${isMobile ? 'px-1 pb-12' : 'px-4'}`}>
+    <div className={cn("space-y-4", isMobile ? "px-1 pb-12" : "px-4")}>
       <div>
-        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Contact Information</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-primary mb-2">Contact Information</h2>
+        <p className="text-muted-foreground">
           Please provide your contact details so we can send you the estimate.
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1 text-left">
+          <label htmlFor="name" className="block text-sm font-medium text-foreground/80 mb-1 text-left">
             Full Name
           </label>
-          <Input 
-            id="name" 
-            type="text" 
-            className={`w-full focus-visible:ring-2 focus-visible:ring-[#1A3174]/20 focus-visible:border-[#1A3174] transition-all duration-200 ${isMobile ? 'h-12' : ''}`} 
-            {...register("name")} 
-            placeholder="Enter your full name" 
-          />
+          <div className="relative">
+            <Input 
+              id="name" 
+              type="text" 
+              className={cn(
+                "w-full pr-10 transition-all duration-200",
+                "focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                isNameValid && "border-green-500 focus-visible:border-green-500",
+                isMobile && "h-12"
+              )} 
+              {...register("name")} 
+              placeholder="Enter your full name" 
+            />
+            {isNameValid && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none animate-in fade-in-0 zoom-in-50 duration-200">
+                <Check className="h-4 w-4 text-green-500" />
+              </div>
+            )}
+          </div>
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1 text-left">
+          <label htmlFor="phone" className="block text-sm font-medium text-foreground/80 mb-1 text-left">
             Phone Number
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <div className="flex items-center gap-1.5">
-                <Flag className="h-4 w-4 text-gray-500" />
-                <span className="text-gray-500 text-sm">+1</span>
+                <Flag className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground text-sm">+1</span>
               </div>
             </div>
             <Input 
               id="phone" 
               type="tel" 
-              className={`w-full pl-16 focus-visible:ring-2 focus-visible:ring-[#1A3174]/20 focus-visible:border-[#1A3174] transition-all duration-200 ${phoneError ? 'border-red-500 focus-visible:ring-red-500/20' : ''} ${isMobile ? 'h-12' : ''}`} 
+              className={cn(
+                "w-full pl-16 pr-10 transition-all duration-200",
+                "focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                phoneError && "border-destructive focus-visible:ring-destructive/20",
+                isPhoneValid && !phoneError && "border-green-500 focus-visible:border-green-500",
+                isMobile && "h-12"
+              )} 
               {...register("phone")} 
               placeholder="(555) 123-4567" 
             />
+            {isPhoneValid && !phoneError && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none animate-in fade-in-0 zoom-in-50 duration-200">
+                <Check className="h-4 w-4 text-green-500" />
+              </div>
+            )}
+            {phoneError && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <AlertCircle className="h-4 w-4 text-destructive" />
+              </div>
+            )}
           </div>
           {phoneError && (
-            <p className="mt-1 text-sm text-red-500">{phoneError}</p>
+            <p className="mt-1 text-sm text-destructive animate-in fade-in-0 slide-in-from-top-1 duration-200">{phoneError}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1 text-left">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground/80 mb-1 text-left">
             Email Address
           </label>
-          <Input 
-            id="email" 
-            type="email" 
-            className={`w-full focus-visible:ring-2 focus-visible:ring-[#1A3174]/20 focus-visible:border-[#1A3174] transition-all duration-200 ${isMobile ? 'h-12' : ''}`} 
-            {...register("email")} 
-            placeholder="Enter your email address" 
-          />
+          <div className="relative">
+            <Input 
+              id="email" 
+              type="email" 
+              className={cn(
+                "w-full pr-10 transition-all duration-200",
+                "focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary",
+                isEmailValid && "border-green-500 focus-visible:border-green-500",
+                isMobile && "h-12"
+              )} 
+              {...register("email")} 
+              placeholder="Enter your email address" 
+            />
+            {isEmailValid && (
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none animate-in fade-in-0 zoom-in-50 duration-200">
+                <Check className="h-4 w-4 text-green-500" />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

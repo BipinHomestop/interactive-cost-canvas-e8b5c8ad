@@ -85,6 +85,38 @@
   }
 }
 
+/* Animation utilities */
+@layer utilities {
+  .animate-in {
+    animation-name: enter;
+    animation-duration: 150ms;
+    --tw-enter-opacity: initial;
+    --tw-enter-scale: initial;
+    --tw-enter-translate-x: initial;
+    --tw-enter-translate-y: initial;
+  }
+  
+  .fade-in-0 {
+    --tw-enter-opacity: 0;
+  }
+  
+  .zoom-in-50 {
+    --tw-enter-scale: 0.5;
+  }
+  
+  .slide-in-from-top-1 {
+    --tw-enter-translate-y: -0.25rem;
+  }
+  
+  @keyframes enter {
+    from {
+      opacity: var(--tw-enter-opacity, 1);
+      transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0)
+        scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1));
+    }
+  }
+}
+
 @layer components {
   .input-modern {
     @apply w-full px-4 py-3 border border-input bg-background rounded-lg 
@@ -130,6 +162,13 @@
   
   .option-card-selected {
     @apply border-primary shadow-sm;
+  }
+  
+  /* Enhanced focus states */
+  .focus-enhanced {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 
+           focus-visible:border-primary focus-visible:shadow-[0_0_0_4px_rgba(26,49,116,0.1)]
+           transition-all duration-200;
   }
 }
 
