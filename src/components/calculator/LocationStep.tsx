@@ -129,8 +129,8 @@ export function LocationStep({
   return (
     <div className={`space-y-4 px-4 ${isMobile ? 'pb-4' : ''}`}>
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Where's Your Project Located?</h2>
-        <p className="text-gray-600 mb-4">
+        <h2 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-[#1A3174] mb-2`}>Where's Your Project Located?</h2>
+        <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-600 mb-4`}>
           Enter your ZIP code to get started with your garage renovation estimate
         </p>
       </div>

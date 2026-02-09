@@ -20,8 +20,8 @@ export function StemWallsStep({
   return (
     <div className={`space-y-6 ${isMobile ? 'pb-24 px-2' : ''}`}>
       <div>
-        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">Stem Walls</h2>
-        <p className="text-gray-600">
+        <h2 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-[#1A3174] mb-2`}>Stem Walls</h2>
+        <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-600`}>
           Stem walls are the vertical concrete surfaces around your garage.
         </p>
       </div>

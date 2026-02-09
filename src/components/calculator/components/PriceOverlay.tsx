@@ -42,14 +42,14 @@ export function PriceOverlay({
     )}>
       <div className={cn(
         "transition-all duration-300",
-        isMobile ? 'text-2xl font-extrabold mb-1' : 'text-3xl font-bold',
+        isMobile ? 'text-3xl font-extrabold mb-1' : 'text-3xl font-bold',
         "text-[#30EE00]",
         isUpdating && "scale-105 drop-shadow-[0_0_15px_rgba(48,238,0,0.5)]"
       )}>
         Your Price: ${displayedCost.toLocaleString()}
       </div>
       <div className={cn(
-        isMobile ? 'text-sm' : 'text-xl mt-2',
+        isMobile ? 'text-base' : 'text-xl mt-2',
         "text-white/90 transition-all duration-300"
       )}>
         Market Price: ${marketPrice.toLocaleString()}
