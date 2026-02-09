@@ -20,70 +20,9 @@ export const getFinishCollectionImage = async (garageFinish: string) => {
   });
 };
 
-export const updateStepImagesLastSelected = async (stepNumber: number) => {
-  return withRetry(async () => {
-    console.log('Updating last selected images for step:', stepNumber);
-    const { error } = await supabase
-      .from('calculator_step_images')
-      .update({ is_last_selected: false })
-      .eq('step_number', stepNumber);
-
-    if (error) {
-      throw handleDatabaseError(error, 'update step images last selected');
-    }
-  });
-};
-
-export const insertStepImage = async (
-  stepNumber: number,
-  imageType: string,
-  imagePath: string,
-  isLastSelected: boolean = false
-) => {
-  return withRetry(async () => {
-    console.log('Inserting step image:', { stepNumber, imageType, imagePath, isLastSelected });
-    
-    const { data: existingImage, error: fetchError } = await supabase
-      .from('calculator_step_images')
-      .select('id')
-      .eq('step_number', stepNumber)
-      .eq('image_type', imageType)
-      .maybeSingle();
-
-    if (fetchError) {
-      throw handleDatabaseError(fetchError, 'fetch existing step image');
-    }
-
-    if (existingImage) {
-      console.log('Updating existing image with id:', existingImage.id);
-      const { error: updateError } = await supabase
-        .from('calculator_step_images')
-        .update({
-          image_path: imagePath,
-          is_last_selected: isLastSelected
-        })
-        .eq('id', existingImage.id);
-
-      if (updateError) {
-        throw handleDatabaseError(updateError, 'update step image');
-      }
-    } else {
-      console.log('Inserting new step image');
-      const { error: insertError } = await supabase
-        .from('calculator_step_images')
-        .insert({
-          step_number: stepNumber,
-          image_type: imageType,
-          image_path: imagePath,
-          is_last_selected: isLastSelected
-        });
-
-      if (insertError) {
-        throw handleDatabaseError(insertError, 'insert step image');
-      }
-    }
-  });
-};
+// Note: updateStepImagesLastSelected and insertStepImage removed.
+// calculator_step_images is admin-managed content only.
+// User selections are tracked in React state.
 
 export const getLastSelectedImage = async (stepNumber: number) => {
   return withRetry(async () => {

@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "./components/LoadingSpinner";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CurrentConditionStepProps {
@@ -47,40 +46,9 @@ export function CurrentConditionStep({
     loadImages();
   }, []);
 
-  const handleConditionChange = async (value: string) => {
+  const handleConditionChange = (value: string) => {
     console.log('Step 8 - Condition changed to:', value);
-    
-    try {
-      // First, update all images to not selected
-      const { error: resetError } = await supabase
-        .from('calculator_step_images')
-        .update({ is_last_selected: false })
-        .eq('step_number', 8);
-
-      if (resetError) {
-        console.error('Error resetting other images:', resetError);
-        throw resetError;
-      }
-
-      // Then, set the selected image to last selected
-      const { error } = await supabase
-        .from('calculator_step_images')
-        .update({ is_last_selected: true })
-        .eq('step_number', 8)
-        .eq('image_type', value);
-
-      if (error) {
-        console.error('Error updating last selected status:', error);
-        throw error;
-      }
-
-      console.log('Step 8 - Successfully updated last selected status for:', value);
-      
-      // Finally, update the UI
-      onConditionChange(value);
-    } catch (error) {
-      console.error('Error in handleConditionChange:', error);
-    }
+    onConditionChange(value);
   };
 
   return (

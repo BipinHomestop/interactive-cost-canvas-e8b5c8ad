@@ -1,6 +1,5 @@
 
 import { CalculatorInputs } from "../../types";
-import * as db from "./databaseQueries";
 
 export const getStemWallImageType = (options: Partial<CalculatorInputs>) => {
   if (options.needStemWalls === 'no') return 'stem-wall-no';
@@ -20,11 +19,6 @@ export const handleStemWallImage = async (collection: any, options: Partial<Calc
   } else if (options.stemWallType === 'large') {
     imagePath = collection.stem_wall_large_image;
   }
-
-  await db.updateStepImagesLastSelected(5);
-  
-  const imageType = getStemWallImageType(options);
-  await db.insertStepImage(5, imageType, imagePath, true);
   
   return { image_path: imagePath };
 };
