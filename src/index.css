@@ -179,11 +179,11 @@
   }
   
   .input-modern {
-    @apply px-3 py-2;
+    @apply px-3 py-2.5;
   }
   
   .btn-primary, .btn-outline {
-    @apply px-4 py-2;
+    @apply px-4 py-2.5;
   }
   
   .card-modern {
@@ -198,6 +198,28 @@
   /* Ensure inputs have enough touch target size */
   input, select, textarea, button {
     @apply min-h-[2.75rem] text-[16px];
+  }
+  
+  /* Improved mobile typography */
+  h1 {
+    @apply text-xl font-bold;
+  }
+  
+  h2 {
+    @apply text-lg font-semibold;
+  }
+  
+  h3 {
+    @apply text-base font-semibold;
+  }
+  
+  p, label, span {
+    @apply text-sm;
+  }
+  
+  /* Larger touch-friendly text for form labels */
+  .form-label {
+    @apply text-base font-medium;
   }
 }
 
