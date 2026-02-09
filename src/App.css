@@ -22,7 +22,7 @@
   
   /* Ensure image takes more height on mobile */
   .image-container-mobile {
-    min-height: 40vh !important;
+    min-height: 35vh !important;
   }
 }
 

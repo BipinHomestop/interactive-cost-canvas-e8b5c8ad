@@ -25,8 +25,8 @@ export function ImageDisplay({
   } = useCalculatorImage(step, options);
 
   const containerHeight = isMobile ? "h-full" : "h-full";
-  const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[85%]" : "h-[80%]");
-  const priceContainerHeight = isMobile ? "h-[15%]" : "h-[20%]";
+  const imageContainerHeight = step <= 2 ? "h-full" : (isMobile ? "h-[80%]" : "h-[80%]");
+  const priceContainerHeight = isMobile ? "h-[20%]" : "h-[20%]";
 
   const handleRetry = useCallback(() => {
     setImageError(false);
