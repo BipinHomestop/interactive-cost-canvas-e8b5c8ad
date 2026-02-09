@@ -111,11 +111,8 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Get email recipients from environment variable or use defaults
-    const recipientsEnv = Deno.env.get("CONTACT_EMAIL_RECIPIENTS");
-    const recipients = recipientsEnv 
-      ? recipientsEnv.split(',').map(email => email.trim())
-      : ["bipin@homestop.us", "nithin@homestop.us"];
+    // Send to verified email only (Resend free tier limitation)
+    const recipient = "bipin@homestop.us";
 
     const emailHtml = `
       <h2>New Contact from Garage Floor Coating Calculator</h2>
@@ -126,16 +123,16 @@ const handler = async (req: Request): Promise<Response> => {
       <p><em>This contact was submitted via the cost calculator on your website.</em></p>
     `;
 
-    // Send email to all recipients
-    const combinedEmailResponse = await resend.emails.send({
+    // Send email
+    const emailResponse = await resend.emails.send({
       from: "Garage Floor Coating <onboarding@resend.dev>",
-      to: recipients,
+      to: [recipient],
       subject: `New Lead: ${sanitizedName} - ${sanitizedLocation}`,
       html: emailHtml,
     });
 
-    if (combinedEmailResponse.error) {
-      throw combinedEmailResponse.error;
+    if (emailResponse.error) {
+      throw emailResponse.error;
     }
 
     return new Response(
