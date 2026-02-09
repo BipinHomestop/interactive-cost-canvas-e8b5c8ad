@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSubmission } from "@/hooks/calculator/use-submission";
 import { format } from "date-fns";
-import { getPreservedCalculationData } from "@/hooks/calculator/utils/submission-db";
+import { getPreservedCalculationData, getSessionTokenForCheckout } from "@/hooks/calculator/utils/submission-db";
 
 export function useCheckout(
   formData: any,
@@ -135,6 +135,19 @@ export function useCheckout(
       console.log('Calling Stripe checkout with metadata:', metadata);
       console.log('Final price being processed:', finalDiscountedTotal);
 
+      // Get session token for checkout security
+      const sessionToken = getSessionTokenForCheckout();
+      if (!sessionToken) {
+        console.error('No session token available for checkout');
+        toast({
+          title: "Session Error",
+          description: "Your session has expired. Please start over from the beginning.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       // Create the checkout session
       const { data, error } = await supabase.functions.invoke('stripe-checkout', {
         body: {
@@ -143,6 +156,7 @@ export function useCheckout(
           metadata: metadata,
           successUrl: window.location.origin + '/success',
           cancelUrl: window.location.origin + '/step/9', // Return to payment step
+          sessionToken: sessionToken,
         },
       });
 

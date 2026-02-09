@@ -157,6 +157,16 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ sessionToken: token }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }
     
+    // Check if this is a request to validate a session token (for stripe-checkout)
+    if (body.action === 'validate_session' && body.submissionId && body.sessionToken) {
+      if (!isUuid(body.submissionId)) {
+        return new Response(JSON.stringify({ valid: false, error: 'Invalid submission ID' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      }
+      const isValid = validateSessionToken(body.sessionToken, body.submissionId);
+      console.log('update-submission: validate session for', body.submissionId, '- valid:', isValid);
+      return new Response(JSON.stringify({ valid: isValid }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+    }
+    
     if (!id || !isUuid(id)) {
       return new Response(JSON.stringify({ error: 'Invalid or missing id' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }

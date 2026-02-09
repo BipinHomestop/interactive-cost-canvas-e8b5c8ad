@@ -39,6 +39,13 @@ const getSessionToken = async (submissionId: string): Promise<string | null> => 
 };
 
 /**
+ * Gets the current session token for checkout (synchronous version)
+ */
+export const getSessionTokenForCheckout = (): string | null => {
+  return currentSessionToken;
+};
+
+/**
  * Creates a new submission in the database
  */
 export const createSubmission = async (

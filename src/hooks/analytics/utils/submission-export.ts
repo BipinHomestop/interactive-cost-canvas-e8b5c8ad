@@ -1,14 +1,6 @@
 
-import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import * as XLSX from 'xlsx';
-
-// Add type declaration for jspdf-autotable
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
 
 type SubmissionData = Array<{
   id: string;
@@ -122,61 +114,144 @@ export const exportToCSV = (submissions: SubmissionData, timeRange: string): voi
 };
 
 /**
- * Export submission data to PDF
+ * Export submission data to PDF using pdf-lib (secure alternative to jspdf)
  */
-export const exportToPDF = (submissions: SubmissionData, timeRange: string): void => {
+export const exportToPDF = async (submissions: SubmissionData, timeRange: string): Promise<void> => {
   try {
-    // Create a new jsPDF instance
-    const doc = new jsPDF();
+    // Create a new PDF document
+    const pdfDoc = await PDFDocument.create();
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    
+    const pageWidth = 842; // A4 landscape width
+    const pageHeight = 595; // A4 landscape height
+    const margin = 40;
+    const lineHeight = 14;
+    const headerColor = rgb(0.1, 0.2, 0.45);
+    
+    let page = pdfDoc.addPage([pageWidth, pageHeight]);
+    let yPosition = pageHeight - margin;
     
     // Add title
-    doc.setFontSize(18);
-    doc.text('User Submissions Report', 14, 22);
+    page.drawText('User Submissions Report', {
+      x: margin,
+      y: yPosition,
+      size: 18,
+      font: helveticaBoldFont,
+      color: headerColor
+    });
+    yPosition -= 25;
     
-    // Add period
-    doc.setFontSize(12);
-    doc.text(`Time Range: ${timeRange}`, 14, 30);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 36);
+    // Add metadata
+    page.drawText(`Time Range: ${timeRange}`, {
+      x: margin,
+      y: yPosition,
+      size: 10,
+      font: helveticaFont
+    });
+    yPosition -= 15;
     
-    // Create simpler column headers for better PDF fit
-    const tableColumn = [
-      "Date", "Name", "Location", "Garage", "Extra Footage", "Condition", "Price", "Status"
+    page.drawText(`Generated: ${new Date().toLocaleString()}`, {
+      x: margin,
+      y: yPosition,
+      size: 10,
+      font: helveticaFont
+    });
+    yPosition -= 25;
+    
+    // Column headers
+    const columns = [
+      { header: 'Date', width: 70 },
+      { header: 'Name', width: 100 },
+      { header: 'Location', width: 60 },
+      { header: 'Garage', width: 50 },
+      { header: 'Extra Footage', width: 80 },
+      { header: 'Condition', width: 80 },
+      { header: 'Price', width: 60 },
+      { header: 'Status', width: 70 }
     ];
     
-    // Simplify data rows for better fitting on PDF
-    const tableRows = submissions.map(sub => [
-      formatDate(sub.created_at),
-      sub.name || 'N/A',
-      sub.location || 'N/A',
-      `${sub.garage_capacity || 'N/A'}-Car`,
-      sub.need_extra_footage === 'yes' ? `Yes (${sub.extra_footage || 'N/A'})` : 'No',
-      sub.current_condition || 'N/A',
-      formatCurrency(sub.total_price),
-      sub.payment_status || 'Unknown'
-    ]);
-    
-    // Add table to document
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 45,
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 2 },
-      columnStyles: {
-        0: { cellWidth: 25 },
-        1: { cellWidth: 30 },
-        2: { cellWidth: 25 },
-        3: { cellWidth: 20 },
-        4: { cellWidth: 25 },
-        5: { cellWidth: 25 },
-        6: { cellWidth: 20 },
-        7: { cellWidth: 20 }
-      },
-      headStyles: { fillColor: [26, 49, 116] }
+    // Draw header row
+    let xPosition = margin;
+    page.drawRectangle({
+      x: margin,
+      y: yPosition - 12,
+      width: pageWidth - 2 * margin,
+      height: 16,
+      color: headerColor
     });
     
-    // Save PDF
-    doc.save(`submissions_${timeRange}.pdf`);
+    columns.forEach(col => {
+      page.drawText(col.header, {
+        x: xPosition + 2,
+        y: yPosition - 8,
+        size: 8,
+        font: helveticaBoldFont,
+        color: rgb(1, 1, 1)
+      });
+      xPosition += col.width;
+    });
+    yPosition -= 20;
+    
+    // Draw data rows
+    submissions.forEach((sub, index) => {
+      // Check if we need a new page
+      if (yPosition < margin + 30) {
+        page = pdfDoc.addPage([pageWidth, pageHeight]);
+        yPosition = pageHeight - margin;
+      }
+      
+      // Alternate row background
+      if (index % 2 === 0) {
+        page.drawRectangle({
+          x: margin,
+          y: yPosition - 10,
+          width: pageWidth - 2 * margin,
+          height: lineHeight,
+          color: rgb(0.95, 0.95, 0.95)
+        });
+      }
+      
+      const rowData = [
+        formatDate(sub.created_at),
+        (sub.name || 'N/A').substring(0, 15),
+        sub.location || 'N/A',
+        `${sub.garage_capacity || 'N/A'}-Car`,
+        sub.need_extra_footage === 'yes' ? `Yes (${sub.extra_footage || 'N/A'})` : 'No',
+        (sub.current_condition || 'N/A').substring(0, 12),
+        formatCurrency(sub.total_price),
+        sub.payment_status || 'Unknown'
+      ];
+      
+      xPosition = margin;
+      rowData.forEach((text, colIndex) => {
+        page.drawText(text.substring(0, 20), {
+          x: xPosition + 2,
+          y: yPosition - 6,
+          size: 7,
+          font: helveticaFont,
+          color: rgb(0, 0, 0)
+        });
+        xPosition += columns[colIndex].width;
+      });
+      
+      yPosition -= lineHeight;
+    });
+    
+    // Save and download PDF
+    const pdfBytes = await pdfDoc.save();
+    // Convert Uint8Array to ArrayBuffer for Blob compatibility
+    const arrayBuffer = pdfBytes.buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength) as ArrayBuffer;
+    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `submissions_${timeRange}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Error generating PDF:', error);
     alert('There was an error generating the PDF. Please try again.');
