@@ -48,11 +48,34 @@ serve(async (req) => {
       throw new Error("Invalid submission ID format.");
     }
     
-    // Validate session token if provided
+    // Require session token for ownership validation
     const sessionToken = requestData.sessionToken;
-    if (sessionToken) {
-      console.log("Session token provided for checkout validation");
+    if (!sessionToken) {
+      console.error("Missing session token for checkout");
+      throw new Error("Session token required. Please restart the checkout process.");
     }
+    
+    // Validate session token by calling update-submission edge function
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const validateResponse = await fetch(`${supabaseUrl}/functions/v1/update-submission`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`
+      },
+      body: JSON.stringify({ 
+        action: 'validate_session', 
+        submissionId: metadata.submission_id, 
+        sessionToken 
+      })
+    });
+    
+    const validateResult = await validateResponse.json();
+    if (!validateResponse.ok || !validateResult.valid) {
+      console.error("Invalid session token for checkout:", validateResult);
+      throw new Error("Invalid session. Please restart the checkout process.");
+    }
+    console.log("Session token validated for checkout");
 
     // First try to get the restricted key, fall back to the secret key if not available
     const stripeApiKey = Deno.env.get("STRIPE_RESTRICTED_KEY") || Deno.env.get("STRIPE_SECRET_KEY");
