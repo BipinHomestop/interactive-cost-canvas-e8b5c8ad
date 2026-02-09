@@ -17,7 +17,7 @@ interface ContactData {
   name: string;
   email: string;
   phone: string;
-  location: string;
+  location?: string; // Location is optional
 }
 
 // Simple input sanitization function
@@ -86,10 +86,18 @@ const handler = async (req: Request): Promise<Response> => {
     const sanitizedName = sanitizeInput(contactData.name || '');
     const sanitizedEmail = sanitizeInput(contactData.email || '');
     const sanitizedPhone = sanitizeInput(contactData.phone || '');
-    const sanitizedLocation = sanitizeInput(contactData.location || '');
+    const sanitizedLocation = sanitizeInput(contactData.location || 'Not provided');
 
-    // Validate inputs
-    if (!sanitizedName || !sanitizedEmail || !sanitizedPhone || !sanitizedLocation) {
+    console.log('Received contact data:', { 
+      name: sanitizedName, 
+      email: sanitizedEmail, 
+      phone: sanitizedPhone ? '***' : 'empty', 
+      location: sanitizedLocation 
+    });
+
+    // Validate required inputs (location is optional)
+    if (!sanitizedName || !sanitizedEmail || !sanitizedPhone) {
+      console.log('Validation failed - missing required fields');
       return new Response(
         JSON.stringify({ error: "Invalid input data" }),
         {
