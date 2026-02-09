@@ -1,6 +1,5 @@
 
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-import * as XLSX from 'xlsx';
 
 type SubmissionData = Array<{
   id: string;
@@ -38,40 +37,56 @@ const formatCurrency = (amount?: number) => {
   return `$${amount.toFixed(2)}`;
 };
 
+// Escape a value for CSV
+const escapeCSV = (value: string): string => {
+  if (value.includes('"') || value.includes(',') || value.includes('\n')) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return `"${value}"`;
+};
+
 /**
- * Export submission data to Excel
+ * Export submission data to Excel-compatible CSV
  */
 export const exportToExcel = (submissions: SubmissionData, timeRange: string): void => {
-  // Prepare data for Excel
-  const data = submissions.map(sub => ({
-    Date: formatDate(sub.created_at),
-    Location: sub.location || 'N/A',
-    Name: sub.name || 'N/A',
-    Email: sub.email || 'N/A',
-    Phone: sub.phone || 'N/A',
-    'Garage Capacity': `${sub.garage_capacity || 'N/A'}-Car`,
-    'Garage Finish': sub.garage_finish || 'N/A',
-    'Stem Walls': sub.need_stem_walls || 'N/A',
-    'Stem Wall Type': sub.stem_wall_type || 'N/A',
-    'Steps': sub.need_steps || 'N/A',
-    'Extra Footage': sub.need_extra_footage || 'N/A',
-    'Footage Amount': sub.extra_footage || 'N/A',
-    'Current Condition': sub.current_condition || 'N/A',
-    'Total Price': formatCurrency(sub.total_price),
-    'Payment Status': sub.payment_status || 'Unknown'
-  }));
-  
-  // Create workbook and worksheet
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Submissions');
-  
-  // Auto size columns
-  const colWidths = Object.keys(data[0] || {}).map(key => ({ wch: Math.max(key.length, 12) }));
-  worksheet['!cols'] = colWidths;
-  
-  // Export to Excel
-  XLSX.writeFile(workbook, `submissions_${timeRange}.xlsx`);
+  const headers = [
+    'Date', 'Location', 'Name', 'Email', 'Phone', 'Garage Capacity',
+    'Garage Finish', 'Stem Walls', 'Stem Wall Type', 'Steps',
+    'Extra Footage', 'Footage Amount', 'Current Condition', 'Total Price', 'Payment Status'
+  ];
+
+  const rows = submissions.map(sub => [
+    formatDate(sub.created_at),
+    sub.location || 'N/A',
+    sub.name || 'N/A',
+    sub.email || 'N/A',
+    sub.phone || 'N/A',
+    `${sub.garage_capacity || 'N/A'}-Car`,
+    sub.garage_finish || 'N/A',
+    sub.need_stem_walls || 'N/A',
+    sub.stem_wall_type || 'N/A',
+    sub.need_steps || 'N/A',
+    sub.need_extra_footage || 'N/A',
+    sub.extra_footage || 'N/A',
+    sub.current_condition || 'N/A',
+    formatCurrency(sub.total_price),
+    sub.payment_status || 'Unknown'
+  ]);
+
+  const csvContent = [
+    headers.map(h => escapeCSV(h)).join(','),
+    ...rows.map(row => row.map(cell => escapeCSV(cell)).join(','))
+  ].join('\n');
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `submissions_${timeRange}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
 
 /**
