@@ -12,7 +12,7 @@ import { ImageDisplay } from "./calculator/ImageDisplay";
 import { FormNavigation } from "./calculator/FormNavigation";
 import { FAQSection } from "./calculator/FAQSection";
 import { ProgressIndicator } from "./calculator/ProgressIndicator";
-import { MobileProgressIndicator } from "./calculator/MobileProgressIndicator";
+
 import { StepTransition } from "./calculator/StepTransition";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -146,10 +146,6 @@ export function CostCalculator() {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Mobile Progress Indicator - shown at top on mobile */}
-      {isMobile && step < 9 && (
-        <MobileProgressIndicator currentStep={step} totalSteps={8} />
-      )}
       
       <div className={`flex-1 flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full gap-0 overflow-hidden`}>
         <div className={`${isMobile ? 'w-full h-[28vh] min-h-[180px]' : 'w-[40%] h-full'}`}>
