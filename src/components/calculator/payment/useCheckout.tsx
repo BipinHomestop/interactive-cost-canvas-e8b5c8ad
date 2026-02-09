@@ -168,27 +168,18 @@ export function useCheckout(
       }
 
       if (data && data.url) {
-        // Update submission with checkout session ID and the final price
+        // Update submission with checkout session ID via edge function (handles RLS)
         if (data.sessionId) {
-          console.log('Updating with checkout session ID and final price:', data.sessionId, finalDiscountedTotal);
-          await updatePaymentInfo(date, data.sessionId, 'checkout_started');
-          
-          // Explicitly update the total_price directly to ensure it's correctly set
-          const { error: priceUpdateError } = await supabase
-            .from('cost_calculator_submissions')
-            .update({ total_price: finalDiscountedTotal })
-            .eq('id', currentSubmissionId);
-            
-          if (priceUpdateError) {
-            console.error('Error updating final price:', priceUpdateError);
-          } else {
-            console.log('Successfully updated submission with final price:', finalDiscountedTotal);
-          }
+          console.log('Updating with checkout session ID:', data.sessionId);
+          // Don't await this - let it run while we redirect
+          updatePaymentInfo(date, data.sessionId, 'checkout_started').catch(err => {
+            console.warn('Non-blocking update error:', err);
+          });
         }
         
-        // Redirect to Stripe Checkout
+        // Redirect to Stripe Checkout immediately
         console.log('Redirecting to Stripe checkout URL:', data.url);
-        window.location.href = data.url;
+        window.location.assign(data.url);
       } else {
         console.error('No checkout URL returned:', data);
         throw new Error('No checkout URL returned from payment processor');
