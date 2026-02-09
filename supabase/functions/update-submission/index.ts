@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -110,31 +110,71 @@ function sanitizeUpdate(input: Record<string, any>): Record<string, any> {
 interface Payload {
   id: string;
   update: Record<string, any>;
-  sessionToken?: string; // Client passes a session token to prove ownership
+  sessionToken?: string;
 }
 
-// Simple in-memory session store (tokens expire after 30 minutes)
-const sessionTokens = new Map<string, { submissionId: string; expiresAt: number }>();
-
-function validateSessionToken(token: string | undefined, submissionId: string): boolean {
+// Validate session token from database
+async function validateSessionToken(token: string | undefined, submissionId: string): Promise<boolean> {
   if (!token) return false;
-  const session = sessionTokens.get(token);
-  if (!session) return false;
-  if (Date.now() > session.expiresAt) {
-    sessionTokens.delete(token);
+  
+  try {
+    // Clean up expired tokens first
+    await supabase
+      .from('submission_session_tokens')
+      .delete()
+      .lt('expires_at', new Date().toISOString());
+    
+    // Look up the token in the database
+    const { data, error } = await supabase
+      .from('submission_session_tokens')
+      .select('submission_id, expires_at')
+      .eq('token', token)
+      .single();
+    
+    if (error || !data) {
+      console.log('Token not found in database:', token);
+      return false;
+    }
+    
+    // Check if token is expired
+    if (new Date(data.expires_at) < new Date()) {
+      console.log('Token expired:', token);
+      await supabase.from('submission_session_tokens').delete().eq('token', token);
+      return false;
+    }
+    
+    // Check if token matches the submission
+    return data.submission_id === submissionId;
+  } catch (err) {
+    console.error('Error validating session token:', err);
     return false;
   }
-  return session.submissionId === submissionId;
 }
 
-function createSessionToken(submissionId: string): string {
+// Create session token and store in database
+async function createSessionToken(submissionId: string): Promise<string> {
   const token = crypto.randomUUID();
   // Token expires in 30 minutes
-  sessionTokens.set(token, { submissionId, expiresAt: Date.now() + 30 * 60 * 1000 });
-  // Clean up expired tokens periodically
-  for (const [key, value] of sessionTokens.entries()) {
-    if (Date.now() > value.expiresAt) sessionTokens.delete(key);
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+  
+  console.log('Attempting to store session token:', { submissionId, token, expiresAt });
+  
+  // Store in database
+  const { data, error } = await supabase
+    .from('submission_session_tokens')
+    .insert({
+      submission_id: submissionId,
+      token: token,
+      expires_at: expiresAt
+    })
+    .select();
+  
+  if (error) {
+    console.error('Error storing session token:', JSON.stringify(error));
+    throw new Error('Failed to create session token: ' + error.message);
   }
+  
+  console.log('Session token stored successfully:', data);
   return token;
 }
 
@@ -152,9 +192,15 @@ serve(async (req: Request) => {
       if (!isUuid(body.submissionId)) {
         return new Response(JSON.stringify({ error: 'Invalid submission ID' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
       }
-      const token = createSessionToken(body.submissionId);
-      console.log('update-submission: created session token for', body.submissionId);
-      return new Response(JSON.stringify({ sessionToken: token }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      
+      try {
+        const token = await createSessionToken(body.submissionId);
+        console.log('update-submission: created session token for', body.submissionId);
+        return new Response(JSON.stringify({ sessionToken: token }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      } catch (err: any) {
+        console.error('Failed to create session token:', err);
+        return new Response(JSON.stringify({ error: 'Failed to create session' }), { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
+      }
     }
     
     // Check if this is a request to validate a session token (for stripe-checkout)
@@ -162,7 +208,7 @@ serve(async (req: Request) => {
       if (!isUuid(body.submissionId)) {
         return new Response(JSON.stringify({ valid: false, error: 'Invalid submission ID' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
       }
-      const isValid = validateSessionToken(body.sessionToken, body.submissionId);
+      const isValid = await validateSessionToken(body.sessionToken, body.submissionId);
       console.log('update-submission: validate session for', body.submissionId, '- valid:', isValid);
       return new Response(JSON.stringify({ valid: isValid }), { status: 200, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }
@@ -172,7 +218,8 @@ serve(async (req: Request) => {
     }
 
     // Validate ownership via session token
-    if (!validateSessionToken(sessionToken, id)) {
+    const isValidToken = await validateSessionToken(sessionToken, id);
+    if (!isValidToken) {
       console.warn('update-submission: invalid or missing session token for', id);
       return new Response(JSON.stringify({ error: 'Unauthorized: invalid session token' }), { status: 403, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }
