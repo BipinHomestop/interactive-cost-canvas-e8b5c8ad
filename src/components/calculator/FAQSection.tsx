@@ -1,6 +1,7 @@
-
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { HelpCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FAQ {
   question: string;
@@ -218,21 +219,32 @@ export function FAQSection({ step }: FAQSectionProps) {
   };
 
   return (
-    <div className={`${isMobile ? 'mb-6' : ''}`}>
-      <h2 className={`text-xl font-bold mb-6 text-[#1A3174] text-left ${isMobile ? 'mt-4' : ''}`}>
+    <div className={cn(isMobile && "mb-6")}>
+      <h2 className={cn(
+        "text-xl font-bold mb-6 text-primary text-left flex items-center gap-2",
+        isMobile && "mt-4"
+      )}>
+        <HelpCircle className="w-5 h-5" />
         {getStepTitle(step)} FAQ's
       </h2>
-      <Accordion type="single" collapsible className="space-y-4">
+      <Accordion type="single" collapsible className="space-y-3">
         {getFAQs(step).map((faq, index) => (
           <AccordionItem 
             key={index} 
             value={`item-${index + 1}`} 
-            className="border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+            className={cn(
+              "border rounded-lg bg-white shadow-sm",
+              "hover:shadow-md hover:border-primary/30",
+              "transition-all duration-200",
+              "data-[state=open]:border-primary/50 data-[state=open]:shadow-md"
+            )}
           >
-            <AccordionTrigger className="px-4 hover:no-underline text-left">
-              <span className="text-[#1A3174] font-medium text-left">{faq.question}</span>
+            <AccordionTrigger className="px-4 hover:no-underline text-left group">
+              <span className="text-primary font-medium text-left group-hover:text-primary-light transition-colors">
+                {faq.question}
+              </span>
             </AccordionTrigger>
-            <AccordionContent className="px-4 text-gray-600 text-left">
+            <AccordionContent className="px-4 text-gray-600 text-left animate-in fade-in-0 slide-in-from-top-1 duration-200">
               {faq.answer}
             </AccordionContent>
           </AccordionItem>

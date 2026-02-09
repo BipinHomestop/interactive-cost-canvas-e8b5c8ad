@@ -12,6 +12,8 @@ import { ImageDisplay } from "./calculator/ImageDisplay";
 import { FormNavigation } from "./calculator/FormNavigation";
 import { FAQSection } from "./calculator/FAQSection";
 import { ProgressIndicator } from "./calculator/ProgressIndicator";
+import { MobileProgressIndicator } from "./calculator/MobileProgressIndicator";
+import { StepTransition } from "./calculator/StepTransition";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useState } from "react";
@@ -136,17 +138,24 @@ export function CostCalculator() {
       {step < 9 && !isMobile && (
         <ProgressIndicator currentStep={step} totalSteps={8} />
       )}
-      {renderStep()}
+      <StepTransition stepKey={step}>
+        {renderStep()}
+      </StepTransition>
     </div>
   );
 
   return (
-    <div className="h-full">
-      <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full h-full gap-0`}>
-        <div className={`${isMobile ? 'w-full' : 'w-[40%]'} ${isMobile ? 'h-[35vh] min-h-[250px]' : 'h-full'}`}>
+    <div className="h-full flex flex-col">
+      {/* Mobile Progress Indicator - shown at top on mobile */}
+      {isMobile && step < 9 && (
+        <MobileProgressIndicator currentStep={step} totalSteps={8} />
+      )}
+      
+      <div className={`flex-1 flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full gap-0 overflow-hidden`}>
+        <div className={`${isMobile ? 'w-full h-[28vh] min-h-[180px]' : 'w-[40%] h-full'}`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
         </div>
-        
+
         <div className={`
           ${isMobile ? 'w-full' : 'w-[40%] border-x border-gray-200'} 
           bg-white p-4 sm:p-6
