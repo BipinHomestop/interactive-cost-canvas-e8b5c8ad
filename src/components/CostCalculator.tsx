@@ -148,7 +148,7 @@ export function CostCalculator() {
     <div className="h-full flex flex-col">
       
       <div className={`flex-1 flex ${isMobile ? 'flex-col' : 'flex-row'} items-stretch w-full gap-0 overflow-hidden`}>
-        <div className={`${isMobile ? 'w-full h-[28vh] min-h-[180px]' : 'w-[40%] h-full'}`}>
+        <div className={`${isMobile ? 'w-full h-[38vh] min-h-[220px]' : 'w-[40%] h-full'}`}>
           <ImageDisplay totalCost={totalCost} step={step} options={getStepOptions()} />
         </div>
 

@@ -35,15 +35,15 @@ export function GarageCapacityStep({ capacity, onCapacityChange }: GarageCapacit
   return (
     <div className={`space-y-8 ${isMobile ? 'px-2 pb-24' : ''}`}>
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-primary mb-2">Garage Capacity</h2>
-        <p className="text-gray-600 mb-4">
+        <h2 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-primary mb-2`}>Garage Capacity</h2>
+        <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-600 mb-4`}>
           Select the number of cars your garage needs to accommodate
         </p>
       </div>
 
       <div className="text-center pt-4">
-        <div className="text-7xl font-bold text-primary mb-4">{capacity}</div>
-        <div className="text-4xl font-semibold text-primary uppercase tracking-wider">CAR</div>
+        <div className={`${isMobile ? 'text-5xl' : 'text-7xl'} font-bold text-primary mb-4`}>{capacity}</div>
+        <div className={`${isMobile ? 'text-2xl' : 'text-4xl'} font-semibold text-primary uppercase tracking-wider`}>CAR</div>
       </div>
       
       <div className={`flex justify-center items-center ${isMobile ? 'gap-10 mt-8' : 'gap-16 mt-8'}`}>

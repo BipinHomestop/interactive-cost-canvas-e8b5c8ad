@@ -16,8 +16,8 @@ export function HouseStepsStep({
   return (
     <div className={`space-y-6 ${isMobile ? 'pb-24 px-2' : ''}`}>
       <div>
-        <h2 className="text-2xl font-bold text-[#1A3174] mb-2">House Steps</h2>
-        <p className="text-gray-600">
+        <h2 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-[#1A3174] mb-2`}>House Steps</h2>
+        <p className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-600`}>
           Do you need steps from your house to the garage?
         </p>
       </div>

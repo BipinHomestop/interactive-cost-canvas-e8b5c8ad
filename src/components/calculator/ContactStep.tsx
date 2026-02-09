@@ -132,8 +132,8 @@ export function ContactStep({
   return (
     <div className={cn("space-y-4", isMobile ? "px-1 pb-12" : "px-4")}>
       <div>
-        <h2 className="text-2xl font-bold text-primary mb-2">Contact Information</h2>
-        <p className="text-muted-foreground">
+        <h2 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-primary mb-2`}>Contact Information</h2>
+        <p className={`${isMobile ? 'text-sm' : 'text-base'} text-muted-foreground`}>
           Please provide your contact details so we can send you the estimate.
         </p>
       </div>

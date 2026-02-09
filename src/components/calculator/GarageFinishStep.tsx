@@ -179,7 +179,7 @@ export function GarageFinishStep({
 
   return (
     <div className={`flex flex-col h-full ${isMobile ? 'px-2 pb-8' : ''}`}>
-      <h2 className="text-2xl font-bold text-[#1A3174] mb-6">
+      <h2 className={`${isMobile ? 'text-lg' : 'text-2xl'} font-bold text-[#1A3174] mb-4`}>
         Garage Finish
       </h2>
       
