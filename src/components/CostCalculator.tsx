@@ -73,6 +73,12 @@ export function CostCalculator() {
         return {
           currentCondition: formValues.currentCondition
         };
+      case 9:
+        return {
+          garageFinish: formValues.garageFinish,
+          needStemWalls: formValues.needStemWalls,
+          stemWallType: formValues.stemWallType
+        };
       default:
         return {};
     }

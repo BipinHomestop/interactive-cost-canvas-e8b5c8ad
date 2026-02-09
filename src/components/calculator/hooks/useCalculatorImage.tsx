@@ -120,8 +120,17 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           if (finishCollection) {
             imageData = { image_path: finishCollection.garage_finish_image };
           }
-        } else if (step === 9) {
-          imageData = await db.getLastSelectedImage(5);
+        } else if (step === 9 && options?.garageFinish) {
+          const finishCollection = await db.getFinishCollectionImage(options.garageFinish);
+          if (finishCollection) {
+            if (options.needStemWalls === 'no') {
+              imageData = { image_path: finishCollection.stem_wall_no_image };
+            } else if (options.stemWallType === 'large') {
+              imageData = { image_path: finishCollection.stem_wall_large_image };
+            } else {
+              imageData = { image_path: finishCollection.stem_wall_standard_image };
+            }
+          }
         } else {
           // Check for default image in cache
           const defaultCacheKey = `step-${step}-default`;
