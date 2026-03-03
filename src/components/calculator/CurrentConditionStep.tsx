@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { CONDITION_IMAGES } from "./hooks/utils/fallbackImages";
 
 interface CurrentConditionStepProps {
   condition: string;
@@ -27,7 +28,7 @@ export function CurrentConditionStep({
 
         if (error) throw error;
 
-        if (data) {
+        if (data && data.length > 0) {
           const imageMap = data.reduce((acc: Record<string, string>, img) => {
             acc[img.image_type] = img.image_path;
             return acc;
@@ -35,9 +36,14 @@ export function CurrentConditionStep({
 
           console.log('Step 8 - Available images:', imageMap);
           setImages(imageMap);
+        } else {
+          // No data — use fallbacks
+          console.log('Step 8 - Using fallback images');
+          setImages(CONDITION_IMAGES);
         }
       } catch (error) {
-        console.error('Error loading images:', error);
+        console.warn('Step 8 - DB fetch failed, using fallback images:', error);
+        setImages(CONDITION_IMAGES);
       } finally {
         setLoading(false);
       }
