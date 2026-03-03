@@ -6,6 +6,7 @@ import * as db from "./utils/databaseQueries";
 import * as imageUtils from "./utils/imageUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { getCachedImage, setCachedImage } from "@/hooks/calculator/use-image-preloader";
+import { getFallbackImage } from "./utils/fallbackImages";
 
 // Simple in-memory cache for database queries
 const queryCache = new Map<string, { data: any; timestamp: number }>();
@@ -39,6 +40,19 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
     
     let isMounted = true;
 
+    const useFallback = () => {
+      if (!isMounted) return;
+      const fallback = getFallbackImage(step, options);
+      if (fallback) {
+        console.log('Using fallback image for step:', step);
+        setCurrentImageSrc(fallback);
+        setIsLoading(false);
+      } else {
+        setImageError(true);
+        setIsLoading(false);
+      }
+    };
+
     const loadImage = async () => {
       if (!isMounted) return;
       
@@ -58,7 +72,6 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
         let imageData = null;
         
         if (step === 8 && options?.currentCondition) {
-          // Check query cache
           const queryCacheKey = `step8-${options.currentCondition}`;
           const cached = getCachedQuery(queryCacheKey);
           
@@ -151,11 +164,13 @@ export function useCalculatorImage(step: number, options?: Partial<CalculatorInp
           setCurrentImageSrc(imageData.image_path);
           setCachedImage(cacheKey, imageData.image_path);
         } else {
-          setImageError(true);
+          // No data from DB — use fallback
+          useFallback();
         }
       } catch (error) {
         if (!isMounted) return;
-        setImageError(true);
+        console.warn('DB fetch failed for step', step, '- using fallback:', error);
+        useFallback();
       } finally {
         if (isMounted) {
           setIsLoading(false);
