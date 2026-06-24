@@ -29,13 +29,14 @@ const AdminSetup: React.FC = () => {
 
   const checkAdminStatus = async () => {
     try {
-      const { data, error } = await supabase.rpc('has_admin_users');
+      const { data, error } = await supabase.functions.invoke('check-admin-exists');
       if (error) throw error;
-      
-      setHasAdminUsers(data);
-      
+
+      const exists = !!data?.hasAdmins;
+      setHasAdminUsers(exists);
+
       // If admin users exist, redirect to login
-      if (data) {
+      if (exists) {
         navigate('/admin');
       }
     } catch (error) {
