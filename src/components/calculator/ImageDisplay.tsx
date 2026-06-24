@@ -51,7 +51,11 @@ export function ImageDisplay({
             <img 
               key={currentImageSrc}
               src={currentImageSrc} 
-              alt={`Step ${step} visualization`} 
+              alt={[
+                options?.garageCapacity ? `${options.garageCapacity}-car garage` : 'Garage',
+                options?.garageFinish ? `with ${options.garageFinish} finish` : null,
+                options?.currentCondition ? `(${options.currentCondition} condition)` : null,
+              ].filter(Boolean).join(' ')} 
               onLoad={handleImageLoad}
               onError={() => {
                 console.error('Image failed to load:', currentImageSrc);

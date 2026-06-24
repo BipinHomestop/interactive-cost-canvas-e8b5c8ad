@@ -43,7 +43,7 @@ export default function Success() {
   return (
     <>
       <MetaTags customMeta={getSuccessPageMetaTags()} />
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50 p-4">
         <div className={cn(
           "w-full max-w-md rounded-2xl border bg-white p-8 shadow-xl transition-all duration-700",
           showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -62,10 +62,10 @@ export default function Success() {
             
             <img 
               src="/lovable-uploads/c072bff9-8118-4dd7-9b73-b8ada113ca3b.png" 
-              alt="American Concrete Coatings logo" 
+              alt="American Concrete Coatings" 
               className="h-12 w-auto mb-4"
             />
-            <h1 className="text-2xl font-bold text-center text-primary">Thank You!</h1>
+            <h1 className="text-2xl font-bold text-center text-primary">Quote Request Received</h1>
             <p className="mt-2 text-center text-gray-600">
               Your information has been submitted successfully. One of our representatives will contact you shortly.
             </p>
@@ -125,7 +125,7 @@ export default function Success() {
             </Button>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

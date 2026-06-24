@@ -141,9 +141,11 @@ export function LocationStep({
             <MapPin size={20} />
           </div>
           <Input
+            id="project-zip-code"
             type="text"
             value={zipCode}
             onChange={handleZipCodeChange}
+            aria-label="Project ZIP code"
             className={cn(
               "w-full h-12 pl-10 hover:border-[#1A3174] focus:ring-[#1A3174] focus:border-[#1A3174]",
               isValid && "border-green-500 pr-10",
