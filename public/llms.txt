@@ -1,0 +1,18 @@
+# American Concrete Coatings — Garage Floor Coating Quote Calculator
+
+> Instant pricing tool for professional garage floor coating installations (epoxy, polyaspartic, polyurea) across the Dallas-Fort Worth metroplex.
+
+American Concrete Coatings provides certified garage floor coating installation throughout the DFW area. This interactive calculator walks homeowners through a 9-step quote flow that estimates project cost based on garage size, current floor condition, finish selection, and additional square footage.
+
+## Pages
+
+- [Quote Calculator](/): Start the garage floor coating cost estimator.
+- [Step 2 – Location](/step/2): Confirm your service ZIP code.
+- [Step 3 – Garage Capacity](/step/3): Select the number of cars your garage holds.
+- [Step 4 – Garage Finish](/step/4): Choose your preferred coating finish.
+- [Step 5 – Current Condition](/step/5): Describe the existing concrete condition.
+- [Step 6 – Stem Walls](/step/6): Indicate whether stem walls should be coated.
+- [Step 7 – House Steps](/step/7): Add coating for connected interior steps.
+- [Step 8 – Additional Footage](/step/8): Add extra square footage outside the garage.
+- [Step 9 – Contact & Payment](/step/9): Submit your details and reserve installation.
+- [Success](/success): Confirmation page after a quote is submitted.

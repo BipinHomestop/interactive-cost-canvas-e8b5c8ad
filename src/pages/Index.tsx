@@ -119,10 +119,10 @@ const Index = () => {
           </div>
         </div>
       </nav>
-      <div className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden">
         <h1 className="text-2xl font-bold text-center text-[#1A3174] my-4 sr-only">Garage Floor Coating Cost Calculator</h1>
         <CostCalculator />
-      </div>
+      </main>
       
       {showFAQs && isMobile && (
         <div className="fixed inset-0 bg-white z-50 flex flex-col">
