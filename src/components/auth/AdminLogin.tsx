@@ -51,10 +51,12 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
 
       if (authError) {
         setError('Invalid email or password');
-        // Log security event
-        await supabase.rpc('log_security_event', {
-          event_type: 'failed_login_attempt',
-          details: { email: email.trim(), error: authError.message }
+        // Log security event via secured edge function
+        await supabase.functions.invoke('log-security-event', {
+          body: {
+            event_type: 'failed_login_attempt',
+            details: { email: email.trim(), error: authError.message }
+          }
         });
         return;
       }
@@ -72,11 +74,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           setError('Access denied. You are not authorized to access this area.');
           // Sign out the user
           await supabase.auth.signOut();
-          // Log unauthorized access attempt
-          await supabase.rpc('log_security_event', {
-            event_type: 'unauthorized_access_attempt',
-            user_id: data.user.id,
-            details: { email: email.trim() }
+          // Log unauthorized access attempt via secured edge function
+          await supabase.functions.invoke('log-security-event', {
+            body: {
+              event_type: 'unauthorized_access_attempt',
+              user_id: data.user.id,
+              details: { email: email.trim() }
+            }
           });
           return;
         }
@@ -87,11 +91,13 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           .update({ last_login: new Date().toISOString() })
           .eq('id', adminData.id);
 
-        // Log successful login
-        await supabase.rpc('log_security_event', {
-          event_type: 'successful_admin_login',
-          user_id: data.user.id,
-          details: { email: email.trim() }
+        // Log successful login via secured edge function
+        await supabase.functions.invoke('log-security-event', {
+          body: {
+            event_type: 'successful_admin_login',
+            user_id: data.user.id,
+            details: { email: email.trim() }
+          }
         });
 
         toast({

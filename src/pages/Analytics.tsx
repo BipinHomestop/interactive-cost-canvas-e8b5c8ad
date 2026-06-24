@@ -45,11 +45,13 @@ export default function Analytics() {
       setIsAuthenticated(true);
       setUserEmail(adminData.email);
       
-      // Log access
-      await supabase.rpc('log_security_event', {
-        event_type: 'analytics_access',
-        user_id: session.user.id,
-        details: { email: adminData.email }
+      // Log access (via secured edge function)
+      await supabase.functions.invoke('log-security-event', {
+        body: {
+          event_type: 'analytics_access',
+          user_id: session.user.id,
+          details: { email: adminData.email }
+        }
       });
     } catch (error) {
       console.error('Authentication check failed:', error);

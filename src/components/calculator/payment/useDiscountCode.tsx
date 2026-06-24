@@ -45,12 +45,11 @@ export function useDiscountCode(totalCost: number) {
     setIsLoading(true);
     
     try {
-      // Use secure validation function instead of direct table query
-      const { data, error } = await supabase
-        .rpc('validate_discount_code', { 
-          code_to_check: couponCode.trim().toUpperCase() 
-        });
-      
+      // Use secured edge function instead of direct RPC
+      const { data, error } = await supabase.functions.invoke('validate-discount', {
+        body: { code: couponCode.trim().toUpperCase() }
+      });
+
       if (error) {
         console.error('Error validating coupon');
         toast({
@@ -61,9 +60,9 @@ export function useDiscountCode(totalCost: number) {
         setDiscountPercentage(0);
         return;
       }
+
+      const validationResult = data;
       
-      // Check if the code is valid (RPC returns array with one row)
-      const validationResult = Array.isArray(data) && data.length > 0 ? data[0] : null;
       
       if (!validationResult || !validationResult.is_valid) {
         toast({

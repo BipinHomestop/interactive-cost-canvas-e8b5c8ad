@@ -2,12 +2,11 @@ import { createClient } from 'npm:@supabase/supabase-js@2'
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors'
 
 const ALLOWED_EVENTS = new Set([
-  'admin_login_success',
-  'admin_login_failed',
-  'admin_login_attempt',
-  'admin_login_locked',
+  'failed_login_attempt',
+  'unauthorized_access_attempt',
+  'successful_admin_login',
+  'analytics_access',
   'admin_setup_completed',
-  'analytics_viewed',
 ])
 
 Deno.serve(async (req) => {
